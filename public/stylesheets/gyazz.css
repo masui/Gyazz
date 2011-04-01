@@ -1,0 +1,383 @@
+body {
+	background-color: #ffeeee;
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+}
+
+div.title {
+/* height:24pt; */
+	margin:1px;
+	padding:5px;
+	text-align: left;
+	text-indent: 0.25em;
+	font-size: 24px;
+	font-weight: bold;
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+	border-style:solid;
+	border-width:1px;
+	border-color:#aaa;
+	background-color:#e0e0e0;
+}
+
+div.links {
+	margin:1px;
+	padding:4px 4px 4px 4px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#aaa;
+	background-color:#c0c0c0;
+	line-height:10pt;
+}
+
+span.wordtitle {
+/* float:left; */
+	color:blue;
+}
+span.memotitle {
+	color:darkgreen;
+}
+span.language {
+	font-size:12pt;
+	color:#8080e0;
+}
+
+/*
+h1 {
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	padding: 0.3em 0.3em;
+	color: #ffffff;
+	text-indent: 0.25em;
+	border-style: none;
+	background-color: #880088;
+}
+h1 a {
+	text-decoration: none;
+	color: white;
+}
+h2 {
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	padding: 0.3em 0.3em;
+	color: #ffffff;
+	text-indent: 0.25em;
+	border-style: none;
+	background-color: #409030;
+}
+h3 {
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	padding: 0.3em 0.3em;
+	color: #000000;
+	text-indent: 0.25em;
+	border-style: none;
+	background-color: #ffddff;
+}
+pre {
+	font-family: monospace;
+	border-style: solid;
+	border-width: 1px 2px 2px 1px;
+	border-color: #6666aa; 
+	color: #444466;
+	background-color: #e8e8ff;
+	white-space: pre;
+	margin-right: 4.0em;
+	margin-left: 3.5em;
+	padding: 0.5em 2em;
+}
+*/
+
+h1 {
+	color: #004400;
+	background-color: #c0c0ff;
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: center;
+	padding: 0.5em 0.5em;
+	text-indent: 0.25em;
+	border-style: none;
+}
+h2 {
+	color: black;
+	background-color: #c0ffc0;
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	padding: 0.1em 0.1em;
+	text-indent: 0.25em;
+	border-style: none;
+}
+h3 {
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	padding: 0.1em 0.1em;
+	color: #000000;
+	text-indent: 0.25em;
+	border-style: none;
+	background-color: #ffddff;
+}
+/* リンクの色を変化させる */
+a {
+	text-decoration: none;
+	/* color:black; */
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+}
+a.tag {
+	margin:1px;
+	padding:1px;
+
+	text-decoration: none;
+	color: blue;
+/*
+	font-weight: bold;
+*/
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+/*
+	border-style:solid;
+	border-width:1px;
+	border-color:#aaa;
+*/
+	background-color:#ffffff;
+}
+a.memo {
+	margin:1px;
+	padding:1px;
+
+	text-decoration: none;
+	color:darkgreen;
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+	background-color:white;
+}
+/*
+a:hover {
+	text-decoration: underline
+}
+*/
+a.links:link {
+	color:white;
+	font-weight: bold;
+}
+
+a.links {
+    color:white;
+	font-weight: bold;
+}
+
+td.td2 {
+	background-color: #ffffff;
+}
+td.td3 {
+	background-color: #ffffff;
+}
+/*
+span.title {
+	color: white;
+}
+*/
+
+div.title1 {
+	margin:1px;
+	padding:5px;
+	text-align: left;
+	text-indent: 0.25em;
+	font-size: 24px;
+	font-weight: bold;
+/*	font-family: serif; */
+	font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif;
+	border-style:solid;
+	border-width:1px;
+	border-color:#aaa;
+	background-color:#e0e0e0;
+}
+
+div.title1 a {
+	text-decoration: none;
+	color: blue;
+}
+
+/*
+div.title {
+	margin-right: 0%;
+	margin-left: 0%;
+	text-align: left;
+	text-indent: 0.25em;
+	font-size: 24px;
+	font-weight: bold;
+	font-family: serif;
+}
+*/
+
+div.title a {
+	text-decoration: none;
+	color: white;
+}
+span.memotitle a {
+	text-decoration: none;
+	color: darkgreen;
+}
+span.wordtitle a {
+	text-decoration: none;
+	color: blue;
+}
+/*
+div.link {
+	float:left;
+	padding:1pt;
+}
+*/
+div.link_wrap2 {
+	float:left;
+	padding:1pt;
+}
+div.link a {
+	text-decoration: none;
+	color: white;
+}
+div.link2 {
+	float:left;
+	background-color:#00AA6C;
+	margin:2pt;
+	padding:1pt;
+}
+div.link2 a {
+	text-decoration: none;
+	color: white;
+}
+
+/*
+********************
+*/
+
+div.listedit0 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 10;
+}
+div.listedit0:before {
+	display: marker;
+	content: "■ ";
+	color: #008000;
+}
+
+div.listedit1 {
+        color: #000000;
+        font-weight: normal;
+        /* font-style: italic; */
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 40;
+}
+
+div.listedit1:before {
+	display: marker;
+	content: "■ ";
+	color: #00b000;
+}
+
+div.listedit2 {
+        color: #000000;
+        font-weight: normal;
+        /* font-style: italic; */
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 70;
+}
+
+div.listedit2:before {
+	display: marker;
+	content: "■ ";
+	color: #00e000;
+/*  marker-offset: 8em; */
+/*  counter-increment: item; */
+}
+
+div.listedit3 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 100;
+}
+
+div.listedit3:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+div.listedit4 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 130;
+}
+
+div.listedit4:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+div.listedit5 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 160;
+}
+
+div.listedit5:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+div.listedit6 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 190;
+}
+
+div.listedit6:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+div.listedit7 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 220;
+}
+
+div.listedit7:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+div.listedit8 {
+        color: #000000;
+        font-weight: normal;
+	list-style-type:disc;
+	list-style-position: inside;
+	margin: 0 0 0 250;
+}
+
+div.listedit8:before {
+	display: marker;
+	content: "■ ";
+	color: #00f000;
+}
+
+
