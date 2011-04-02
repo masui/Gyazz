@@ -8,6 +8,7 @@ def edit(name,title)
   @title = title
   @urltop = topurl(name)
   @urlroot = URLROOT
+  @srcroot = SRCROOT
   file = datafile(name,title,0)
   @text = File.exist?(file) ? File.read(file)  : ''
   @text =~ /^\s*$/ ? "(empty)" : @text

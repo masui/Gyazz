@@ -8,6 +8,7 @@ def page(name,title)
   @name = name
   @title = title
   @urlroot = URLROOT
+  @srcroot = SRCROOT
   @related = related_html(@name,@title)
   erb :page
 end
