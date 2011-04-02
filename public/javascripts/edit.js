@@ -4,18 +4,14 @@
 
 var timeout;
 
-var TOP = "http://gyazz.com"
+//var TOP = "http://gyazz.com"
+var root = "http://masui.sfc.keio.ac.jp/Gyazz"
 
 document.onkeyup = keyup;
 
 function keyup(event){
   if(timeout) clearTimeout(timeout);
   timeout = setTimeout("writedata()",2000);
-
-  // 書き込みが必要な状態になると背景を黄色くしていたが、
-  // ウザい気もするのでやめてみる。
-  //var input = document.getElementById("contents");
-  //input.style.backgroundColor = "#ffff80";
 }
 
 function createXmlHttp(){
@@ -30,24 +26,63 @@ function createXmlHttp(){
 
 function writedata(){
   xmlhttp = createXmlHttp();
-  xmlhttp.open("POST", TOP + "/programs/postdata.cgi" , true);
-  xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
-  xmlhttp.setRequestHeader("Content-Type" , "text/html; charset=utf-8"); //2006/11/10追加 for Safari
+  xmlhttp.open("POST", root + "/__write" , true);
+  xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded"); // これで送るとSinatraが受け付けるらしい
+  //http://www.gittr.com/index.php/archive/getting-data-into-a-sinatra-app に解説あり
+
   var textarea = document.getElementById('contents');
-  data = textarea.value;
-  //postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + data);
-  // xmlhttp.send(postdata);
-  postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + data);
+  datastr = textarea.value;
+
+  postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
+
   xmlhttp.send(postdata);
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       response = xmlhttp.responseText;
-      if(response == 'collision'){
-	  alert('書込み衝突が発生しました。別の場所で同時に修正が行なわれている可能性があります。リロードして編集をやり直して下さい。');
+      //  alert(response);
+      if(response == 'conflict'){
+        // 再読み込み
+        getdata();
       }
       else {
-	  orig_md5 = response;
+        orig_md5 = MD5_hexhash(utf16to8(datastr));
       }
     }
   }
 }
+
+function getdata(){ // 20050815123456.utf のようなテキストを読み出し
+  version = 0;
+  data = [];
+  xmlhttp = createXmlHttp();
+  file = root + "/" + name + "/" + title + "/text/" + version;
+  xmlhttp.open("GET", file , true);
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4) {
+      xx = xmlhttp.responseText;
+      d = xx.split(/\n/);
+      datestr = d.shift();
+      data = [];
+      dt = [];
+      for(var i=0;i<d.length;i++){
+        s = d[i]
+        if(s != ''){
+          t = 0;
+          if(version > 0){
+            s.match(/^(.*) ([0-9]*)$/);
+            s = RegExp.$1;
+            t = RegExp.$2;
+          }
+          dt.push(Number(t));
+          data.push(s);
+        }
+      }
+      datastr = data.join("\n")+"\n";
+      document.getElementById('contents').value = datastr;
+      orig_md5 = MD5_hexhash(utf16to8(datastr));
+    }
+  }
+  xmlhttp.send("");
+}
+
+

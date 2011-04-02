@@ -4,7 +4,8 @@ require 'config'
 require 'lib'
 
 def write(postdata)
-  #postdata = params[:data].split(/\n/)
+  # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
+
   wikiname = postdata.shift
   pagetitle = postdata.shift
   browser_md5 = postdata.shift
