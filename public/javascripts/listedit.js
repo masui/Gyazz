@@ -769,7 +769,7 @@ function writedata(){
   //xmlhttp.setRequestHeader("Content-Type" , "text/html; charset=utf-8"); //2006/11/10追加 for Safari
 
   //postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + data.join("\n"));
-  datastr = data.join("\n");
+  datastr = data.join("\n")+"\n";
 
 //datamd5 = MD5_hexhash(utf16to8(datastr));
 //alert(datamd5);
@@ -780,8 +780,8 @@ function writedata(){
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       response = xmlhttp.responseText;
-  alert(response);
-      iff(response == 'conflict'){
+      //  alert(response);
+      if(response == 'conflict'){
         // 再読み込み
         getdata();
       }
@@ -820,7 +820,7 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
           data.push(s);
         }
       }
-      orig_md5 = MD5_hexhash(utf16to8(data.join("\n")));
+      orig_md5 = MD5_hexhash(utf16to8(data.join("\n")+"\n"));
       //alert(MD5_hexhash(utf16to8(data.join("\n"))));
       search();
     }

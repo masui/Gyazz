@@ -59,24 +59,30 @@ post '/post' do
   title = data.shift
   browser_md5 = data.shift
   file = datafile(name,title,0)
-  server_md5 = md5(File.read(file))
+  server_md5 = ""
+  if File.exist?(file) then
+    server_md5 = md5(File.read(file))
+  end
+  File.open("/tmp/md5","w"){ |f|
+    f.puts "#{server_md5}, #{browser_md5}"
+  }
 
   Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
   Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
-  newdata = data.join("\n")
+  newdata = data.join("\n")+"\n"
   if File.exist?(file) then
     curdata = File.read(file)
     if curdata != newdata then
       File.open(newbackupfile(name,title),'w'){ |f|
-        f.puts(curdata)
-      }
-      File.open(file,"w"){ |f|
-        f.puts(newdata)
+        f.print(curdata)
       }
     end
   end
 
   if server_md5 == browser_md5 then
+    File.open(file,"w"){ |f|
+      f.print(newdata)
+    }
     'noconflict'
   else
     # ブラウザが指定したMD5のファイルを捜す
@@ -88,12 +94,16 @@ post '/post' do
       # patch curr < patch
       newfile = "/tmp/newfile"
       File.open(newfile,"w"){ |f|
-        f.puts newdata
+        f.print newdata
       }
       # oldfile = datafile(name,title,0)
-      system "diff #{oldfile} #{newfile} > /tmp/patchdata"
+      system "diff -c #{oldfile} #{newfile} > /tmp/patchdata"
       curfile = datafile(name,title,0)
       system "patch #{curfile} < /tmp/patchdata"
+    else
+      File.open(datafile(name,title,0),"w"){ |f|
+        f.print newdata
+      }
     end
 
     'conflict'
