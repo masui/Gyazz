@@ -10,6 +10,10 @@ def topdir(name)
   "#{FILEROOT}/#{md5(name)}"
 end
 
+def topurl(name)
+  "#{URLROOT}/#{name}"
+end
+
 def backupdir(name,title=nil)
   if title then
     "#{FILEROOT}/#{md5(name)}/backups/#{md5(title)}"

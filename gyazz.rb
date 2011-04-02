@@ -8,11 +8,35 @@ require 'erb'
 
 $: << 'lib'
 require 'config'
+require 'lib'
 require 'related'
+require 'search'
+require 'write'
 
 #
 # API
 #
+# 外に見せないサービスは /__xxx という名前にする
+#
+
+get '/:name/*/search' do  # /増井研/合宿/search 
+  name = params[:name]
+  q = params[:splat].join('/')
+  search(name,q)
+end
+
+get "/__search/:name" do |name|
+  q = params[:q]
+  redirect q == '' ? "#{URLROOT}/#{name}" : "#{URLROOT}/#{name}/#{q}/search"
+end
+
+get "/:name" do |name|
+  search(name)
+end
+
+get "/:name/" do |name|
+  search(name)
+end
 
 #
 # データテキスト取得
@@ -44,7 +68,7 @@ end
 get '/:name/*' do
   @name = params[:name]               # Wikiの名前   (e.g. masui)
   @title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-  @root = URLROOT
+  @urlroot = URLROOT
   @related = related_html(@name,@title)
   erb :page
 end
@@ -52,56 +76,59 @@ end
 #
 # データ書込み 
 #
-post '/post' do
+post '/__write' do
   # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
   postdata = params[:data].split(/\n/)
-  wikiname = postdata.shift
-  pagetitle = postdata.shift
-  browser_md5 = postdata.shift
-  newdata = postdata.join("\n")+"\n"
+  write(postdata)
 
-  curfile = datafile(wikiname,pagetitle,0)
-  server_md5 = ""
-  curdata = ""
-  if File.exist?(curfile) then
-    curdata = File.read(curfile)
-    server_md5 = md5(curdata)
-  end
-
-  Dir.mkdir(backupdir(wikiname)) unless File.exist?(backupdir(wikiname))
-  Dir.mkdir(backupdir(wikiname,pagetitle)) unless File.exist?(backupdir(wikiname,pagetitle))
-
-  if curdata != "" && curdata != newdata then
-    File.open(newbackupfile(wikiname,pagetitle),'w'){ |f|
-      f.print(curdata)
-    }
-  end
-
-  if server_md5 == browser_md5 then
-    File.open(curfile,"w"){ |f|
-      f.print(newdata)
-    }
-    'noconflict'
-  else
-    # ブラウザが指定したMD5のファイルを捜す
-    oldfile = backupfiles(wikiname,pagetitle).find { |f|
-      md5(File.read(f)) == browser_md5
-    }
-    if oldfile then
-      newfile = "/tmp/newfile#{$$}"
-      patchfile = "/tmp/patchfile#{$$}"
-      File.open(newfile,"w"){ |f|
-        f.print newdata
-      }
-      system "diff -c #{oldfile} #{newfile} > #{patchfile}"
-      system "patch #{curfile} < #{patchfile}"
-      File.delete newfile, patchfile
-    else
-      File.open(curfile,"w"){ |f|
-        f.print newdata
-      }
-    end
-    'conflict'
-  end
+#  wikiname = postdata.shift
+#  pagetitle = postdata.shift
+#  browser_md5 = postdata.shift
+#  newdata = postdata.join("\n")+"\n"
+#
+#  curfile = datafile(wikiname,pagetitle,0)
+#  server_md5 = ""
+#  curdata = ""
+#  if File.exist?(curfile) then
+#    curdata = File.read(curfile)
+#    server_md5 = md5(curdata)
+#  end
+#
+#  Dir.mkdir(backupdir(wikiname)) unless File.exist?(backupdir(wikiname))
+#  Dir.mkdir(backupdir(wikiname,pagetitle)) unless File.exist?(backupdir(wikiname,pagetitle))
+#
+#  if curdata != "" && curdata != newdata then
+#    File.open(newbackupfile(wikiname,pagetitle),'w'){ |f|
+#      f.print(curdata)
+#    }
+#  end
+#
+#  if server_md5 == browser_md5 then
+#    File.open(curfile,"w"){ |f|
+#      f.print(newdata)
+#    }
+#    'noconflict'
+#  else
+#    # ブラウザが指定したMD5のファイルを捜す
+#    oldfile = backupfiles(wikiname,pagetitle).find { |f|
+#      md5(File.read(f)) == browser_md5
+#    }
+#    if oldfile then
+#      newfile = "/tmp/newfile#{$$}"
+#      patchfile = "/tmp/patchfile#{$$}"
+#      File.open(newfile,"w"){ |f|
+#        f.print newdata
+#      }
+#      system "diff -c #{oldfile} #{newfile} > #{patchfile}"
+#      system "patch #{curfile} < #{patchfile}"
+#      File.delete newfile, patchfile
+#    else
+#      File.open(curfile,"w"){ |f|
+#        f.print newdata
+#      }
+#    end
+#    'conflict'
+#  end
+#end
 end
 

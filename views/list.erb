@@ -1,0 +1,25 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Search Result</title>
+  <link rel="stylesheet" href="/Gyazz/stylesheets/gyazz.css" type="text/css">
+</head>
+<body>
+  <div class="title">
+    <span class='wordtitle'>検索結果 (<%= @matchids.length %>)</span>
+    <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+      <input height='20' name='q' type='text' value='<%= @q %>'>
+      <input type='submit' value='検索'>
+    </form>
+  </div>
+  <p>
+  <% @matchids.each { |id| %>
+    <% title = @id2title[id] %>
+    <% url = "#{@urltop}/#{title}" %>
+    <div class="listedit0">
+      <a href="<%= url %>" class='tag'><%= title %></a>
+    </div>
+  <% } %>
+</body>
+</html>
+

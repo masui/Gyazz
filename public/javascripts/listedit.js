@@ -763,7 +763,7 @@ function addtag(tag){
 
 function writedata(){
   xmlhttp = createXmlHttp();
-  xmlhttp.open("POST", root + "/post" , true);
+  xmlhttp.open("POST", root + "/__write" , true);
   xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded"); // これで送るとSinatraが受け付けるらしい
   //http://www.gittr.com/index.php/archive/getting-data-into-a-sinatra-app に解説あり
   //xmlhttp.setRequestHeader("Content-Type" , "text/html; charset=utf-8"); //2006/11/10追加 for Safari

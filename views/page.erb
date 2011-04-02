@@ -13,7 +13,7 @@
 <script type="text/javascript">
 var name =  '<%= @name %>';
 var title = '<%= @title %>';
-var root =  '<%= @root %>';
+var root =  '<%= @urlroot %>';
 var version = 0;
 </script>
 </head>
@@ -21,14 +21,16 @@ var version = 0;
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <a href='<%= @root %>/<%= @name %>/<%= @title %>/edit' id='title'>
+    <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/edit' id='title'>
     <%= @title %>
     </a>
   </span>
-  <form action='<%= @root %>/search' method='get' style='float:right;font-size:12pt;'>
-    <input name='q' type='text' height='20'>
-    <input type='submit' value='検索'><input name='name' type='hidden' value='<%= @name %>'>
+
+  <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+    <input height='20' name='q' type='text' value='<%= @q %>'>
+    <input type='submit' value='検索'>
   </form>
+
   <span class='language' id='datestr'></span>
 </div>
 
