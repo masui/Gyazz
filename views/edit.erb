@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta name='robots' content='noindex,nofollow'>
+    <title><%= @name %> / <%= @title %></title>
+    <link href='/Gyazz/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
+    <script language="JavaScript" src='/Gyazz/javascripts/utf.js'></script>
+    <script language="JavaScript" src='/Gyazz/javascripts/md5.js'></script>
+    <script language="JavaScript" src='/Gyazz/javascripts/edit.js'></script>
+    <script type='text/javascript'>
+    var name = '<%= @name %>';
+    var title = '<%= @title %>';
+    var orig_md5;
+    </script>
+  </head>
+  <body>
+    <div class='title'>
+      <span class='wordtitle'>
+        <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>'><%= @title %></a>
+      </span>
+      <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+        <input height='20' name='q' type='text' value='<%= @q %>'>
+        <input type='submit' value='検索'>
+      </form>
+    </div>
+    <p>
+    <textarea id='contents' rows='40' cols='100'><%= @text %></textarea>
+    <script type='text/javascript'>
+    var textarea = document.getElementById('contents');
+    data = textarea.value;
+    datamd5 = MD5_hexhash(utf16to8(data));
+    </script>
+  </body>
+</html>

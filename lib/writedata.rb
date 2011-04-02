@@ -62,7 +62,7 @@ def writedata(data)
 
   # タイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-  dbm = SDBM.open("#{backupdir(wikiname)}/timestamp",0644)
+  dbm = SDBM.open("#{backupdir(wikiname,pagetitle)}/timestamp",0644)
   data.each { |line|
     l = line.sub(/^\s*/,'')
     if !dbm[l] then

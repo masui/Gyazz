@@ -47,9 +47,10 @@ end
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')   # /a/b/c/text のtitleを"b/c"にする
-  file = datafile(name,title,0)
-  s = File.exist?(file) ? File.read(file)  : ''
-  s =~ /^\s*$/ ? "(empty)" : s
+  readdata(name,title,0)
+#  file = datafile(name,title,0)
+#  s = File.exist?(file) ? File.read(file)  : ''
+#  s =~ /^\s*$/ ? "(empty)" : s
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
@@ -57,16 +58,6 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   title = params[:splat].join('/')
   version = params[:version].to_i
   readdata(name,title,version)
-
-#  file = datafile(name,title,version)
-#  datestr = ""
-#  if version > 0 then
-#    file =~ /\/(\d{14})$/
-#    datestr = $1
-#  end
-#  s = File.exist?(file) ? File.read(file)  : ''
-#  s = "(empty)" if s =~ /^\s*$/
-#  datestr + "\n" + s
 end
 
 get '/:name/*/edit' do
