@@ -1,21 +1,21 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><%= @name %> / <%= @title %></title>
-<link rel="stylesheet" href="<%= @srcroot %>/stylesheets/gyazz.css" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title><%= @name %> / <%= @title %></title>
+  <link rel="stylesheet" href="<%= @srcroot %>/stylesheets/gyazz.css" type="text/css">
 
-<script language="JavaScript" src='<%= @srcroot %>/javascripts/pbsearch.js'></script>
-<script language="JavaScript" src='<%= @srcroot %>/javascripts/pbdict.js'></script>
-<script language="JavaScript" src='<%= @srcroot %>/javascripts/utf.js'></script>
-<script language="JavaScript" src='<%= @srcroot %>/javascripts/md5.js'></script>
-<script language="JavaScript" src='<%= @srcroot %>/javascripts/listedit.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/pbsearch.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/pbdict.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/utf.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/md5.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/listedit.js'></script>
 
-<script type="text/javascript">
-var name =  '<%= @name %>';
-var title = '<%= @title %>';
-var root =  '<%= @urlroot %>';
-var version = 0;
-</script>
+  <script type="text/javascript">
+  var name =  '<%= @name %>';
+  var title = '<%= @title %>';
+  var root =  '<%= @urlroot %>';
+  var version = 0;
+  </script>
 </head>
 
 <body>
@@ -37,10 +37,7 @@ var version = 0;
 <p>
 <div id='querydiv'></div>
 <div id='contents'></div>
-
-<input autocomplete='off' type='text' id='newtext' onmousedown='editing=true'
-style='font-size:10pt;position:absolute;width:600;visibility:hidden;border:none;padding:1px;margin:0;background-color:#ddd;'>
-
+<input autocomplete='off' type='text' id='newtext' onmousedown='editing=true' style='visibility:hidden;'>
 <p>
 
 <div class="links">

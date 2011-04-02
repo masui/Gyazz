@@ -3,13 +3,13 @@
 require 'config'
 require 'lib'
 
-def edit(name,title)
+def edit(name,title,version=0)
   @name = name
   @title = title
   @urltop = topurl(name)
   @urlroot = URLROOT
   @srcroot = SRCROOT
-  file = datafile(name,title,0)
+  file = datafile(name,title,version)
   @text = File.exist?(file) ? File.read(file)  : ''
   @text =~ /^\s*$/ ? "(empty)" : @text
   erb :edit

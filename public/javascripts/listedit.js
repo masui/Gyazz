@@ -468,9 +468,13 @@ function display(delay){
             zoomlevel == -1 ? '#e0e0c0' :
             zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
   document.body.style.backgroundColor = bgcolor;
-  if(version != 0){ // 古いページを表示する場合はバックグラウンド変更?
-    // document.body.style.backgroundColor = '#c0c0c0';
+  if(version != 0){
+    document.getElementById('datestr').innerHTML = datestr;
   }
+  else {
+    document.getElementById('datestr').innerHTML = '';
+  }
+  document.getElementById('title').href = root + "/" + name + "/" + title + "/" + "edit" + "/" + version;
 
   var i;
   if(delay){ // ちょっと待ってもう一度呼び出す!
@@ -780,7 +784,7 @@ function writedata(){
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       response = xmlhttp.responseText;
-      //  alert(response);
+      // alert(response);
       if(response == 'conflict'){
         // 再読み込み
         getdata();

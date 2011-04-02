@@ -3,7 +3,7 @@
 require 'config'
 require 'lib'
 
-def readdata(name,title,version)
+def readdata(name,title,version=0)
   file = datafile(name,title,version)
   datestr = ""
   if version > 0 then
@@ -18,9 +18,6 @@ def readdata(name,title,version)
     data.each_line { |line|
       l = line.chomp
       ll = l.sub(/^\s*/,'')
-      File.open("/tmp/junk","w"){ |f|
-        f.puts ll
-      }
       dbm[ll] =~ /(....)(..)(..)(..)(..)(..)/
       t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
       td = (Time.now - t).to_i
