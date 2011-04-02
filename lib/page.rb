@@ -2,6 +2,7 @@
 
 require 'config'
 require 'lib'
+require 'related'
 
 def page(name,title)
   @name = name

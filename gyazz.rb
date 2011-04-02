@@ -3,13 +3,9 @@
 
 require 'rubygems'
 require 'sinatra'
-require 'json'
-require 'erb'
 
 $: << 'lib'
 require 'config'
-# require 'lib'
-require 'related'
 require 'search'
 require 'writedata'
 require 'readdata'
@@ -71,12 +67,6 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
   page(name,title)
-
-#  @name = params[:name]               # Wikiの名前   (e.g. masui)
-#  @title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-#  @urlroot = URLROOT
-#  @related = related_html(@name,@title)
-#  erb :page
 end
 
 #

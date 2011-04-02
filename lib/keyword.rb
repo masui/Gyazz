@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 class String
-  def keywords
+  def keywords # [[...]] のキーワードを配列にして返す
     s = self.dup
     a = []
     while s.sub!(/\[\[\[[^\]\n\r]+\]\]\]/,'') do
