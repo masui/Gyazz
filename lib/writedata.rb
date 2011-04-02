@@ -2,14 +2,17 @@
 
 require 'config'
 require 'lib'
+require 'sdbm'
+require 'pair'
 
-def write(postdata)
+def writedata(data)
   # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
 
-  wikiname = postdata.shift
-  pagetitle = postdata.shift
-  browser_md5 = postdata.shift
-  newdata = postdata.join("\n")+"\n"
+
+  wikiname = data.shift
+  pagetitle = data.shift
+  browser_md5 = data.shift
+  newdata = data.join("\n")+"\n"            # newdata: 新規書込みデータ
 
   curfile = datafile(wikiname,pagetitle,0)
   server_md5 = ""
@@ -17,11 +20,13 @@ def write(postdata)
   if File.exist?(curfile) then
     curdata = File.read(curfile)
     server_md5 = md5(curdata)
-  end
+  end                                       # curdata: Web上の最新データ
 
+  # バックアップディレクトリを作成
   Dir.mkdir(backupdir(wikiname)) unless File.exist?(backupdir(wikiname))
   Dir.mkdir(backupdir(wikiname,pagetitle)) unless File.exist?(backupdir(wikiname,pagetitle))
 
+  # 最新データをバックアップ
   if curdata != "" && curdata != newdata then
     File.open(newbackupfile(wikiname,pagetitle),'w'){ |f|
       f.print(curdata)
@@ -32,7 +37,7 @@ def write(postdata)
     File.open(curfile,"w"){ |f|
       f.print(newdata)
     }
-    'noconflict'
+    status = 'noconflict'
   else
     # ブラウザが指定したMD5のファイルを捜す
     oldfile = backupfiles(wikiname,pagetitle).find { |f|
@@ -52,7 +57,37 @@ def write(postdata)
         f.print newdata
       }
     end
-    'conflict'
+    status = 'conflict'
   end
+
+  # タイムスタンプ保存
+  timestamp = Time.now.strftime('%Y%m%d%H%M%S')
+  dbm = SDBM.open("#{backupdir(wikiname)}/timestamp",0644)
+  data.each { |line|
+    l = line.sub(/^\s*/,'')
+    if !dbm[l] then
+      dbm[l] = timestamp
+    end
+  }
+  dbm.close
+
+  # リンク情報更新
+  pair = Pair.new("#{topdir(wikiname)}/pair")
+  curdata.keywords.each { |keyword|
+    pair.delete(pagetitle,keyword)
+  }
+  newdata.keywords.each { |keyword|
+    pair.add(pagetitle,keyword)
+  }
+
+  # 代表画像
+  repimage = SDBM.open("#{topdir(wikiname)}/repimage")
+  if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
+    repimage[pagetitle] = $1
+  else
+    repimage.delete(pagetitle)
+  end
+
+  status # 'conflict' or 'noconflict'
 end
 

@@ -803,16 +803,13 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       xx = xmlhttp.responseText;
-      alert(xx);
       d = xx.split(/\n/);
       datestr = d.shift();
-      alert(datestr);
       data = [];
       dt = [];
       for(var i=0;i<d.length;i++){
         s = d[i]
         if(s != ''){
-	    /*
 	  t = 0;
           if(version > 0){
             s.match(/^(.*) ([0-9]*)$/);
@@ -820,11 +817,10 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
             t = RegExp.$2;
           }
           dt.push(Number(t));
-	    */
           data.push(s);
         }
       }
-      alert(data.join('-'));
+      //alert(data.join('-'));
       orig_md5 = MD5_hexhash(utf16to8(data.join("\n")+"\n"));
       //alert(MD5_hexhash(utf16to8(data.join("\n"))));
       search();

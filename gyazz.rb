@@ -11,7 +11,8 @@ require 'config'
 require 'lib'
 require 'related'
 require 'search'
-require 'write'
+require 'writedata'
+require 'readdata'
 require 'edit'
 
 #
@@ -53,17 +54,19 @@ end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
-  version = params[:version].to_i
   title = params[:splat].join('/')
-  file = datafile(name,title,version)
-  datestr = ""
-  if version > 0 then
-    file =~ /\/(\d{14})$/
-    datestr = $1
-  end
-  s = File.exist?(file) ? File.read(file)  : ''
-  s = "(empty)" if s =~ /^\s*$/
-  datestr + "\n" + s
+  version = params[:version].to_i
+  readdata(name,title,version)
+
+#  file = datafile(name,title,version)
+#  datestr = ""
+#  if version > 0 then
+#    file =~ /\/(\d{14})$/
+#    datestr = $1
+#  end
+#  s = File.exist?(file) ? File.read(file)  : ''
+#  s = "(empty)" if s =~ /^\s*$/
+#  datestr + "\n" + s
 end
 
 get '/:name/*/edit' do
@@ -88,6 +91,6 @@ end
 #
 post '/__write' do
   postdata = params[:data].split(/\n/)
-  write(postdata)
+  writedata(postdata)
 end
 
