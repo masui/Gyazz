@@ -53,61 +53,55 @@ end
 # データ書込み 
 #
 post '/post' do
-  data = params[:data]
-  data = data.split(/\n/)
-  name = data.shift
-  title = data.shift
-  browser_md5 = data.shift
-  file = datafile(name,title,0)
-  server_md5 = ""
-  if File.exist?(file) then
-    server_md5 = md5(File.read(file))
-  end
-  File.open("/tmp/md5","w"){ |f|
-    f.puts "#{server_md5}, #{browser_md5}"
-  }
+  # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
+  postdata = params[:data].split(/\n/)
+  wikiname = postdata.shift
+  pagetitle = postdata.shift
+  browser_md5 = postdata.shift
+  newdata = postdata.join("\n")+"\n"
 
-  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
-  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
-  newdata = data.join("\n")+"\n"
-  if File.exist?(file) then
-    curdata = File.read(file)
-    if curdata != newdata then
-      File.open(newbackupfile(name,title),'w'){ |f|
-        f.print(curdata)
-      }
-    end
+  curfile = datafile(wikiname,pagetitle,0)
+  server_md5 = ""
+  curdata = ""
+  if File.exist?(curfile) then
+    curdata = File.read(curfile)
+    server_md5 = md5(curdata)
+  end
+
+  Dir.mkdir(backupdir(wikiname)) unless File.exist?(backupdir(wikiname))
+  Dir.mkdir(backupdir(wikiname,pagetitle)) unless File.exist?(backupdir(wikiname,pagetitle))
+
+  if curdata != "" && curdata != newdata then
+    File.open(newbackupfile(wikiname,pagetitle),'w'){ |f|
+      f.print(curdata)
+    }
   end
 
   if server_md5 == browser_md5 then
-    File.open(file,"w"){ |f|
+    File.open(curfile,"w"){ |f|
       f.print(newdata)
     }
     'noconflict'
   else
     # ブラウザが指定したMD5のファイルを捜す
-    oldfile = backupfiles(name,title).find { |f|
+    oldfile = backupfiles(wikiname,pagetitle).find { |f|
       md5(File.read(f)) == browser_md5
     }
     if oldfile then
-      # diff old new > patch
-      # patch curr < patch
-      newfile = "/tmp/newfile"
+      newfile = "/tmp/newfile#{$$}"
+      patchfile = "/tmp/patchfile#{$$}"
       File.open(newfile,"w"){ |f|
         f.print newdata
       }
-      # oldfile = datafile(name,title,0)
-      system "diff -c #{oldfile} #{newfile} > /tmp/patchdata"
-      curfile = datafile(name,title,0)
-      system "patch #{curfile} < /tmp/patchdata"
+      system "diff -c #{oldfile} #{newfile} > #{patchfile}"
+      system "patch #{curfile} < #{patchfile}"
+      File.delete newfile, patchfile
     else
-      File.open(datafile(name,title,0),"w"){ |f|
+      File.open(curfile,"w"){ |f|
         f.print newdata
       }
     end
-
     'conflict'
   end
 end
-
 
