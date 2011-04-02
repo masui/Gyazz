@@ -8,27 +8,26 @@ require 'pair'
 def writedata(data)
   # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
 
-
-  wikiname = data.shift
-  pagetitle = data.shift
+  name = data.shift
+  title = data.shift
   browser_md5 = data.shift
-  newdata = data.join("\n")+"\n"            # newdata: 新規書込みデータ
+  newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
 
-  curfile = datafile(wikiname,pagetitle,0)
+  curfile = datafile(name,title,0)
   server_md5 = ""
   curdata = ""
   if File.exist?(curfile) then
     curdata = File.read(curfile)
     server_md5 = md5(curdata)
-  end                                       # curdata: Web上の最新データ
+  end                                 # curdata: Web上の最新データ
 
   # バックアップディレクトリを作成
-  Dir.mkdir(backupdir(wikiname)) unless File.exist?(backupdir(wikiname))
-  Dir.mkdir(backupdir(wikiname,pagetitle)) unless File.exist?(backupdir(wikiname,pagetitle))
+  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
+  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
 
   # 最新データをバックアップ
   if curdata != "" && curdata != newdata then
-    File.open(newbackupfile(wikiname,pagetitle),'w'){ |f|
+    File.open(newbackupfile(name,title),'w'){ |f|
       f.print(curdata)
     }
   end
@@ -40,7 +39,7 @@ def writedata(data)
     status = 'noconflict'
   else
     # ブラウザが指定したMD5のファイルを捜す
-    oldfile = backupfiles(wikiname,pagetitle).find { |f|
+    oldfile = backupfiles(name,title).find { |f|
       md5(File.read(f)) == browser_md5
     }
     if oldfile then
@@ -60,9 +59,9 @@ def writedata(data)
     status = 'conflict'
   end
 
-  # タイムスタンプ保存
+  # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-  dbm = SDBM.open("#{backupdir(wikiname,pagetitle)}/timestamp",0644)
+  dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
   data.each { |line|
     l = line.sub(/^\s*/,'')
     if !dbm[l] then
@@ -72,20 +71,20 @@ def writedata(data)
   dbm.close
 
   # リンク情報更新
-  pair = Pair.new("#{topdir(wikiname)}/pair")
+  pair = Pair.new("#{topdir(name)}/pair")
   curdata.keywords.each { |keyword|
-    pair.delete(pagetitle,keyword)
+    pair.delete(title,keyword)
   }
   newdata.keywords.each { |keyword|
-    pair.add(pagetitle,keyword)
+    pair.add(title,keyword)
   }
 
   # 代表画像
-  repimage = SDBM.open("#{topdir(wikiname)}/repimage")
+  repimage = SDBM.open("#{topdir(name)}/repimage")
   if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
-    repimage[pagetitle] = $1
+    repimage[title] = $1
   else
-    repimage.delete(pagetitle)
+    repimage.delete(title)
   end
 
   status # 'conflict' or 'noconflict'

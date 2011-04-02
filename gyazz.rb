@@ -8,12 +8,13 @@ require 'erb'
 
 $: << 'lib'
 require 'config'
-require 'lib'
+# require 'lib'
 require 'related'
 require 'search'
 require 'writedata'
 require 'readdata'
 require 'edit'
+require 'page'
 
 #
 # API
@@ -48,9 +49,6 @@ get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')   # /a/b/c/text のtitleを"b/c"にする
   readdata(name,title,0)
-#  file = datafile(name,title,0)
-#  s = File.exist?(file) ? File.read(file)  : ''
-#  s =~ /^\s*$/ ? "(empty)" : s
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
@@ -70,11 +68,15 @@ end
 # ページ表示
 #
 get '/:name/*' do
-  @name = params[:name]               # Wikiの名前   (e.g. masui)
-  @title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-  @urlroot = URLROOT
-  @related = related_html(@name,@title)
-  erb :page
+  name = params[:name]               # Wikiの名前   (e.g. masui)
+  title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+  page(name,title)
+
+#  @name = params[:name]               # Wikiの名前   (e.g. masui)
+#  @title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+#  @urlroot = URLROOT
+#  @related = related_html(@name,@title)
+#  erb :page
 end
 
 #
