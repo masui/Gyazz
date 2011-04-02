@@ -763,24 +763,30 @@ function addtag(tag){
 
 function writedata(){
   xmlhttp = createXmlHttp();
-  //xmlhttp.open("POST", root + "/programs/postdata.cgi" , true);
   xmlhttp.open("POST", root + "/post" , true);
   xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded"); // これで送るとSinatraが受け付けるらしい
-  //http://www.gittr.com/index.php/archive/getting-data-into-a-sinatra-app
+  //http://www.gittr.com/index.php/archive/getting-data-into-a-sinatra-app に解説あり
   //xmlhttp.setRequestHeader("Content-Type" , "text/html; charset=utf-8"); //2006/11/10追加 for Safari
 
   //postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + data.join("\n"));
-  postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + data.join("\n"));
+  datastr = data.join("\n");
+
+//datamd5 = MD5_hexhash(utf16to8(datastr));
+//alert(datamd5);
+
+  postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
+
   xmlhttp.send(postdata);
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       response = xmlhttp.responseText;
-      if(response == 'collision'){
-	  alert('書込み衝突が発生しました。別の場所で同時に修正が行なわれている可能性があります。リロードして編集をやり直して下さい。');
+  alert(response);
+      iff(response == 'conflict'){
+        // 再読み込み
+        getdata();
       }
       else {
-	  orig_md5 = response;
-	  //	  	  alert(orig_md5);
+        orig_md5 = MD5_hexhash(utf16to8(datastr));
       }
     }
   }
@@ -792,18 +798,13 @@ function writedata(){
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
   data = [];
   xmlhttp = createXmlHttp();
-  // file = root + "/programs/getdata.cgi?name=" + encodeURIComponent(name) + "&title=" + encodeURIComponent(title) + "&version=" + version;
-  file = root + "/" + name + "/" + title + "/text";
+  file = root + "/" + name + "/" + title + "/text/" + version;
   xmlhttp.open("GET", file , true);
-
-  //xmlhttp.setRequestHeader("Content-Type" , "text/html; charset=utf-8"); //2006/11/10追加 for Safari
-  //  と思ったら無くても大丈夫じゃん
-
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       xx = xmlhttp.responseText;
-      //xx = decodeURIComponent(xmlhttp.responseText);
       d = xx.split(/\n/);
+      datestr = d.shift();
       data = [];
       dt = [];
       for(var i=0;i<d.length;i++){
@@ -819,6 +820,8 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
           data.push(s);
         }
       }
+      orig_md5 = MD5_hexhash(utf16to8(data.join("\n")));
+      //alert(MD5_hexhash(utf16to8(data.join("\n"))));
       search();
     }
   }

@@ -11,7 +11,7 @@ def _weight(name,title)
   pair = Pair.new("#{topdir(name)}/pair")
 
   pagekeywords = []
-  filename = datafile(name,title)
+  filename = datafile(name,title,0)
   if File.exist?(filename) then
     pagekeywords = File.read(filename).keywords
     File.utime(Time.now,Time.now,filename)
