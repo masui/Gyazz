@@ -6,6 +6,7 @@ require 'config'
 require 'lib'
 require 'pair'
 require 'keyword'
+require 'sdbm'
 
 def _weight(name,title)
   pair = Pair.new("#{topdir(name)}/pair")

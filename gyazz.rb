@@ -29,11 +29,11 @@ get "/__search/:name" do |name|
   redirect q == '' ? "#{URLROOT}/#{name}" : "#{URLROOT}/#{name}/#{q}/search"
 end
 
-get "/:name" do |name|
+get "/:name/" do |name|
   search(name)
 end
 
-get "/:name/" do |name|
+get "/:name" do |name|
   search(name)
 end
 
