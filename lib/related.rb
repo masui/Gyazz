@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'cgi'
-
 require 'config'
 require 'lib'
 require 'pair'
@@ -71,7 +69,6 @@ end
 def related_html(name,title)
   repimage = SDBM.open("#{topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
-    # @target_url = "#{URLROOT}/#{CGI.escape(name)}/#{CGI.escape(t)}".gsub(/%2F/,"/") # '?'がデコードされない
     @target_url = "#{URLROOT}/#{name}/#{t}"
     @target_title = t
     if repimage[t] then
