@@ -29,11 +29,29 @@ get "/__search/:name" do |name|
   redirect q == '' ? "#{URLROOT}/#{name}" : "#{URLROOT}/#{name}/#{q}/search"
 end
 
-get "/:name/" do |name|
+# データ書込み 
+
+post '/__write' do
+  postdata = params[:data].split(/\n/)
+  writedata(postdata)
+end
+
+# Gyazoへの転送!
+
+get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |id,url|
+  File.open("/tmp/data","w"){ |f|
+    f.puts "#{id}//#{url}"
+  }
+  redirect url
+end
+
+###########################
+
+get "/:name" do |name|
   search(name)
 end
 
-get "/:name" do |name|
+get "/:name/" do |name|
   search(name)
 end
 
@@ -77,10 +95,4 @@ get '/:name/*' do
   page(name,title)
 end
 
-# データ書込み 
-
-post '/__write' do
-  postdata = params[:data].split(/\n/)
-  writedata(postdata)
-end
 
