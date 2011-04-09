@@ -48,6 +48,12 @@ post '/__write' do
   writedata(postdata)
 end
 
+get '/__setattr/:name/:key/:val' do |name,key,val|
+  attr = SDBM.open("#{topdir(name)}/attr",0644);
+  attr[key] = val
+  attr.close
+end
+
 # Gyazoへの転送!
 #
 #  /__gyazoupload/(Gyazo ID)/(Gyazo URL) というリクエストが来る
