@@ -13,6 +13,7 @@ require 'writedata'
 require 'readdata'
 require 'edit'
 require 'page'
+require 'attr'
 
 #
 # API
@@ -48,12 +49,11 @@ post '/__write' do
 end
 
 # Gyazoへの転送!
-
+#
+#  /__gyazoupload/(Gyazo ID)/(Gyazo URL) というリクエストが来る
+#  Gyazo IDは各GyazoアプリのユニークID
+#
 get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
-  # cookie = request.cookies["thing"]
-  File.open("/tmp/data","w"){ |f|
-    f.puts "#{gyazoid}//#{url}"
-  }
   # GyazoID(アプリのID)とurlの対応関係を保存しておく
   url =~ /([\da-f]{32})/
   id = $1
@@ -69,6 +69,14 @@ get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
   response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
 
   redirect url
+end
+
+#
+# 設定
+#
+
+get "/:name/.settings" do |name|
+  attr(name)
 end
 
 #
