@@ -4,6 +4,8 @@
 require 'rubygems'
 require 'sinatra'
 
+enable :sessions
+
 $: << 'lib'
 require 'config'
 require 'search'
@@ -17,6 +19,15 @@ require 'page'
 #
 # 外に見せないサービスは /__xxx という名前にする
 #
+
+get '/__redirect/*' do
+  uri = params[:splat].first
+  if uri =~ /https?\:[\w\.\~\-\/\?\&\+\=\:\@\%\;\#\%]+/
+    redirect uri.to_s
+  else
+    @mes = 'invalid url'
+  end
+end
 
 get '/:name/*/search' do  # /増井研/合宿/search 
   name = params[:name]
@@ -38,11 +49,26 @@ end
 
 # Gyazoへの転送!
 
-get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |id,url|
+get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
+  # cookie = request.cookies["thing"]
   File.open("/tmp/data","w"){ |f|
-    f.puts "#{id}//#{url}"
+    f.puts "#{gyazoid}//#{url}"
   }
+  # GyazoID(アプリのID)とurlの対応関係を保存しておく
+  url =~ /([\da-f]{32})/
+  id = $1
+  idimage = SDBM.open("#{FILEROOT}/idimage",0644)
+  idimage[gyazoid] = idimage[gyazoid].to_s.split(/,/).unshift(id)[0,5].join(',')
+
+  # 画像URLとGyazoIDの対応も保存する
+  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
+  imageid[id] = gyazoid
+
+  # response.set_cookie("GyazoID", gyazoid)
+  response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
+
   redirect url
+  # redirect "http://pitecan.com/~masui/junk3.cgi"
 end
 
 ###########################

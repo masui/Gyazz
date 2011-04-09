@@ -3,6 +3,7 @@
 require 'config'
 require 'lib'
 require 'related'
+require 'uploaded'
 
 def page(name,title)
   @name = name
@@ -10,6 +11,7 @@ def page(name,title)
   @urlroot = URLROOT
   @srcroot = SRCROOT
   @related = related_html(@name,@title)
+  @uploaded = uploaded_html
   erb :page
 end
 
