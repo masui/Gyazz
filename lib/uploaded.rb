@@ -12,8 +12,9 @@ File.open("/tmp/gyazoid","w"){ |f|
 }
   idimage = SDBM.open("#{FILEROOT}/idimage",0644)
   uploadedimages = idimage[gyazoid].to_s.split(/,/).collect { |id|
+    @id = id
     @imageurl = "http://gyazo.com/#{id}.png"
-    erb :icon
+    erb :gyazoicon
   }.join(' ')
 end
 

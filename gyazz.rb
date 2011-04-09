@@ -4,7 +4,7 @@
 require 'rubygems'
 require 'sinatra'
 
-enable :sessions
+enable :sessions   # Cookieを使うのに要るらしい
 
 $: << 'lib'
 require 'config'
@@ -29,9 +29,9 @@ get '/__redirect/*' do
   end
 end
 
-get '/:name/*/search' do  # /増井研/合宿/search 
+get '/:name/*/search' do          # /増井研/合宿/search 
   name = params[:name]
-  q = params[:splat].join('/')   # /a/b/c/search の q を"b/c"にする
+  q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
   search(name,q)
 end
 
@@ -64,14 +64,16 @@ get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
   imageid = SDBM.open("#{FILEROOT}/imageid",0644)
   imageid[id] = gyazoid
 
+  # CookieをセットしてGyazo.comに飛ぶ
   # response.set_cookie("GyazoID", gyazoid)
   response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
 
   redirect url
-  # redirect "http://pitecan.com/~masui/junk3.cgi"
 end
 
-###########################
+#
+# リスト表示
+#
 
 get "/:name" do |name|
   search(name)
@@ -98,7 +100,9 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   readdata(name,title,version)
 end
 
-# 編集
+#
+# 編集モード
+#
 
 get '/:name/*/edit' do
   name = params[:name]
@@ -113,7 +117,9 @@ get '/:name/*/edit/:version' do       # 古いバージョンを編集
   edit(name,title,version)
 end
 
+#
 # ページ表示
+#
 
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
