@@ -603,6 +603,13 @@ function display(delay){
   }
 
   input.style.visibility = (editline == -1 ? 'hidden' : 'visible');
+
+  //
+  // リファラを消すというプラグインを呼んでみる
+  // http://logic.moo.jp/memo.php/archive/569
+  // http://logic.moo.jp/data/filedir/569_3.js
+  //
+  jQuery.kill_referrer.rewrite.init();
 }
 
 function seteditline(event,i){
@@ -677,9 +684,10 @@ function tag(s){
       s5 = RegExp.$2;
       s = s1 + '<a href="' + s4 + '">' + s5 + '</a>' + s3;
     }
-    else if(s2.match(/^(http[s]?:[^: ]+)$/)){
+    else if(s2.match(/^(http[s]?:[^: ]+)$/)){ // [[http://example.com/]]
       s4 = RegExp.$1;
       s = s1 + '<a href="' + s4 + '" class="link">' + s4 + '</a>' + s3;
+      //s = s1 + '<a href="/__redirect/' + s4 + '" class="link">' + s4 + '</a>' + s3;
     }
     else if(s2.match(/^(http[s]?:.*):(.*)$/)){
     	s4 = RegExp.$1;

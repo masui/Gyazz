@@ -5,11 +5,8 @@ require 'lib'
 require 'sdbm'
 
 def uploaded_html
-  gyazoid = request.cookies["GyazoID"]
+  gyazoid = request.cookies["GyazoID"].to_s
 
-File.open("/tmp/gyazoid","w"){ |f|
-  f.puts gyazoid
-}
   idimage = SDBM.open("#{FILEROOT}/idimage",0644)
   uploadedimages = idimage[gyazoid].to_s.split(/,/).collect { |id|
     @id = id

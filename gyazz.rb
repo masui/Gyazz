@@ -15,6 +15,11 @@ require 'edit'
 require 'page'
 require 'attr'
 
+
+get '/' do
+  redirect "#{URLROOT}/Gyazz/目次"
+end
+
 #
 # API
 #
