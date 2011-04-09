@@ -891,7 +891,6 @@ function addimageline(line,indent,id){
 
 function addimage(id)
 {
-    alert(id);
   var old = editline;
   if(data[0] == '(empty)'){
     data[0] = '[[http://gyazo.com/' + id + '.png]]';

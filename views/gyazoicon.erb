@@ -1,0 +1,10 @@
+<div style="height:64;width:64;margin:2;float:left">
+  <center>
+    <img src='<%= @imageurl %>'
+      title='<%= @target_title %>'
+      style='max-height:64;max-width:64;border:none;width:expression(document.body.clientWidth < 64? "64px" : document.body.clientWidth > 64? "64px" : "auto");'
+      ondragend = 'addimage("<%= @id %>")'
+      onclick='location.href="http://gyazo.com/<%= @id %>.png"'>
+  </center>
+</div>
+
