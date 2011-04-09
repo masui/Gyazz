@@ -26,15 +26,6 @@ end
 # 外に見せないサービスは /__xxx という名前にする
 #
 
-get '/__redirect/*' do
-  uri = params[:splat].first
-  if uri =~ /https?\:[\w\.\~\-\/\?\&\+\=\:\@\%\;\#\%]+/
-    redirect uri.to_s
-  else
-    @mes = 'invalid url'
-  end
-end
-
 get '/:name/*/search' do          # /増井研/合宿/search 
   name = params[:name]
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
