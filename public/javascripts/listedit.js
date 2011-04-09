@@ -784,9 +784,13 @@ function writedata(){
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4) {
       response = xmlhttp.responseText;
-      // alert(response);
       if(response == 'conflict'){
         // 再読み込み
+        getdata();
+      }
+      else if(response == 'protected'){
+        // 再読み込み
+        alert("このページは編集できません");
         getdata();
       }
       else {

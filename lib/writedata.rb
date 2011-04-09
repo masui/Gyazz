@@ -4,6 +4,33 @@ require 'config'
 require 'lib'
 require 'sdbm'
 require 'pair'
+require 'set'
+
+def writable?(name,gyazoid)
+  attr = SDBM.open("#{topdir(name)}/attr",0644);
+  return true if attr['protected'] != 'true'
+
+  gyazoids = Set.new
+  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
+  Dir.open(topdir(name)).each { |f|
+    if f =~ /^[0-9a-f]{32}$/ then
+      filename = "#{topdir(name)}/#{f}"
+      if File.file?(filename) then
+        File.open(filename){ |f|
+          f.each { |line|
+            while line.sub!(/http:\/\/gyazo.com\/([0-9a-f]{32}).png/,'') do
+              iid = $1
+              if imageid[iid] then
+                gyazoids.add(imageid[iid])
+              end
+            end
+          }
+        }
+      end
+    end
+  }
+  gyazoids.member?(gyazoid)
+end
 
 def writedata(data)
   # Wiki名/タイトル/ブラウザの前MD5値/新規データが送られる
@@ -12,6 +39,11 @@ def writedata(data)
   title = data.shift
   browser_md5 = data.shift
   newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
+
+  gyazoid = request.cookies["GyazoID"]
+  if !writable?(name, gyazoid) then
+    return "protected"
+  end
 
   curfile = datafile(name,title,0)
   server_md5 = ""

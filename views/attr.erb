@@ -5,27 +5,21 @@
 <link href='<%= @srcroot %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
 <script language="JavaScript" src='<%= @srcroot %>/javascripts/jquery.js'></script>
 <script type="text/javascript">
-var TOP = "<%= @urlroot %>";
 var name = "<%= @name %>";
 
 function setchange(id){
   $('#'+id).change(function(){
     $.ajax({
       async: true,
-      url: "/__setattr/" + name + "/protected/" + $('#'+id).attr('checked')
+      url: "/__setattr/" + name + "/" + id + "/" + $('#'+id).attr('checked')
     });
-  });
+  })
 }
 
 $(document).ready(function(){
   setchange('protected');
-//  $('#protected').change(function(){
-//    $.ajax({
-//      async: true,
-//      url: "/__setattr/" + name + "/protected/" + $('#protected').attr('checked')
-//    });
-//  });
-});
+  setchange('searchable');
+})
 </script>
 </head>
 
@@ -42,41 +36,5 @@ $(document).ready(function(){
 <input <%= @protected %> type='checkbox' id='protected'>編集を制限する<p>
 <input <%= @searchable %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する
 
-<script type="text/javascript">
-//function createXmlHttp(){
-//    if (window.ActiveXObject) {
-//        return new ActiveXObject("Microsoft.XMLHTTP");
-//    } else if (window.XMLHttpRequest) {
-//        return new XMLHttpRequest();
-//    } else {
-//        return null;
-//    }
-//}
-//
-//var attr = [];
-//
-//function sendattr(){
-//  file = TOP + "/programs/setattr.cgi?name=" + encodeURIComponent(name) + "&protected=" + attr['protected'] + "&searchable=" + attr['searchable'];
-//  xmlhttp = createXmlHttp();
-//  xmlhttp.open("GET", file , true);
-//  xmlhttp.send("");
-////  alert(event.target.checked);
-////  alert(protected.checked);
-//}
-//
-//function setattr(event){
-//  attr[event.target.id] = event.target.checked;
-//  sendattr();
-//}
-//
-//var checkbox_protected = document.getElementById('protected');
-//checkbox_protected.addEventListener("change", setattr, false);
-//checkbox_protected.checked = false;
-//
-//var checkbox_searchable = document.getElementById('searchable');
-//checkbox_searchable.addEventListener("change", setattr, false);
-//checkbox_searchable.checked = false;
-
-</script>
 </body>
 </html>
