@@ -117,10 +117,16 @@ end
 get '/:name/*/edit' do
   name = params[:name]
   title = params[:splat].join('/')
+  redirect "/#{name}/#{title}"
+end
+
+get '/:name/*/__edit' do
+  name = params[:name]
+  title = params[:splat].join('/')
   edit(name,title)
 end
 
-get '/:name/*/edit/:version' do       # 古いバージョンを編集
+get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i

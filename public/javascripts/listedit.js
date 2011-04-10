@@ -474,7 +474,7 @@ function display(delay){
   else {
     document.getElementById('datestr').innerHTML = '';
   }
-  document.getElementById('title').href = root + "/" + name + "/" + title + "/" + "edit" + "/" + version;
+  document.getElementById('title').href = root + "/" + name + "/" + title + "/" + "__edit" + "/" + version;
 
   var i;
   if(delay){ // ちょっと待ってもう一度呼び出す!

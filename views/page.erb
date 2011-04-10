@@ -21,9 +21,9 @@
   var version = 0;
 
 $(document).ready(function(){
+  $('#rawdata').hide();
   setup();
   getdata();
-  $('#rawdata').hide();
 })
 
   </script>
@@ -32,7 +32,7 @@ $(document).ready(function(){
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/edit' id='title'>
+    <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/__edit' id='title'>
     <%= @title %>
     </a>
   </span>

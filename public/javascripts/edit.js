@@ -5,7 +5,7 @@
 var timeout;
 
 //var TOP = "http://gyazz.com"
-var root = "http://masui.sfc.keio.ac.jp/Gyazz"
+//var root = "http://Gyazz.com""
 
 document.onkeyup = keyup;
 
