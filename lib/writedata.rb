@@ -40,6 +40,8 @@ def writedata(data)
   browser_md5 = data.shift
   newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
 
+  puts "writedata: #{name}/#{title}"
+
   gyazoid = request.cookies["GyazoID"]
   if !writable?(name, gyazoid) then
     return "protected"
