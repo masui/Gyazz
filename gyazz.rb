@@ -20,6 +20,10 @@ get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
 end
 
+get '/programs/*' do
+  ''
+end
+
 #
 # API
 #
