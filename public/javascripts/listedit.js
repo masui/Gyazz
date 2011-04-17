@@ -742,14 +742,17 @@ function tag(s){
         twittername = RegExp.$1
         s = s1 + '<a href="http://twitter.com/' + twittername + '" class="link">@' + twittername + '</a>' + s3;
     }
+    else if(s2.match(/^(.+)::$/)){ //  Wikiname:: で他Wikiに飛ぶ (2011 4/17)
+       wikiname = RegExp.$1;
+       wikiurl = root + '/' + wikiname;
+       s = s1 + '<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname + '</a>' + s3;
+    }
     else if(s2.match(/^(.+)::(.+)$/)){ //  Wikiname::Title で他Wikiに飛ぶ (2010 4/27)
        wikiname = RegExp.$1;
        wikititle = RegExp.$2;
        wikiurl = root + '/' + wikiname + '/';
        url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
-       // s = s1 + '<a href="' + url + '" class="link">' + wikiname + '::' + wikititle + '</a>' + s3; このリンクは五月蝿い...
-       // s = s1 + '<a href="' + url + '" class="link" title="' + wikiname + '::' + wikititle + '">' + '[' + wikititle + ']</a>' + s3;
-       s = s1 + '<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname + '</a>::<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a3>' + s3;
+       s = s1 + '<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname + '</a>::<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>' + s3;
     }
     else { // タグ/リンク
 	s = s1 + '<a href="' + root + '/' + name + '/' + encodeURIComponent(s2).replace(/%2F/g,"/") + '" class="tag">' + s2 + '</a>' + s3;
