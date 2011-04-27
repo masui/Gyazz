@@ -14,7 +14,7 @@ require 'readdata'
 require 'edit'
 require 'page'
 require 'attr'
-
+require 'lib/rss'
 
 get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
@@ -99,6 +99,10 @@ end
 
 get "/:name/__list" do |name|
   list(name)
+end
+
+get "/:name/rss.xml" do |name|
+  rss(name)
 end
 
 #

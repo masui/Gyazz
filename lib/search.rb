@@ -77,9 +77,17 @@ def list(name)
   }
 
   # JSON作成
+  $KCODE = "u"
   "[\n" +
     @hotids.collect { |id|
-     "  [\"#{@id2title[id]}\", #{@modtime[id].to_i}]"
-    }.join(",\n") +
+    s = @id2title[id].dup
+    title = ""
+    while s.sub!(/^(.)/,'') do
+      c = $1
+      u = c.unpack("U")[0]
+      title += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
+    end
+    "  [\"#{title}\", #{@modtime[id].to_i}]"
+  }.join(",\n") +
     "\n]\n"
 end
