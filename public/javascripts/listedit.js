@@ -747,6 +747,13 @@ function tag(s){
        wikiurl = root + '/' + wikiname;
        s = s1 + '<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname + '</a>' + s3;
     }
+    else if(s2.match(/^(.+):::(.+)$/)){ //  Wikiname:::Title で他Wikiに飛ぶ (2010 4/27)
+       wikiname = RegExp.$1;
+       wikititle = RegExp.$2;
+       wikiurl = root + '/' + wikiname + '/';
+       url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
+       s = s1 + '<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>' + s3;
+    }
     else if(s2.match(/^(.+)::(.+)$/)){ //  Wikiname::Title で他Wikiに飛ぶ (2010 4/27)
        wikiname = RegExp.$1;
        wikititle = RegExp.$2;

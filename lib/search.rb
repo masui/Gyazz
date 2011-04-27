@@ -45,7 +45,41 @@ def search(name,query='')
   @name = name
   @urlroot = URLROOT
 
-  erb :list
+  erb :search
 
 end
 
+def list(name)
+  top = topdir(name)
+  unless File.exist?(top) then
+    Dir.mkdir(top)
+  end
+
+  pair = Pair.new("#{top}/pair")
+  titles = pair.keys
+
+  @id2title = {}
+  titles.each { |title|
+    @id2title[md5(title)] = title
+  }
+
+  ids = Dir.open(top).find_all { |file|
+    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
+  }
+
+  @modtime = {}
+  ids.each { |id|
+    @modtime[id] = File.mtime("#{top}/#{id}")
+  }
+
+  @hotids = ids.sort { |a,b|
+    @modtime[b] <=> @modtime[a]
+  }
+
+  # JSON作成
+  "[\n" +
+    @hotids.collect { |id|
+     "  [\"#{@id2title[id]}\", #{@modtime[id].to_i}]"
+    }.join(",\n") +
+    "\n]\n"
+end

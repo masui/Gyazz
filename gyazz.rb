@@ -97,6 +97,10 @@ get "/:name/" do |name|
   search(name)
 end
 
+get "/:name/__list" do |name|
+  list(name)
+end
+
 #
 # データテキスト取得
 #
