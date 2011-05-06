@@ -124,3 +124,66 @@ def writedata(data)
   status # 'conflict' or 'noconflict'
 end
 
+def __writedata(data) # 無条件書き込み
+  # Wiki名/タイトル/新規データが送られる
+  # MD5は使わない
+
+  name = data.shift
+  title = data.shift
+  newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
+
+  puts "__writedata: #{name}/#{title}"
+
+  curfile = datafile(name,title,0)
+  curdata = ""
+  if File.exist?(curfile) then
+    curdata = File.read(curfile)
+  end                                 # curdata: Web上の最新データ
+
+  # バックアップディレクトリを作成
+  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
+  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
+
+  # 最新データをバックアップ
+  if curdata != "" && curdata != newdata then
+    File.open(newbackupfile(name,title),'w'){ |f|
+      f.print(curdata)
+    }
+  end
+
+  curfile = datafile(name,title,0)
+  File.open(curfile,"w"){ |f|
+    f.print(newdata)
+  }
+  status = 'noconflict'
+
+  # 各行のタイムスタンプ保存
+  timestamp = Time.now.strftime('%Y%m%d%H%M%S')
+  dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
+  data.each { |line|
+    l = line.sub(/^\s*/,'')
+    if !dbm[l] then
+      dbm[l] = timestamp
+    end
+  }
+  dbm.close
+
+  # リンク情報更新
+  pair = Pair.new("#{topdir(name)}/pair")
+  curdata.keywords.each { |keyword|
+    pair.delete(title,keyword)
+  }
+  newdata.keywords.each { |keyword|
+    pair.add(title,keyword)
+  }
+
+  # 代表画像
+  repimage = SDBM.open("#{topdir(name)}/repimage")
+  if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
+    repimage[title] = $1
+  else
+    repimage.delete(title)
+  end
+
+  status # 'conflict' or 'noconflict'
+end

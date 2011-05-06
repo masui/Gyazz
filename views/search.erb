@@ -14,13 +14,20 @@
     </form>
   </div>
   <p>
-  <% @matchids.each { |id| %>
-    <% title = @id2title[id] %>
-    <% url = "#{@urltop}/#{title}" %>
-    <div class="listedit0">
-      <a href="<%= url %>" class='tag'><%= title %></a>
+  <div>
+    <div style="float:left;">
+      <% @matchids.each { |id| %>
+        <% title = @id2title[id] %>
+        <% url = "#{@urltop}/#{title}" %>
+        <div class="listedit0">
+          <a href="<%= url %>" class='tag'><%= title %></a>
+        </div>
+      <% } %>
     </div>
-  <% } %>
+    <div style="width:450;float:right;">
+      <%= @matchimages %>
+    </div>
+  </div>
 </body>
 </html>
 

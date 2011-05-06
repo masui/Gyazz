@@ -3,6 +3,7 @@
 require 'config'
 require 'lib'
 require 'pair'
+require 'sdbm'
 
 def search(name,query='')
   top = topdir(name)
@@ -40,6 +41,19 @@ def search(name,query='')
       title.match(/#{@q}/i) || content.match(/#{@q}/i)
     }
   end
+
+  repimage = SDBM.open("#{topdir(name)}/repimage",0644)
+  @matchimages = @matchids.collect { |id|
+    title = @id2title[id]
+    if repimage[title] then
+      @target_url = "#{URLROOT}/#{name}/#{title}"
+      @target_title = title
+      @imageurl = "http://gyazo.com/#{repimage[title]}.png"
+      erb :icon
+    else
+      ''
+    end
+  }.join('')
 
   @urltop = topurl(name)
   @name = name

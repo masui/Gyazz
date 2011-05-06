@@ -48,6 +48,11 @@ post '/__write' do
   writedata(postdata)
 end
 
+post '/__write__' do # 無条件書き込み
+  postdata = params[:data].split(/\n/)
+  __writedata(postdata)
+end
+
 get '/__setattr/:name/:key/:val' do |name,key,val|
   attr = SDBM.open("#{topdir(name)}/attr",0644);
   attr[key] = val
