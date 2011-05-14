@@ -24,9 +24,11 @@
         </div>
       <% } %>
     </div>
-    <div style="width:450;float:right;">
-      <%= @matchimages %>
-    </div>
+    <% if @matchimages.length < 50 then %>
+      <div style="width:450;float:right;">
+        <%= @matchimages %>
+      </div>
+    <% end %>
   </div>
 </body>
 </html>

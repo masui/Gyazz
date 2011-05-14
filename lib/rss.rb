@@ -14,6 +14,7 @@ def rss(name)
 
   pair = Pair.new("#{top}/pair")
   titles = pair.keys
+  pair.close
 
   @id2title = {}
   titles.each { |title|

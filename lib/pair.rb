@@ -67,6 +67,10 @@ class Pair
     }
     v.keys
   end
+
+  def close
+    @pairs.close
+  end
 end
 
 if __FILE__ == $0 then
@@ -90,4 +94,6 @@ if __FILE__ == $0 then
   puts pair.collect('a').join('---')
   puts "================"
   puts pair.keys.join('-')
+
+  pair.close
 end

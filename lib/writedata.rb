@@ -112,6 +112,7 @@ def writedata(data)
   newdata.keywords.each { |keyword|
     pair.add(title,keyword)
   }
+  pair.close
 
   # 代表画像
   repimage = SDBM.open("#{topdir(name)}/repimage")
@@ -120,6 +121,7 @@ def writedata(data)
   else
     repimage.delete(title)
   end
+  repimage.close
 
   status # 'conflict' or 'noconflict'
 end
@@ -133,6 +135,11 @@ def __writedata(data) # 無条件書き込み
   newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
 
   puts "__writedata: #{name}/#{title}"
+
+  top = topdir(name)
+  unless File.exist?(top) then
+    Dir.mkdir(top)
+  end
 
   curfile = datafile(name,title,0)
   curdata = ""
@@ -176,6 +183,7 @@ def __writedata(data) # 無条件書き込み
   newdata.keywords.each { |keyword|
     pair.add(title,keyword)
   }
+  pair.close
 
   # 代表画像
   repimage = SDBM.open("#{topdir(name)}/repimage")
@@ -184,6 +192,9 @@ def __writedata(data) # 無条件書き込み
   else
     repimage.delete(title)
   end
+  repimage.close
 
-  status # 'conflict' or 'noconflict'
+  # status # 'conflict' or 'noconflict'
+
+  redirect "/#{name}/#{title}"
 end

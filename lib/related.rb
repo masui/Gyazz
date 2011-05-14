@@ -56,6 +56,7 @@ def _weight(name,title)
     weight[key] = val
   }
   weight.delete(title)
+  pair.close
   weight
 end
 

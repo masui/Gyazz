@@ -3,3 +3,4 @@ Disallow: /*/edit
 Disallow: /*/text
 Disallow: /*/text/0
 Disallow: /%e5%a2%97%e4%ba%95%e7%a0%94/
+Disallow: /masui/

@@ -3,16 +3,16 @@
 require 'config'
 require 'lib'
 
-def readdata(name,title,version=0)
+def readdata(name,title,version=nil)
   file = datafile(name,title,version)
   datestr = ""
-  if version > 0 then
+  if version && version > 0 then
     file =~ /\/(\d{14})$/
     datestr = $1
   end
   data = File.exist?(file) ? File.read(file)  : ''
 
-  if version > 0 then
+  if version && version > 0 then
     dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
     a = ''
     data.each_line { |line|
@@ -32,6 +32,6 @@ def readdata(name,title,version=0)
     data = '(empty)'
   end
 
-  datestr + "\n" + data
+  version ? datestr + "\n" + data : data
 end
 

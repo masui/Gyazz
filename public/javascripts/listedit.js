@@ -691,7 +691,7 @@ function tag(s){
       s5 = RegExp.$2;
       s = s1 + '<a href="' + s4 + '.' + s5 + '"><img src="' + s4 + '.' + s5 + '" border="none"></a>' + s3;
     }
-    else if(s2.match(/^(http[^ ]+) (.*)$/)){
+    else if(s2.match(/^(http[^ ]+|javascript:[^ ]+) (.*)$/)){
       s4 = RegExp.$1;
       s5 = RegExp.$2;
       s = s1 + '<a href="' + s4 + '">' + s5 + '</a>' + s3;
