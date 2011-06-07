@@ -140,6 +140,11 @@ get "/:name/" do |name|
   search(name)
 end
 
+get "/:name/__sort" do |name|
+  protected!(name)
+  search(name,'',true)
+end
+
 get "/:name/__list" do |name|
   protected!(name)
   list(name)

@@ -36,7 +36,7 @@ def titles(name)
   }
 end
 
-def search(name,query='')
+def search(name,query='',namesort=false)
   top = topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
@@ -60,9 +60,16 @@ def search(name,query='')
     modtime[id] = File.mtime("#{top}/#{id}")
   }
 
-  hotids = ids.sort { |a,b|
-    modtime[b] <=> modtime[a]
-  }
+  hotids = 
+    if namesort then
+      ids.sort { |a,b|
+        @id2title[b] <=> @id2title[a]
+      }
+    else
+      ids.sort { |a,b|
+        modtime[b] <=> modtime[a]
+      }
+    end
 
   @q = query
   @matchids = hotids
