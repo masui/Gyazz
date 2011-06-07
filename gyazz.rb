@@ -34,6 +34,11 @@ helpers do
     user = a.shift
     pass = a.shift
     return true if user.to_s == '' || pass.to_s == ''
+#File.open("/tmp/user","w"){ |f|
+#  f.puts user
+#  f.puts pass
+#  f.puts @auth
+#}
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
     @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [user,pass]
   end

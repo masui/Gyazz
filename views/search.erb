@@ -18,9 +18,10 @@
     <div style="float:left;">
       <% @matchids.each { |id| %>
         <% title = @id2title[id] %>
+        <% shorttitle = title.sub(/\[\[http.*\s+(.*)\]\]/){ $1 } %>
         <% url = "#{@urltop}/#{title}" %>
         <div class="listedit0">
-          <a href="<%= url %>" class='tag'><%= title %></a>
+          <a href="<%= url %>" class='tag'><%= shorttitle %></a>
         </div>
       <% } %>
     </div>
