@@ -512,7 +512,7 @@ function tag(s,line){
 	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link">@' + t[1] + '</a>');
 	}
 	else {
-	    matched.push('<a href="' + root + '/' + name + '/' + inner + '">' + inner + '</a>');
+	    matched.push('<a href="' + root + '/' + name + '/' + inner + '" class="tag">' + inner + '</a>');
 	}
 	s = pre + '<<<' + (matched.length-1) + '>>>' + post;
     }
