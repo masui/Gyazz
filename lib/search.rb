@@ -97,6 +97,7 @@ def search(name,query='',namesort=false)
   @urltop = topurl(name)
   @name = name
   @urlroot = URLROOT
+  @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
   erb :search
 

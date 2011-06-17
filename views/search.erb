@@ -1,13 +1,13 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Search Result</title>
+  <title><%= @name %> <%= @pagetitle %></title>
   <link rel="stylesheet" href="<%= @urlroot %>/stylesheets/gyazz.css" type="text/css">
   <link rel="alternate" href="<%= @urlroot %>/<%= @name %>/rss.xml" title="<%= @name %> RSS" type="application/rss+xml" />
 </head>
 <body>
   <div class="title">
-    <span class='wordtitle'>検索結果 (<%= @matchids.length %>)</span>
+    <span class='wordtitle'><%= @name %> <%= @pagetitle %> (<%= @matchids.length %>)</span>
     <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
       <input height='20' name='q' type='text' value='<%= @q %>'>
       <input type='submit' value='検索'>

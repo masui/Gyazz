@@ -31,10 +31,12 @@ var reloadInterval = 10 * 60 * 1000; // 10分ごとにリロード
 
 var searchmode = false;
 
+var edited = false;
+
 var orig_md5; // getdata()したときのMD5
 
 var KC = {
-    tab:9, enter:13, left:37, up:38, right:39, down:40
+    tab:9, enter:13, ctrlD:17, left:37, up:38, right:39, down:40
 };
 
 //$(document).ready(function(){
@@ -181,7 +183,7 @@ $(document).keyup(function(event){
 	data[editline] = $("#newtext").val();
 	
 	// 数秒入力がなければデータ書き込み
-	if(version == 0 && !event.ctrlKey){
+	if(version == 0 && !event.ctrlKey && edited){
 	    if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
 		if(sendTimeout) clearTimeout(sendTimeout);
 		sendTimeout = setTimeout("writedata()",1300);
@@ -196,12 +198,15 @@ $(document).keydown(function(event){
 	
 	var kc = event.which;
 	var sk = event.shiftKey;
+	var ck = event.ctrlKey;
 	var i;
 	var m,m2;
 	var dst;
 	var tmp = [];
-	
+
 	if(searchmode) return true;
+
+	edited = false;
 	
 	if(kc == KC.enter){
 	    $('#query').val('');
@@ -218,6 +223,7 @@ $(document).keydown(function(event){
 		    editline = editline + m2;
 		    deleteblankdata();
 		    display();
+		    edited = true;
 		}
 	    }
 	}
@@ -246,6 +252,7 @@ $(document).keydown(function(event){
 		    editline = dst;
 		    deleteblankdata();
 		    display();
+		    edited = true;
 		}
 	    }
 	}
@@ -303,6 +310,9 @@ $(document).keydown(function(event){
 	else if(kc >= 0x30 && kc <= 0x7e && editline < 0){
 	    $('#querydiv').css('visibility','visible').css('display','block');
 	    $('#query').focus();
+	}
+	else if(kc >= 0x20 && kc <= 0x7e || kc == 0x08 || (ck && kc == 0x68)){
+	    edited = true;
 	}
     });
 
