@@ -10,79 +10,62 @@ var timeout;
 document.onkeyup = keyup;
 
 function keyup(event){
-  if(timeout) clearTimeout(timeout);
-  timeout = setTimeout("writedata()",2000);
-}
-
-function createXmlHttp(){
-    if (window.ActiveXObject) {
-        return new ActiveXObject("Microsoft.XMLHTTP");
-    } else if (window.XMLHttpRequest) {
-        return new XMLHttpRequest();
-    } else {
-        return null;
-    }
+    if(timeout) clearTimeout(timeout);
+    timeout = setTimeout("writedata()",2000);
+    $("#contents").css('background-color','#f0f0d0');
 }
 
 function writedata(){
-  xmlhttp = createXmlHttp();
-  xmlhttp.open("POST", root + "/__write" , true);
-  xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded"); // これで送るとSinatraが受け付けるらしい
-  //http://www.gittr.com/index.php/archive/getting-data-into-a-sinatra-app に解説あり
-
-  var textarea = document.getElementById('contents');
-  datastr = textarea.value;
-
-  postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
-
-  xmlhttp.send(postdata);
-  xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4) {
-      response = xmlhttp.responseText;
-      //  alert(response);
-      if(response == 'conflict'){
-        // 再読み込み
-        getdata();
-      }
-      else {
-        orig_md5 = MD5_hexhash(utf16to8(datastr));
-      }
-    }
-  }
-}
+    datastr = $('#contents').val();
+    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
+	$.ajax({
+		type: "POST",
+		sync: true,
+		url: root + "/__write",
+		data: postdata,
+		success: function(msg){
+		    $("#contents").css('background-color','#ffffff');
+		    if(msg.match(/^conflict/)){
+			// 再読み込み
+			//alert(msg);
+			getdata(); // ここで強制書き換えしてしまうのがマズい (2011/6/17)
+		    }
+		    else if(msg == 'protected'){
+			// 再読み込み
+			alert("このページは編集できません");
+			getdata();
+		    }
+		    else {
+			orig_md5 = MD5_hexhash(utf16to8(datastr));
+		    }
+		}
+	    })
+	}
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
-  version = 0;
-  data = [];
-  xmlhttp = createXmlHttp();
-  file = root + "/" + name + "/" + title + "/text/" + version;
-  xmlhttp.open("GET", file , true);
-  xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4) {
-      xx = xmlhttp.responseText;
-      d = xx.split(/\n/);
-      datestr = d.shift();
-      data = [];
-      dt = [];
-      for(var i=0;i<d.length;i++){
-        s = d[i]
-        if(s != ''){
-          t = 0;
-          if(version > 0){
-            s.match(/^(.*) ([0-9]*)$/);
-            s = RegExp.$1;
-            t = RegExp.$2;
-          }
-          dt.push(Number(t));
-          data.push(s);
-        }
-      }
-      datastr = data.join("\n")+"\n";
-      document.getElementById('contents').value = datastr;
-      orig_md5 = MD5_hexhash(utf16to8(datastr));
-    }
-  }
-  xmlhttp.send("");
+    $.ajax({
+	    async: false,
+		url: root + "/" + name + "/" + title + "/text/" + version,
+		success: function(msg){
+		d = msg.split(/\n/);
+		datestr = d.shift();
+		data = [];
+		dt = [];
+		for(var i=0;i<d.length;i++){
+		    s = d[i]
+			if(s != ''){
+			    t = 0;
+			    if(version > 0){
+				s.match(/^(.*) ([0-9]*)$/);
+				s = RegExp.$1;
+				t = RegExp.$2;
+			    }
+			    dt.push(Number(t));
+			    data.push(s);
+			}
+		}
+		orig_md5 = MD5_hexhash(utf16to8(data.join("\n")+"\n"));
+		search();
+	    }
+	});
 }
-
-

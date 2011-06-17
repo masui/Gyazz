@@ -66,7 +66,7 @@ def writedata(data)
     }
   end
 
-  if server_md5 == browser_md5 then
+  if server_md5 == browser_md5 || curdata == '' then
     File.open(curfile,"w"){ |f|
       f.print(newdata)
     }
@@ -85,12 +85,14 @@ def writedata(data)
       system "diff -c #{oldfile} #{newfile} > #{patchfile}"
       system "patch #{curfile} < #{patchfile}"
       File.delete newfile, patchfile
+      status = 'conflict'
     else
       File.open(curfile,"w"){ |f|
         f.print newdata
       }
+      status = 'noconflict'
     end
-    status = 'conflict'
+    #status = 'conflict'
   end
 
   # 各行のタイムスタンプ保存

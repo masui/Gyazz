@@ -184,7 +184,8 @@ $(document).keyup(function(event){
 	if(version == 0 && !event.ctrlKey){
 	    if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
 		if(sendTimeout) clearTimeout(sendTimeout);
-		sendTimeout = setTimeout("writedata()",2000);
+		sendTimeout = setTimeout("writedata()",1300);
+		$("#newtext").css('background-color','#f0f0d0');
 	    }
 	}
     });
@@ -572,9 +573,11 @@ function writedata(){
 		url: root + "/__write",
 		data: postdata,
 		success: function(msg){
-		    if(msg == 'conflict'){
+		    $("#newtext").css('background-color','#ddd');
+		    if(msg.match(/^conflict/)){
 			// 再読み込み
-			getdata();
+			// alert(msg);
+			getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
 		    }
 		    else if(msg == 'protected'){
 			// 再読み込み
