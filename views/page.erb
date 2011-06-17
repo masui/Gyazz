@@ -21,11 +21,11 @@
   var root =  '<%= @urlroot %>';
   var version = 0;
 
-$(document).ready(function(){
-  $('#rawdata').hide();
-  setup();
-  getdata();
-})
+  $(document).ready(function(){ // この場所にないと駄目?
+    $('#rawdata').hide();
+    setup();
+    getdata();
+  })
 
   </script>
 </head>
@@ -47,13 +47,13 @@ $(document).ready(function(){
 </div>
 
 <div id='rawdata'>
-<%= @rawdata.gsub(/</,'&lt;') %>
+<%= @rawdata.to_s.gsub(/</,'&lt;') %>
 </div>
 
 <p>
 <div id='querydiv'></div>
 <div id='contents'></div>
-<input autocomplete='off' type='text' id='newtext' onmousedown='editing=true' style='visibility:hidden;'>
+<input autocomplete='off' type='text' id='newtext' style='visibility:hidden;'>
 <p>
 
 <div class="links">

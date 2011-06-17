@@ -21,6 +21,8 @@ var doi = [];
 var zoomlevel = 0;
 var spaces = [];
 
+var posy = [];
+
 var datestr = '';
 
 var sendTimeout;                     // 放置すると書き込み
@@ -35,11 +37,11 @@ var KC = {
     tab:9, enter:13, left:37, up:38, right:39, down:40
 };
 
-$(document).ready(function(){
-	$('#rawdata').hide();
-	setup();
-	getdata();
-    })
+//$(document).ready(function(){
+//	$('#rawdata').hide();
+//	setup();
+//	getdata();
+//    })
     
 // keypressを定義しておかないとFireFox上で矢印キーを押してときカーソルが動いてしまう
     $(document).keypress(function(event){
@@ -328,8 +330,8 @@ function setup(){ // 初期化
     // <div id='listbg0'>
     //   <span id='list0'>
     for(var i=0;i<1000;i++){
-	var y = $('<div>').attr('id','listbg'+i)
-	    var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
+	var y = $('<div>').attr('id','listbg'+i);
+	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
 	$('#contents').append(y.append(x));
     }
     reloadTimeout = setTimeout(reload,reloadInterval);
@@ -369,9 +371,9 @@ function display(delay){
 	var p = $("#listbg"+i);
 	if(doi[i] >= -zoomlevel){
 	    if(i == editline){ // 編集行
-		input.css('visibility','visible').css('left',xmargin+25).css('top',p.position().top).val(data[i]).mousedown(linefunc(i));
 		t.css('display','inline').css('visibility','hidden');
 		p.css('display','block').css('visibility','hidden');
+		input.css('position','absolute').css('visibility','visible').css('left',xmargin+25).css('top',p.position().top).val(data[i]).mousedown(linefunc(i));
 		setTimeout(function(){ $("#newtext").focus(); }, 100); // 何故か少し待ってからfocus()を呼ばないとフォーカスされない...
 	    }
 	    else {
@@ -410,7 +412,18 @@ function display(delay){
     }
     
     input.css('display',(editline == -1 ? 'none' : 'block'));
-    
+
+    /*    
+    for(i=0;i<data.length;i++){
+	//posy[i] = $('#list'+i).position().top;
+	posy[i] = $("#e" + i + "_0").offset().top;
+    }
+    for(i=0;i<data.length;i++){
+    	for(var j=0;j<=spaces[i];i++){
+    	    $("#e" + i + "_" + j).css('position','absolute').css('top',posy[line]);
+    	}
+    }
+    */
     aligncolumns();
     
     // リファラを消すプラグイン
@@ -468,7 +481,8 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
     for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
 	for(var line=begin;line<begin+lines;line++){
 	    var id = "#e" + line + "_" + (i + indent(line));
-	    $(id).css('position','absolute').css('left',colpos);
+	    $(id).css('position','absolute').css('line-height','').css('left',colpos); // .css('top',posy[line]);
+	    //$("#listbg"+line).css('line-height','');
 	}
 	colpos += maxwidth[i];
     }
@@ -502,14 +516,34 @@ function tag(s,line){
 	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[http://example.com/abc.jpg]
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
-	else if(t = inner.match(/^(http[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
-	    matched.push('<a href="' + t[1] + '">' + t[2] + '</a>');
+	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
+	    matched.push('<a href="' + t[1] + '">' + t[3] + '</a>');
 	}
-        else if(t = inner.match(/^(http[s]?:[^: ]+)$/)){ // [[http://example.com/]]
+        else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
 	    matched.push('<a href="' + t[1] + '" class="link">' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^@([a-zA-Z0-9_]+)$/)){ // @名前 を twitterへのリンクにする
 	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link">@' + t[1] + '</a>');
+	}
+	else if(t = inner.match(/^(.+)::$/)){ //  Wikiname:: で他Wikiに飛ぶ (2011 4/17)
+	    matched.push('<a href="' + root + '/' + t[1] + '" class="link" title="' + t[1] + '">' + t[1] + '</a>');
+	}
+	else if(t = inner.match(/^(.+):::(.+)$/)){ //  Wikiname:::Title で他Wikiに飛ぶ (2010 4/27)
+	    wikiname = t[1];
+	    wikititle = t[2];
+	    url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
+	    matched.push('<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>');
+	}
+	else if(t = inner.match(/^(.+)::(.+)$/)){ //  Wikiname::Title で他Wikiに飛ぶ (2010 4/27)
+	    wikiname = t[1];
+	    wikititle = t[2];
+	    wikiurl = root + '/' + wikiname + '/';
+	    url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
+	    matched.push('<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname +
+			 '</a>::<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>');
+	}
+	else if(t = inner.match(/^([a-fA-F0-9]{32})\.(\w+) (.*)$/)){ // (MD5).ext をpitecan.com上のデータにリンク (2010 5/1)
+	    matched.push('<a href="http://masui.sfc.keio.ac.jp/' + t[1] + '.' + t[2] + '" class="link">' + t[3] + '</a>');
 	}
 	else {
 	    matched.push('<a href="' + root + '/' + name + '/' + inner + '" class="tag">' + inner + '</a>');
