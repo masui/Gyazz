@@ -11,7 +11,7 @@ def edit(name,title,version=0)
   @srcroot = SRCROOT
   file = datafile(name,title,version)
   @text = File.exist?(file) ? File.read(file)  : ''
-  @text =~ /^\s*$/ ? "(empty)" : @text
+  # @text =~ /^\s*$/ ? "(empty)" : @text
   erb :edit
 end
 

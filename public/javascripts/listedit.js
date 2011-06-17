@@ -372,6 +372,10 @@ function display(delay){
     }
     
     var contline = -1;
+    if(data.length == 0){
+	data = ["(empty)"];
+	doi[0] = maxindent();
+    }
     for(i=0;i<data.length;i++){
 	var x;
 	var ind;
@@ -586,7 +590,7 @@ function writedata(){
 		    $("#newtext").css('background-color','#ddd');
 		    if(msg.match(/^conflict/)){
 			// 再読み込み
-			// alert(msg);
+			//alert(msg);
 			getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
 		    }
 		    else if(msg == 'protected'){

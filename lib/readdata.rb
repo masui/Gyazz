@@ -28,9 +28,9 @@ def readdata(name,title,version=nil)
   end
 
   s = data.gsub(/[\s\r\n]/,'')
-  if s.length == 0 then
-    data = '(empty)'
-  end
+#  if s.length == 0 then
+#    data = '(empty)'
+#  end
 
   version ? datestr + "\n" + data : data
 end
