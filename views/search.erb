@@ -4,6 +4,64 @@
   <title><%= @name %> <%= @pagetitle %></title>
   <link rel="stylesheet" href="<%= @urlroot %>/stylesheets/gyazz.css" type="text/css">
   <link rel="alternate" href="<%= @urlroot %>/<%= @name %>/rss.xml" title="<%= @name %> RSS" type="application/rss+xml" />
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/jquery-1.5.1.js'></script>
+  <script language="JavaScript" src='<%= @srcroot %>/javascripts/jquery.sparkline.js'></script>
+  <script type="text/javascript">
+  //var matchids = <%= "['"+@matchids.join("','")+"']" %>;
+  //   for(var i=0;i<matchids.length;i++){
+  //     id = matchids[i];
+  function showsparkline(id){
+    return function(retdata){
+      var origdata = eval(retdata);
+      var data = [];
+      var map = [];
+      for(var i=0;i<origdata.length;i++){
+        var v = origdata[i];
+        var h = v
+        if(h >= 10) h = 10;
+//        var color = "#00f";
+//        if(v >= 10) color = "#00d";
+//        if(v >= 20) color = "#00b";
+//        if(v >= 30) color = "#009";
+//        if(v >= 40) color = "#007";
+//        if(v >= 50) color = "#005";
+//        if(v >= 60) color = "#003";
+//        if(v >= 70) color = "#001";
+//        if(v >= 80) color = "#000";
+        var color = "#888";
+        if(v >= 10) color = "#777";
+        if(v >= 20) color = "#666";
+        if(v >= 30) color = "#555";
+        if(v >= 40) color = "#444";
+        if(v >= 50) color = "#333";
+        if(v >= 60) color = "#222";
+        if(v >= 70) color = "#111";
+        if(v >= 80) color = "#000";
+        data[i] = h;
+        map[i] = color;
+      }
+      $('#id'+id).sparkline(data, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:map, barWidth:3});
+    }
+  }
+
+  $(function() {
+     <% @matchids.each { |id| %>
+       <% title = @id2title[id].gsub(/"/,'\"') %>
+       $.ajax({
+         type: "GET",
+         url: "/<%= @name %>/<%= title %>/history",
+         success: showsparkline('<%= id %>')
+       })
+     <% } %>
+  })
+// 
+// //         async: false
+// //       }).responseText;
+// //       data = eval(data);
+// //       //$('.time').sparkline(data, {type:'bar', barSpacing:0, barWidth:5});
+// //       $('#id<%= id %>').sparkline(data);
+// 
+  </script>
 </head>
 <body>
   <div class="title">
@@ -20,7 +78,8 @@
         <% title = @id2title[id] %>
         <% shorttitle = title.sub(/\[\[http.*\s+(.*)\]\]/){ $1 } %>
         <% url = "#{@urltop}/#{title}" %>
-        <div class="listedit0">
+        <div class="listedit0__xxx">
+          <span id="<%= "id"+id %>"></span>
           <a href="<%= url %>" class='tag'><%= shorttitle %></a>
         </div>
       <% } %>
@@ -33,4 +92,3 @@
   </div>
 </body>
 </html>
-

@@ -14,6 +14,7 @@ require 'readdata'
 require 'edit'
 require 'page'
 require 'attr'
+require 'history'
 require 'lib/rss'
 
 helpers do
@@ -57,6 +58,12 @@ end
 #
 # 外に見せないサービスは /__xxx という名前にする
 #
+
+get '/:name/*/history' do
+  name = params[:name]
+  title = params[:splat].join('/')
+  history(name,title)
+end
 
 get '/:name/*/search' do          # /増井研/合宿/search 
   name = params[:name]
@@ -170,6 +177,7 @@ end
 
 get '/:name/*/text' do
   name = params[:name]
+  # protected!(name)
   title = params[:splat].join('/')
   readdata(name,title)
 end

@@ -46,25 +46,25 @@ var KC = {
 //    })
     
 // keypressを定義しておかないとFireFox上で矢印キーを押してときカーソルが動いてしまう
-    $(document).keypress(function(event){
-	    var kc = event.which;
-	    if(kc == KC.enter)  event.preventDefault();
-	    if(kc == KC.enter){
-		// 1行追加 
-		// IME確定でもkeydownイベントが出てしまうのでここで定義が必要!
-		if(editline >= 0){
-		    addblankline(editline+1,indent(editline));
-		    zoomlevel = 0;
-		    calcdoi();
-		    display();
-		}
-		return false;
+$(document).keypress(function(event){
+	var kc = event.which;
+	if(kc == KC.enter)  event.preventDefault();
+	if(kc == KC.enter){
+	    // 1行追加 
+	    // IME確定でもkeydownイベントが出てしまうのでここで定義が必要!
+	    if(editline >= 0){
+		addblankline(editline+1,indent(editline));
+		zoomlevel = 0;
+		calcdoi();
+		display();
 	    }
-	    // カーソルキーやタブを無効化
-	    if(!event.shiftKey && (kc == KC.down || kc == KC.up || kc == KC.tab)){
-		return false;
-	    }
-	});
+	    return false;
+	}
+	// カーソルキーやタブを無効化
+	if(!event.shiftKey && (kc == KC.down || kc == KC.up || kc == KC.tab)){
+	    return false;
+	}
+    });
 
 function hex2(v){
     return ("0" + v.toString(16)).slice(-2);
@@ -311,7 +311,17 @@ $(document).keydown(function(event){
 	    $('#querydiv').css('visibility','visible').css('display','block');
 	    $('#query').focus();
 	}
-	else if(kc >= 0x20 && kc <= 0x7e || kc == 0x08 || (ck && kc == 0x68)){
+	//else if(kc >= 0x20 && kc <= 0x7e || kc == 0x08 || (ck && kc == 0x68)){
+	else if(ck && kc == 0x68){
+	    edited = true;
+	}
+	else if(kc == 0x08){
+	    edited = true;
+	}
+	else if(ck){
+	    edited = false;
+	}
+	else {
 	    edited = true;
 	}
     });
@@ -647,7 +657,7 @@ function calcdoi(){
     var pbs = new POBoxSearch(assocwiki_pobox_dict);
     var re = null;
     if(q && q.value != '') re = pbs.regexp(q.value,false);
-    
+
     var maxind = maxindent();
     for(var i=0;i<data.length;i++){
 	if(re ? re.exec(data[i]) : true){

@@ -73,6 +73,10 @@ def search(name,query='',namesort=false)
 
   @q = query
   @matchids = hotids
+#  @matchids = hotids.find_all { |id|
+#    title = @id2title[id]
+#    title != '時空間を超えた指輪進化論〜宇宙飛行士の指輪'
+#  }
   if @q != '' then
     @matchids = hotids.find_all { |id|
       title = @id2title[id]
