@@ -9,35 +9,34 @@
   <script type="text/javascript">
   function showsparkline(id){
     return function(retdata){
-      var origdata = eval(retdata);
-      var data = [];
-      var map = [];
-      for(var i=0;i<origdata.length;i++){
-        var v = origdata[i];
-        var h = v
-        if(h >= 10) h = 10;
-//        var color = "#00f";
-//        if(v >= 10) color = "#00d";
-//        if(v >= 20) color = "#00b";
-//        if(v >= 30) color = "#009";
-//        if(v >= 40) color = "#007";
-//        if(v >= 50) color = "#005";
-//        if(v >= 60) color = "#003";
-//        if(v >= 70) color = "#001";
-//        if(v >= 80) color = "#000";
-        var color = "#888";
-        if(v >= 10) color = "#777";
-        if(v >= 20) color = "#666";
-        if(v >= 30) color = "#555";
-        if(v >= 40) color = "#444";
-        if(v >= 50) color = "#333";
-        if(v >= 60) color = "#222";
-        if(v >= 70) color = "#111";
-        if(v >= 80) color = "#000";
-        data[i] = h;
-        map[i] = color;
+      var data = eval(retdata);
+      var dispdata = [];
+      var colormap = [];
+      for(var i=0;i<data.length;i++){
+        dispdata[i] = data[i];
+        if(dispdata[i] >= 10) dispdata[i] = 10;
+        var c = 8 - Math.floor(data[i]/10);
+        if(c < 0) c = 0;
+        c = String(c);
+        colormap[i] = "#"+c+c+c;
       }
-      $('#id'+id).sparkline(data, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:map, barWidth:3});
+      var hot = false;
+      var hotcolors = ['#ff0', '#ff4', '#ff8', '#ffc'];
+      var hotcolor;
+      for(var j=3;j>=0;j--){
+        if(data[data.length-j-1] > 0){
+          hot = true;
+          hotcolor = hotcolors[j];
+        }
+      }
+      if(hot){
+        $('#id'+id).sparkline([10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+            {type:'bar', chartRangeMin:0, chartRangeMax:11, barSpacing:0, barWidth:3, barColor:hotcolor});
+        $('#id'+id).sparkline(dispdata, {composite:true, type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
+      }
+      else {
+        $('#id'+id).sparkline(dispdata, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
+      }
     }
   }
 
@@ -51,13 +50,6 @@
        })
      <% } %>
   })
-// 
-// //         async: false
-// //       }).responseText;
-// //       data = eval(data);
-// //       //$('.time').sparkline(data, {type:'bar', barSpacing:0, barWidth:5});
-// //       $('#id<%= id %>').sparkline(data);
-// 
   </script>
 </head>
 <body>
