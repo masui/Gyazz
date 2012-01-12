@@ -82,18 +82,22 @@ end
 
 post '/__write' do
   postdata = params[:data].split(/\n/)
+  name = postdata[0]
+  protected!(name)
   writedata(postdata)
 end
 
 post '/__write__' do # 無条件書き込み
   postdata = params[:data].split(/\n/)
+  name = postdata[0]
+  protected!(name)
   __writedata(postdata)
 end
 
-get '/__write__' do # 無条件書き込み
-  postdata = params[:data].split(/\n/)
-  __writedata(postdata)
-end
+#get '/__write__' do # 無条件書き込み
+#  postdata = params[:data].split(/\n/)
+#  __writedata(postdata)
+#end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|
   attr = SDBM.open("#{topdir(name)}/attr",0644);
@@ -177,13 +181,14 @@ end
 
 get '/:name/*/text' do
   name = params[:name]
-  # protected!(name)
+  protected!(name)
   title = params[:splat].join('/')
   readdata(name,title)
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
+  protected!(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
   readdata(name,title,version)

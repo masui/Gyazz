@@ -521,10 +521,10 @@ function tag(s,line){
 	inner = m[2];
 	post =  m[4];
 	if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
-	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" height=80></a>');
+	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
 	}
 	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http...jpg]]]
-	    matched.push('<a href="' + t[1] + '.' + t[2] + '"><img src="' + t[1] + '.' + t[2] + '" border="none" height=80></a>');
+	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none" height=80></a>');
 	}
 	else { // [[[abc]]]
 	    matched.push('<b>' + inner + '</b>');
@@ -536,42 +536,42 @@ function tag(s,line){
 	inner = m[2];
 	post =  m[4];
 	if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[http://example.com/ http://example.com/abc.jpg]]
-	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none"></a>');
+	    matched.push('<a href="' + t[1] + '" target="_blank"><img src="' + t[2] + '.' + t[3] + '" border="none"></a>');
 	}
 	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[http://example.com/abc.jpg]
-	    matched.push('<a href="' + t[1] + '.' + t[2] + '"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
+	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
 	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
-	    matched.push('<a href="' + t[1] + '">' + t[3] + '</a>');
+	    matched.push('<a href="' + t[1] + '" target="_blank">' + t[3] + '</a>');
 	}
         else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
-	    matched.push('<a href="' + t[1] + '" class="link">' + t[1] + '</a>');
+	    matched.push('<a href="' + t[1] + '" class="link" target="_blank">' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^@([a-zA-Z0-9_]+)$/)){ // @名前 を twitterへのリンクにする
-	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link">@' + t[1] + '</a>');
+	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">@' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^(.+)::$/)){ //  Wikiname:: で他Wikiに飛ぶ (2011 4/17)
-	    matched.push('<a href="' + root + '/' + t[1] + '" class="link" title="' + t[1] + '">' + t[1] + '</a>');
+	    matched.push('<a href="' + root + '/' + t[1] + '" class="link" target="_blank" title="' + t[1] + '">' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^(.+):::(.+)$/)){ //  Wikiname:::Title で他Wikiに飛ぶ (2010 4/27)
 	    wikiname = t[1];
 	    wikititle = t[2];
 	    url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
-	    matched.push('<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>');
+	    matched.push('<a href="' + url + '" class="link" target="_blank" title="' + wikititle + '">' + wikititle + '</a>');
 	}
 	else if(t = inner.match(/^(.+)::(.+)$/)){ //  Wikiname::Title で他Wikiに飛ぶ (2010 4/27)
 	    wikiname = t[1];
 	    wikititle = t[2];
 	    wikiurl = root + '/' + wikiname + '/';
 	    url = root + '/' + wikiname + '/' + encodeURIComponent(wikititle).replace(/%2F/g,"/");
-	    matched.push('<a href="' + wikiurl + '" class="link" title="' + wikiname + '">' + wikiname +
-			 '</a>::<a href="' + url + '" class="link" title="' + wikititle + '">' + wikititle + '</a>');
+	    matched.push('<a href="' + wikiurl + '" class="link" target="_blank" title="' + wikiname + '">' + wikiname +
+			 '</a>::<a href="' + url + '" class="link" target="_blank" title="' + wikititle + '">' + wikititle + '</a>');
 	}
 	else if(t = inner.match(/^([a-fA-F0-9]{32})\.(\w+) (.*)$/)){ // (MD5).ext をpitecan.com上のデータにリンク (2010 5/1)
 	    matched.push('<a href="http://masui.sfc.keio.ac.jp/' + t[1] + '.' + t[2] + '" class="link">' + t[3] + '</a>');
 	}
 	else {
-	    matched.push('<a href="' + root + '/' + name + '/' + inner + '" class="tag">' + inner + '</a>');
+	    matched.push('<a href="' + root + '/' + name + '/' + inner + '" class="tag" target="_blank">' + inner + '</a>');
 	}
 	s = pre + '<<<' + (matched.length-1) + '>>>' + post;
     }
