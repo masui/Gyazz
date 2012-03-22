@@ -412,56 +412,25 @@ function display(delay){
 		    }
 		    $("#list"+contline).css('display','inline').css('visibility','visible').html(tag(s,contline).replace(/__newline__/g,''));
 		    $("#listbg"+contline).css('display','inline').css('visibility','visible');
-		    t.css('display','none');
-		    p.css('display','none');
+		    //t.css('display','none');
+		    //p.css('display','none');
+		    t.css('visibility','hidden');
+		    p.css('visibility','hidden');
 		}
 		else { // 通常行
 		    contline = -1;
-		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*)\]\]/i)){
-			//s1 = "<scr";
-			//s2 = 'ipt src="' + m[1] + '"></scr';
-			//s3 = 'ipt>';
-			//sss = s1+s2+s2;
-			sss = m[1];
-
-			//document.write(s1);
-			//document.write(s2);
-			//t.html(s);
-			//$('body').append('kkk');
-			//$('body').append('<scr'+'ipt src="https://gist.github.com/1335651.js?file=gistfile1.js"></script>');
-			//scr = document.createElement('script');
-			//scr.src = 'https://gist.github.com/1335651.js?file=gistfile1.js';
-			//document.body.appendChild(scr);
-
+		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*)\]\]/i)){ // gistエンベッド
+			// https://gist.github.com/1748966 のやり方
+			var gisturl = m[1];
 			var gistFrame = document.createElement("iframe");
 			gistFrame.setAttribute("width", "100%");
 			gistFrame.id = "gistFrame" + i;
 			gistFrame.style.border = 'none';
 			gistFrame.style.margin = '0';
-
-
-			//var zone = document.getElementById("gistZone");
-
-			var zone = document.createElement('div');
-			zone.innerHTML = "";
-			zone.appendChild(gistFrame);
-			//document.body.appendChild(zone);
-			//p.append(zone);
-
-			t.children().remove();
-
+			t.children().remove(); // 子供を全部消す
 			t.append(gistFrame);
-
-			// Create the iframe's document
-			//var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + 
-			//var gistFrameHTML = '<html><body><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + 
-			//  '1335651' + '.js"></sc'+'ript></body></html>';
-
-			//var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + '1558252' + '.js?file=check.rb"></sc'+'ript></body></html>';
-			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight,'+i+')"><scr' + 'ipt type="text/javascript" src="' + sss + '"></sc'+'ript></body></html>';
-
-			var src = 'javascript:void(document.write("<html><body><script type=\\"text/javascript\\" src=\\"https://gist.github.com/1335651.js\\"></script></body></html>"));';
-
+			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight,'+i+
+			    ')"><scr' + 'ipt type="text/javascript" src="' + gisturl + '"></sc'+'ript></body></html>';
 			// Set iframe's document with a trigger for this document to adjust the height
 			var gistFrameDoc = gistFrame.document;
 			if (gistFrame.contentDocument) {
@@ -469,21 +438,13 @@ function display(delay){
 			} else if (gistFrame.contentWindow) {
 			    gistFrameDoc = gistFrame.contentWindow.document;
 			}
-			//alert(gistFrameDoc);
 
 			gistFrameDoc.open();
 			gistFrameDoc.writeln(gistFrameHTML);
 			gistFrameDoc.close(); 
 
-			//var sc = document.createElement('script');
-			//sc.innerHTML = 'alert(100);';
-			//gistFrameDoc.body.appendChild(sc);
-
-			//gistFrame.src = gistFrameHTML;
-			//gistFrame.src = src; // load never ends
-
-			t.css('display','block');
-			p.css('display','block');
+			//			t.css('display','block');
+			//			p.css('display','block');
 		    }
 		    else {
 			t.css('display','inline').css('visibility','visible').css('line-height','').html(tag(data[i],i));
