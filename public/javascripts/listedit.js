@@ -418,10 +418,12 @@ function display(delay){
 		else { // 通常行
 		    contline = -1;
 		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*)\]\]/i)){
-			s1 = "<scr";
-			s2 = 'ipt src="' + m[1] + '"></scr';
-			s3 = 'ipt>';
-			sss = s1+s2+s2;
+			//s1 = "<scr";
+			//s2 = 'ipt src="' + m[1] + '"></scr';
+			//s3 = 'ipt>';
+			//sss = s1+s2+s2;
+			sss = m[1];
+
 			//document.write(s1);
 			//document.write(s2);
 			//t.html(s);
@@ -433,7 +435,7 @@ function display(delay){
 
 			var gistFrame = document.createElement("iframe");
 			gistFrame.setAttribute("width", "100%");
-			gistFrame.id = "gistFrame";
+			gistFrame.id = "gistFrame" + i;
 			gistFrame.style.border = 'none';
 			gistFrame.style.margin = '0';
 
@@ -445,6 +447,9 @@ function display(delay){
 			zone.appendChild(gistFrame);
 			//document.body.appendChild(zone);
 			//p.append(zone);
+
+			t.children().remove();
+
 			t.append(gistFrame);
 
 			// Create the iframe's document
@@ -452,7 +457,8 @@ function display(delay){
 			//var gistFrameHTML = '<html><body><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + 
 			//  '1335651' + '.js"></sc'+'ript></body></html>';
 
-			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + '1335651' + '.js"></sc'+'ript></body></html>';
+			//var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + '1558252' + '.js?file=check.rb"></sc'+'ript></body></html>';
+			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight,'+i+')"><scr' + 'ipt type="text/javascript" src="' + sss + '"></sc'+'ript></body></html>';
 
 			var src = 'javascript:void(document.write("<html><body><script type=\\"text/javascript\\" src=\\"https://gist.github.com/1335651.js\\"></script></body></html>"));';
 
@@ -524,10 +530,10 @@ function display(delay){
 
 
 
-function adjustIframeSize(newHeight) {
-    //    var i = document.getElementById("gistFrame");
-    //    i.style.height = parseInt(newHeight) + "px";
-    //    console.log("size adjusted", newHeight);
+function adjustIframeSize(newHeight,i) {
+    var frame= document.getElementById("gistFrame"+i);
+    frame.style.height = parseInt(newHeight) + "px";
+    console.log("size adjusted", newHeight);
 }
 
 function aligncolumns(){ // 同じパタンの連続を検出して桁を揃える
