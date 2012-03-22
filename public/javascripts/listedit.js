@@ -392,7 +392,7 @@ function display(delay){
 	ind = indent(i);
 	xmargin = ind * 30;
 	
-	var t = $ ("#list"+i);
+	var t = $("#list"+i);
 	var p = $("#listbg"+i);
 	if(doi[i] >= -zoomlevel){
 	    if(i == editline){ // 編集行
@@ -417,8 +417,72 @@ function display(delay){
 		}
 		else { // 通常行
 		    contline = -1;
-		    t.css('display','inline').css('visibility','visible').css('line-height','').html(tag(data[i],i));
-		    p.attr('class','listedit'+ind).css('display','block').css('visibility','visible').css('line-height','');
+		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*)\]\]/i)){
+			s1 = "<scr";
+			s2 = 'ipt src="' + m[1] + '"></scr';
+			s3 = 'ipt>';
+			sss = s1+s2+s2;
+			//document.write(s1);
+			//document.write(s2);
+			//t.html(s);
+			//$('body').append('kkk');
+			//$('body').append('<scr'+'ipt src="https://gist.github.com/1335651.js?file=gistfile1.js"></script>');
+			//scr = document.createElement('script');
+			//scr.src = 'https://gist.github.com/1335651.js?file=gistfile1.js';
+			//document.body.appendChild(scr);
+
+			var gistFrame = document.createElement("iframe");
+			gistFrame.setAttribute("width", "100%");
+			gistFrame.id = "gistFrame";
+			gistFrame.style.border = 'none';
+			gistFrame.style.margin = '0';
+
+
+			//var zone = document.getElementById("gistZone");
+
+			var zone = document.createElement('div');
+			zone.innerHTML = "";
+			zone.appendChild(gistFrame);
+			//document.body.appendChild(zone);
+			//p.append(zone);
+			t.append(gistFrame);
+
+			// Create the iframe's document
+			//var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + 
+			//var gistFrameHTML = '<html><body><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + 
+			//  '1335651' + '.js"></sc'+'ript></body></html>';
+
+			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight)"><scr' + 'ipt type="text/javascript" src="https://gist.github.com/' + '1335651' + '.js"></sc'+'ript></body></html>';
+
+			var src = 'javascript:void(document.write("<html><body><script type=\\"text/javascript\\" src=\\"https://gist.github.com/1335651.js\\"></script></body></html>"));';
+
+			// Set iframe's document with a trigger for this document to adjust the height
+			var gistFrameDoc = gistFrame.document;
+			if (gistFrame.contentDocument) {
+			    gistFrameDoc = gistFrame.contentDocument;
+			} else if (gistFrame.contentWindow) {
+			    gistFrameDoc = gistFrame.contentWindow.document;
+			}
+			//alert(gistFrameDoc);
+
+			gistFrameDoc.open();
+			gistFrameDoc.writeln(gistFrameHTML);
+			gistFrameDoc.close(); 
+
+			//var sc = document.createElement('script');
+			//sc.innerHTML = 'alert(100);';
+			//gistFrameDoc.body.appendChild(sc);
+
+			//gistFrame.src = gistFrameHTML;
+			//gistFrame.src = src; // load never ends
+
+			t.css('display','block');
+			p.css('display','block');
+		    }
+		    else {
+			t.css('display','inline').css('visibility','visible').css('line-height','').html(tag(data[i],i));
+			p.attr('class','listedit'+ind).css('display','block').css('visibility','visible').css('line-height','');
+		    }
 		}
 	    }
 	}
@@ -450,12 +514,20 @@ function display(delay){
     }
     */
     aligncolumns();
-    
+
     // リファラを消すプラグイン
     // http://logic.moo.jp/memo.php/archive/569
     // http://logic.moo.jp/data/filedir/569_3.js
     //
     jQuery.kill_referrer.rewrite.init();
+}
+
+
+
+function adjustIframeSize(newHeight) {
+    //    var i = document.getElementById("gistFrame");
+    //    i.style.height = parseInt(newHeight) + "px";
+    //    console.log("size adjusted", newHeight);
 }
 
 function aligncolumns(){ // 同じパタンの連続を検出して桁を揃える

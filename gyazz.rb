@@ -194,6 +194,85 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   readdata(name,title,version)
 end
 
+#get "/:name/__related" do |name|
+#  protected!(name)
+#
+#  top = topdir(name)
+#  unless File.exist?(top) then
+#    Dir.mkdir(top)
+#  end
+#
+#  pair = Pair.new("#{top}/pair")
+#  titles = pair.keys
+#  pair.close
+#
+#  @id2title = {}
+#  titles.each { |title|
+#    @id2title[md5(title)] = title
+#  }
+#
+#  ids = Dir.open(top).find_all { |file|
+#    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
+#  }
+#
+#  @modtime = {}
+#  ids.each { |id|
+#    @modtime[id] = File.mtime("#{top}/#{id}")
+#  }
+#
+#  ids.sort { |a,b|
+#    @modtime[b] <=> @modtime[a]
+#  }
+#
+#  @hotids = ids.sort { |a,b|
+#    @modtime[b] <=> @modtime[a]
+#  }
+#
+#  # JSON作成
+#  $KCODE = "u"
+#  "[\n" +
+#    @hotids.collect { |id|
+#    title = @id2title[id]
+#    "  [\"#{title.gsub(/"/,'\"')}\", 0],\n" +
+#    related(name,title).collect { |keyword|
+#      "  [\"#{keyword.gsub(/"/,'\"')}\", 1]"
+#    }.join(",\n")
+#  }.join(",\n") +
+#  "\n]\n"
+#end
+
+get '/:name/*/related' do
+  name = params[:name]
+  protected!(name)
+  title = params[:splat].join('/')
+
+#  pagekeywords = []
+#  filename = datafile(name,title,0)
+#  if File.exist?(filename) then
+#    pagekeywords = File.read(filename).keywords
+#  end
+
+  top = topdir(name)
+  unless File.exist?(top) then
+    Dir.mkdir(top)
+  end
+
+  pair = Pair.new("#{top}/pair")
+  relatedkeywords = {}
+  pair.each(title){ |keyword|
+    relatedkeywords[keyword] = true
+  }
+  pair.close
+
+  # JSON作成
+  $KCODE = "u"
+  "[\n" +
+    relatedkeywords.keys.collect { |keyword|
+    "  \"#{keyword.gsub(/"/,'\"')}\""
+  }.join(",\n") +
+    "\n]\n"
+end
+
 #
 # 編集モード
 #
