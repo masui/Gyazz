@@ -4,6 +4,7 @@ require 'config'
 require 'lib'
 require 'pair'
 require 'sdbm'
+require 'history'
 
 def titles(name)
   top = topdir(name)
@@ -98,6 +99,12 @@ def search(name,query='',namesort=false)
     end
   }.join('')
 
+  #@matchhistories = {}
+  #@matchids.each { |id|
+  #  title = @id2title[id]
+  #  @matchhistories[id] = history(name,title)
+  #}
+
   @urltop = topurl(name)
   @name = name
   @urlroot = URLROOT
@@ -142,13 +149,18 @@ def list(name)
     s = @id2title[id].dup
     ss = s.dup
     title = ""
+File.open("/tmp/log","w"){ |f|
+  f.print s
+}
     while s.sub!(/^(.)/,'') do
       c = $1
       u = c.unpack("U")[0]
       title += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
     end
 #    "  [\"#{title}\", #{@modtime[id].to_i}]"
-    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}]"
-  }.join(",\n") +
+#    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, #{history(name,ss)}]"
+    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\"]"
+#    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}]"
+ }.join(",\n") +
     "\n]\n"
 end

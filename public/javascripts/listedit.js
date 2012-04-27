@@ -419,7 +419,7 @@ function display(delay){
 		}
 		else { // 通常行
 		    contline = -1;
-		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*)\]\]/i)){ // gistエンベッド
+		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i)){ // gistエンベッド
 			// https://gist.github.com/1748966 のやり方
 			var gisturl = m[1];
 			var gistFrame = document.createElement("iframe");
@@ -559,10 +559,13 @@ function tag(s,line){
 	pre =   m[1];
 	inner = m[2];
 	post =  m[4];
-	if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
+	//if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
+	//    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
+	//}
+	if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)/i)){ // [[[http:... ....jpg]]]
 	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
 	}
-	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http...jpg]]]
+	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)/i)){ // [[[http...jpg]]]
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none" height=80></a>');
 	}
 	else { // [[[abc]]]

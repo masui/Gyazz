@@ -67,10 +67,17 @@ def related(name,title)
   }
 end
 
+def enc(s)
+  (0..s.length-1).collect { |i|
+    s[i] < 0x80 ? s[i,1] : '%'+s[i,1].unpack('H2').to_s
+  }.join('')
+end
+
 def related_html(name,title)
   repimage = SDBM.open("#{topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
-    @target_url = "#{URLROOT}/#{name}/#{t}"
+    # @target_url = "#{URLROOT}/#{name}/#{t}"
+    @target_url = "#{URLROOT}/#{name}/#{enc(t)}"
     @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
     if repimage[t] then
       @imageurl = "http://gyazo.com/#{repimage[t]}.png"

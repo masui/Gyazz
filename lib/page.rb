@@ -15,6 +15,17 @@ def page(name,title)
     @rawdata = File.read(datafile(name,title))
   end
 
+  #
+  # アクセス履歴をバックアップディレクトリに保存
+  # ちょっと変だがとりあえず...
+  # readdata() でやるよりここの方がよいようだ (2012/04/14 13:45:53)
+  #
+  if File.exists?("#{backupdir(name,title)}") then
+    File.open("#{backupdir(name,title)}/access","a"){ |f|
+      f.puts Time.now.strftime('%Y%m%d%H%M%S')
+    }
+  end
+
   @name = name
   @title = title
   @urlroot = URLROOT

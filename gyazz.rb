@@ -16,6 +16,8 @@ require 'page'
 require 'attr'
 require 'history'
 require 'lib/rss'
+require 'access'
+require 'modify'
 
 helpers do
   #
@@ -159,6 +161,20 @@ end
 get "/:name/__list" do |name|
   protected!(name)
   list(name)
+end
+
+get '/:name/*/__access' do
+  name = params[:name]
+  protected!(name)
+  title = params[:splat].join('/')
+  access(name,title)
+end
+
+get '/:name/*/__modify' do
+  name = params[:name]
+  protected!(name)
+  title = params[:splat].join('/')
+  modify(name,title)
 end
 
 get "/:name/__random" do |name|

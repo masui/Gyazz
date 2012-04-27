@@ -41,14 +41,49 @@
     }
   }
 
+  function showsparkline2(id,retdata){
+      var data = eval(retdata);
+      var dispdata = [];
+      var colormap = [];
+      for(var i=0;i<data.length;i++){
+        dispdata[i] = data[i];
+        if(dispdata[i] >= 10) dispdata[i] = 10;
+        var c = 8 - Math.floor(data[i]/10);
+        if(c < 0) c = 0;
+        c = String(c);
+        colormap[i] = "#"+c+c+c;
+      }
+      var hot = false;
+      var hotcolors = ['#ff0', '#ff4', '#ff8', '#ffc'];
+      var hotcolor;
+      for(var j=3;j>=0;j--){
+        if(data[data.length-j-1] > 0){
+          hot = true;
+          hotcolor = hotcolors[j];
+        }
+      }
+      if(hot){
+        $('#id'+id).sparkline([10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+            {type:'bar', chartRangeMin:0, chartRangeMax:11, barSpacing:0, barWidth:3, barColor:hotcolor});
+        $('#id'+id).sparkline(dispdata, {composite:true, type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
+      }
+      else {
+        $('#id'+id).sparkline(dispdata, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
+      }
+  }
+
   $(function() {
+     var limit = 100;
      <% @matchids.each { |id| %>
        <% title = @id2title[id].gsub(/"/,'\"') %>
-       $.ajax({
-         type: "GET",
-         url: "/<%= @name %>/<%= title %>/history",
-         success: showsparkline('<%= id %>')
-       })
+       if(limit > 0){
+         $.ajax({
+           type: "GET",
+           url: "/<%= @name %>/<%= title %>/history",
+           success: showsparkline('<%= id %>')
+         });
+       }
+       limit -= 1;
      <% } %>
   })
   </script>
