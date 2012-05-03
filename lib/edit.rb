@@ -13,6 +13,7 @@ def edit(name,title,version=0)
   @text = File.exist?(file) ? File.read(file)  : ''
   # @text =~ /^\s*$/ ? "(empty)" : @text
   @text.gsub!(/&/,'&amp;') # 2012/04/23 04:44:29 masui ????
+  @orig_md5 = md5(@text) # 2012/5/3 masui
   erb :edit
 end
 

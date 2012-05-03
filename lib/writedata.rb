@@ -38,7 +38,12 @@ def writedata(data)
   name = data.shift
   title = data.shift
   browser_md5 = data.shift
+  File.open("/tmp/loglog","a"){ |log|
+    log.puts "browser_md5 = #{browser_md5}"
+  }
   newdata = data.join("\n")+"\n"      # newdata: 新規書込みデータ
+
+  newdata = data.join("\n").sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
 
   puts "writedata: #{name}/#{title}"
 
@@ -51,9 +56,13 @@ def writedata(data)
   server_md5 = ""
   curdata = ""
   if File.exist?(curfile) then
-    curdata = File.read(curfile)
+    curdata = File.read(curfile).sub(/\n+$/,'')+"\n"
     server_md5 = md5(curdata)
   end                                 # curdata: Web上の最新データ
+  File.open("/tmp/loglog","a"){ |log|
+    log.puts "server_md5 = #{server_md5}"
+    log.puts "curdata = #{curdata}"
+  }
 
   # バックアップディレクトリを作成
   Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
@@ -66,17 +75,22 @@ def writedata(data)
     }
   end
 
+  status = '******'
+  File.open("/tmp/loglog","a"){ |log|
   if server_md5 == browser_md5 || curdata == '' then
+    log.puts "first if - noconflict"
     File.open(curfile,"w"){ |f|
       f.print(newdata)
     }
     status = 'noconflict'
   else
+    log.puts "second if"
     # ブラウザが指定したMD5のファイルを捜す
     oldfile = backupfiles(name,title).find { |f|
       md5(File.read(f)) == browser_md5
     }
     if oldfile then
+      log.puts "second if conflict"
       newfile = "/tmp/newfile#{$$}"
       patchfile = "/tmp/patchfile#{$$}"
       File.open(newfile,"w"){ |f|
@@ -87,6 +101,7 @@ def writedata(data)
       File.delete newfile, patchfile
       status = 'conflict'
     else
+      log.puts "second if noconflict"
       File.open(curfile,"w"){ |f|
         f.print newdata
       }
@@ -94,6 +109,7 @@ def writedata(data)
     end
     #status = 'conflict'
   end
+  }
 
   # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')

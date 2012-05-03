@@ -4,9 +4,6 @@
 
 var timeout;
 
-//var TOP = "http://gyazz.com"
-//var root = "http://Gyazz.com""
-
 document.onkeyup = keyup;
 
 function keyup(event){
@@ -16,7 +13,7 @@ function keyup(event){
 }
 
 function writedata(){
-    datastr = $('#contents').val();
+    datastr = $('#contents').val().replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
 	$.ajax({
 		type: "POST",
@@ -26,8 +23,8 @@ function writedata(){
 		success: function(msg){
 		    $("#contents").css('background-color','#ffffff');
 		    if(msg.match(/^conflict/)){
+			//alert('conflict!! reload');
 			// 再読み込み
-			//alert(msg);
 			getdata(); // ここで強制書き換えしてしまうのがマズい (2011/6/17)
 		    }
 		    else if(msg == 'protected'){
@@ -43,6 +40,7 @@ function writedata(){
 	}
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
+    var version = 0;
     $.ajax({
 	    async: false,
 		url: root + "/" + name + "/" + title + "/text/" + version,
@@ -64,7 +62,10 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
 			    data.push(s);
 			}
 		}
-		orig_md5 = MD5_hexhash(utf16to8(data.join("\n")+"\n"));
+		//document.getElementById('contents').value = data.join("\n").replace(/\n+$/,'')+"\n";
+		$('#contents').val(data.join("\n").replace(/\n+$/,'')+"\n");
+
+		orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
 		search();
 	    }
 	});
