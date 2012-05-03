@@ -284,24 +284,24 @@ $(document).keydown(function(event){
 		display();
 	    }
 	}
-	if(kc == KC.left && !sk && editline < 0){ // zoom out
+	if(kc == KC.left && !sk && !ck && editline < 0){ // zoom out
 	    if(-zoomlevel < maxindent()){
 		zoomlevel -= 1;
 		display();
 	    }
 	}
-	if(kc == KC.right && !sk && editline < 0){ // zoom in
+	if(kc == KC.right && !sk && !ck && editline < 0){ // zoom in
 	    //if(zoomlevel < maxindent()){
 	    if(zoomlevel < 0){
 		zoomlevel += 1;
 		display();
 	    }
 	}
-	if(event.ctrlKey && kc == KC.left){ // 古いバージョンゲット
+	if(ck && kc == KC.left){ // 古いバージョンゲット
 	    version += 1;
 	    getdata();
 	}
-	else if(event.ctrlKey && kc == KC.right){
+	else if(ck && kc == KC.right){
 	    if(version > 0){
 		version -= 1;
 		getdata();
