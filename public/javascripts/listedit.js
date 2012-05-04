@@ -632,22 +632,22 @@ function tag(s,line){
 
 function writedata(){
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: root + "/__write",
-		data: postdata,
-		success: function(msg){
-		    $("#newtext").css('background-color','#ddd');
-		    if(msg.match(/^conflict/)){
-			// 再読み込み
-			getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
-		    }
-		    else if(msg == 'protected'){
-			// 再読み込み
-			alert("このページは編集できません");
-			getdata();
+    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
+    $.ajax({
+	    type: "POST",
+	    async: true,
+	    url: root + "/__write",
+	    data: postdata,
+	    success: function(msg){
+		$("#newtext").css('background-color','#ddd');
+		if(msg.match(/^conflict/)){
+		    // 再読み込み
+		    getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
+		}
+		else if(msg == 'protected'){
+		    // 再読み込み
+		    alert("このページは編集できません");
+		    getdata();
 		    }
 		    else {
 			orig_md5 = MD5_hexhash(utf16to8(datastr));
