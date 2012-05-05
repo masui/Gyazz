@@ -335,10 +335,26 @@ function deleteblankdata(){ // 空白行を削除
     calcdoi();
 }
 
+// name/titleのn行目をクリックしたことをサーバに知らせる
+// 認証で使ってみる! (2012/05/04 23:29:18)
+function tellline(n){
+    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + data[n]);
+    $.ajax({
+        type: "POST",
+	async: true,
+	url: root + "/__tellline",
+	data: postdata
+    })
+}
+
 // こうすると動的に関数を定義できる (クロージャ)
-function linefunc(n){
+// 行をクリックしたとき呼ばれる
+function linefunc(n,tell){
     return function(event){
 	eline = n;
+	if(tell){
+	    tellline(n);
+	}
 	if(event.shiftKey){
 	    addblankline(n,indent(n));  // 上に行を追加
 	}
@@ -350,9 +366,10 @@ function setup(){ // 初期化
     title_id = MD5_hexhash(utf16to8(title));
     // <div id='listbg0'>
     //   <span id='list0'>
+    tell = (title == '.読み出し認証');
     for(var i=0;i<1000;i++){
 	var y = $('<div>').attr('id','listbg'+i);
-	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
+	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i,tell));
 	$('#contents').append(y.append(x));
     }
     reloadTimeout = setTimeout(reload,reloadInterval);

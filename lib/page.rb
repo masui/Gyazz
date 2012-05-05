@@ -4,6 +4,7 @@ require 'config'
 require 'lib'
 require 'related'
 require 'uploaded'
+require 'auth'
 
 def page(name,title)
   attr = SDBM.open("#{topdir(name)}/attr",0644);
@@ -13,6 +14,9 @@ def page(name,title)
 
   if File.exist?(datafile(name,title)) then
     @rawdata = File.read(datafile(name,title))
+    if title == '.読み出し認証' then
+      @rawdata = randomize(@rawdata)
+    end
   end
 
   #

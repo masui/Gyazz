@@ -18,6 +18,7 @@ require 'history'
 require 'lib/rss'
 require 'access'
 require 'modify'
+require 'auth'
 
 helpers do
   #
@@ -37,11 +38,6 @@ helpers do
     user = a.shift
     pass = a.shift
     return true if user.to_s == '' || pass.to_s == ''
-#File.open("/tmp/user","w"){ |f|
-#  f.puts user
-#  f.puts pass
-#  f.puts @auth
-#}
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
     @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [user,pass]
   end
@@ -105,6 +101,37 @@ get '/__setattr/:name/:key/:val' do |name,key,val|
   attr = SDBM.open("#{topdir(name)}/attr",0644);
   attr[key] = val
   attr.close
+end
+
+# 認証
+# クリックされた行の内容が通知される
+post '/__tellline' do
+  postdata = params[:data].split(/\n/)
+  name = postdata[0]
+  title = postdata[1]
+  line = postdata[2]
+  # ユーザを区別してないので誰からリクエストが来てもauthファイルに足してしまう (2012/05/05 10:28:46)
+  # これはあまりに酷い実装だが、ユーザの区別をどうするべきか?
+  # JS側でやるべきなんだろうな
+  File.open("#{topdir(name)}/auth","a"){ |f|
+    f.puts line
+  }
+  useranswer = File.read("#{topdir(name)}/auth").split(/\n/).sort.join(',')
+  correctanswer = ansstring(readdata(name,title))
+  if useranswer == correctanswer then # 認証成功!
+    # Cookie設定
+    cookiename = md5(name)
+    response.set_cookie(cookiename, {:value => 'authorized', :path => '/' })
+  end
+
+  #File.open("/tmp/ans","w"){ |f|
+  #  f.puts useranswer
+  #  f.puts correctanswer
+  #}
+
+  #File.open("/tmp/line","w"){ |f|
+  #  f.puts "line = #{line}"
+  #}
 end
 
 # Gyazoへの転送!
@@ -194,12 +221,19 @@ end
 #
 # データテキスト取得
 #
-
 get '/:name/*/text' do
   name = params[:name]
   protected!(name)
   title = params[:splat].join('/')
-  readdata(name,title)
+  data = readdata(name,title)
+
+  #
+  # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
+  # この場所でやるべきか?
+  #
+  if title == '.読み出し認証' then
+    data = randomize(data)
+  end
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
@@ -207,7 +241,14 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   protected!(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
-  readdata(name,title,version)
+  data = readdata(name,title,version)
+  #
+  # 「.読み出し認証」のときはデータを並びかえる
+  #
+  if title == '.読み出し認証' then
+    data = randomize(data)
+  end
+  data
 end
 
 #get "/:name/__related" do |name|
@@ -323,7 +364,12 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   protected!(name)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+  if title == '.読み出し認証' then
+    File.open("#{topdir(name)}/auth","w"){ }
+  elsif File.exist?(datafile(name,'.読み出し認証')) && !request.cookies[md5(name)] then
+    redirect "401.html"
+  end
+
   page(name,title)
 end
-
 
