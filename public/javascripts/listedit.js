@@ -39,6 +39,8 @@ var KC = {
     tab:9, enter:13, ctrlD:17, left:37, up:38, right:39, down:40
 };
 
+var authbuf = [];
+
 //$(document).ready(function(){
 //	$('#rawdata').hide();
 //	setup();
@@ -335,25 +337,28 @@ function deleteblankdata(){ // 空白行を削除
     calcdoi();
 }
 
-// name/titleのn行目をクリックしたことをサーバに知らせる
-// 認証で使ってみる! (2012/05/04 23:29:18)
-function tellline(n){
-    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + data[n]);
+// 認証文字列をサーバに送る
+function tell_auth(){
+    authstr = authbuf.sort().join(",");
+    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + authstr);
     $.ajax({
         type: "POST",
 	async: true,
-	url: root + "/__tellline",
+	url: root + "/__tellauth",
 	data: postdata
     })
 }
 
 // こうすると動的に関数を定義できる (クロージャ)
 // 行をクリックしたとき呼ばれる
-function linefunc(n,tell){
+function linefunc(n){
     return function(event){
-	eline = n;
-	if(tell){
-	    tellline(n);
+	if(write_authorized){
+	    eline = n;
+	}
+	if(do_auth){
+	    authbuf.push(data[n]);
+	    tell_auth();
 	}
 	if(event.shiftKey){
 	    addblankline(n,indent(n));  // 上に行を追加
@@ -366,10 +371,9 @@ function setup(){ // 初期化
     title_id = MD5_hexhash(utf16to8(title));
     // <div id='listbg0'>
     //   <span id='list0'>
-    tell = (title == '.読み出し認証');
     for(var i=0;i<1000;i++){
 	var y = $('<div>').attr('id','listbg'+i);
-	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i,tell));
+	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
 	$('#contents').append(y.append(x));
     }
     reloadTimeout = setTimeout(reload,reloadInterval);
@@ -648,6 +652,7 @@ function tag(s,line){
 }
 
 function writedata(){
+    if(!write_authorized) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
     $.ajax({

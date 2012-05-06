@@ -6,18 +6,31 @@ require 'related'
 require 'uploaded'
 require 'auth'
 
-def page(name,title)
-  attr = SDBM.open("#{topdir(name)}/attr",0644);
-  searchable = (attr['searchable'] == 'true' ? true : false)
+def page(name,title,write_authorized)
+  searchable = false
+  if File.exist?("#{topdir(name)}/attr.dir") then
+    attr = SDBM.open("#{topdir(name)}/attr",0644);
+    searchable = (attr['searchable'] == 'true' ? true : false)
+    attr.close
+  end
   @robotspec = (searchable ? "index,follow" : "noindex,nofollow")
-  attr.close
 
+  @do_auth = false
   if File.exist?(datafile(name,title)) then
     @rawdata = File.read(datafile(name,title))
-    if title == '.読み出し認証' then
-      @rawdata = randomize(@rawdata)
+    if title == ALL_AUTH then
+      if !all_authorized?(name) then
+        @rawdata = randomize(@rawdata)
+        @do_auth = true
+      end
+    elsif title == WRITE_AUTH then
+      if !write_authorized?(name) then
+        @rawdata = randomize(@rawdata)
+        @do_auth = true
+      end
     end
   end
+  @write_authorized = write_authorized
 
   #
   # アクセス履歴をバックアップディレクトリに保存

@@ -2,6 +2,7 @@
 
 require 'config'
 require 'lib'
+require 'auth'
 
 def edit(name,title,version=0)
   @name = name
@@ -14,6 +15,8 @@ def edit(name,title,version=0)
   # @text =~ /^\s*$/ ? "(empty)" : @text
   @text.gsub!(/&/,'&amp;') # 2012/04/23 04:44:29 masui ????
   @orig_md5 = md5(@text) # 2012/5/3 masui
+  @write_authorized = (write_authorized?(name) ? true : false)
+
   erb :edit
 end
 

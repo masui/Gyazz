@@ -103,35 +103,62 @@ get '/__setattr/:name/:key/:val' do |name,key,val|
   attr.close
 end
 
-# 認証
-# クリックされた行の内容が通知される
-post '/__tellline' do
+#
+# 認証の考え方
+#
+# 読み書き認証だけ設定されている場合 
+#   読出しはOK
+#   書込みだけNG
+#   HPなどの場合
+# 読出し認証だけ設定されている場合???
+#      読出しも書込みもNG
+#   or 読出しも書込みもOK
+#
+#   読出し 書込み
+#   O      O               通常
+#   O      X       => O O  HP      書込み認証
+#   X      X       => O O  秘密    秘密認証 - basic認証と同等
+#   X      0               無い
+#
+#                 r_authorized rw_authorized
+#  普通にアクセス true         true          UIPediaなど
+#  書込み禁止     true         false         HPなど
+#  読出し禁止     false        false         増井研など
+#
+#
+# 認証のアルゴリズム
+#
+# auth_page_exist?()      認証ページが存在して空じゃない
+# r_cookie_authorized?()  Cookieで認証されている
+# r_authorized            読出し権限あり
+# rw_cookie_authorized?() Cookieで認証されている
+# rw_authorized
+#
+# * 認証ページが存在しない状態で認証ページ編集しはじめた人には読み書き/読み出しCookieを与える ★★
+# * 読み書き権限のある人には読み書き認証ページをrandomizeしない
+# * 読み出し権限のある人には読み出し認証ページをrandomizeしない
+# * 認証ページがある状態で、権限のない人が読み出し認証ページにアクセスすると
+#  randomizeされる。読み出しはできる。書き込みはできない。
+# * 認証ページがある状態で、権限のない人が読み書き認証ページにアクセスすると
+#  randomizeされる。読み出しはできる。書き込みはできない。
+# * 認証ページがある状態で、読み出し権限のある人が読み書き認証ページにアクセスすると、上と同様
+#
+
+# 認証文字列取得
+post '/__tellauth' do
   postdata = params[:data].split(/\n/)
   name = postdata[0]
   title = postdata[1]
-  line = postdata[2]
-  # ユーザを区別してないので誰からリクエストが来てもauthファイルに足してしまう (2012/05/05 10:28:46)
-  # これはあまりに酷い実装だが、ユーザの区別をどうするべきか?
-  # JS側でやるべきなんだろうな
-  File.open("#{topdir(name)}/auth","a"){ |f|
-    f.puts line
-  }
-  useranswer = File.read("#{topdir(name)}/auth").split(/\n/).sort.join(',')
+  useranswer = postdata[2]
   correctanswer = ansstring(readdata(name,title))
   if useranswer == correctanswer then # 認証成功!
     # Cookie設定
-    cookiename = md5(name)
-    response.set_cookie(cookiename, {:value => 'authorized', :path => '/' })
+    if title == ALL_AUTH then
+      response.set_cookie(all_cookie(name), {:value => 'authorized', :path => '/' })
+    elsif title == WRITE_AUTH then
+      response.set_cookie(write_cookie(name), {:value => 'authorized', :path => '/' })
+    end
   end
-
-  #File.open("/tmp/ans","w"){ |f|
-  #  f.puts useranswer
-  #  f.puts correctanswer
-  #}
-
-  #File.open("/tmp/line","w"){ |f|
-  #  f.puts "line = #{line}"
-  #}
 end
 
 # Gyazoへの転送!
@@ -231,9 +258,16 @@ get '/:name/*/text' do
   # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
   # この場所でやるべきか?
   #
-  if title == '.読み出し認証' then
-    data = randomize(data)
+  if auth_page_exist?(name,ALL_AUTH) then
+    if !all_authorized?(name) then
+      data = randomize(data)
+    end
+  elsif auth_page_exist?(name,WRITE_AUTH) then
+    if !write_authorized?(name) then
+      data = randomize(data)
+    end
   end
+  data
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
@@ -243,10 +277,16 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   version = params[:version].to_i
   data = readdata(name,title,version)
   #
-  # 「.読み出し認証」のときはデータを並びかえる
+  # 「認証」のときはデータを並びかえる
   #
-  if title == '.読み出し認証' then
-    data = randomize(data)
+  if auth_page_exist?(name,ALL_AUTH) then
+    if !all_authorized?(name) then
+      data = randomize(data)
+    end
+  elsif auth_page_exist?(name,WRITE_AUTH) then
+    if !write_authorized?(name) then
+      data = randomize(data)
+    end
   end
   data
 end
@@ -364,12 +404,35 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   protected!(name)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-  if title == '.読み出し認証' then
-    File.open("#{topdir(name)}/auth","w"){ }
-  elsif File.exist?(datafile(name,'.読み出し認証')) && !request.cookies[md5(name)] then
-    redirect "401.html"
+
+  write_authorized = true
+  if auth_page_exist?(name,ALL_AUTH) then
+    if title != ALL_AUTH then
+      if !all_authorized?(name) then
+        redirect "/401.html"
+      end
+    else
+      if !all_authorized?(name) then
+        write_authorized = false
+      end
+    end
+  else
+    if title == ALL_AUTH then
+      response.set_cookie(all_cookie(name), {:value => 'authorized', :path => '/' })
+    end
+
+    if auth_page_exist?(name,WRITE_AUTH) then
+      #if title != WRITE_AUTH then
+        if !write_authorized?(name) then
+          write_authorized = false
+        end
+      #end
+    else
+      if title == WRITE_AUTH then
+        response.set_cookie(write_cookie(name), {:value => 'authorized', :path => '/' })
+      end
+    end
   end
 
-  page(name,title)
+  page(name,title,write_authorized)
 end
-

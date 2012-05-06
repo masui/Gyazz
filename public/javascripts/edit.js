@@ -8,11 +8,14 @@ document.onkeyup = keyup;
 
 function keyup(event){
     if(timeout) clearTimeout(timeout);
-    timeout = setTimeout("writedata()",2000);
-    $("#contents").css('background-color','#f0f0d0');
+    if(write_authorized){
+	timeout = setTimeout("writedata()",2000);
+	$("#contents").css('background-color','#f0f0d0');
+    }
 }
 
 function writedata(){
+    if(!write_authorized) return;
     datastr = $('#contents').val().replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
 	$.ajax({

@@ -24,6 +24,9 @@
   var root =  '<%= @urlroot %>';
   var version = 0;
 
+  var do_auth = <%= @do_auth %>;
+  var write_authorized = <%= @write_authorized %>;
+
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();
     setup();
@@ -36,9 +39,13 @@
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/__edit' id='title'>
-    <%= @title %>
-    </a>
+    <% if @write_authorized then %>
+      <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/__edit' id='title'>
+      <%= @title %>
+      </a>
+    <% else %>
+      <%= @title %>
+    <% end %>
   </span>
 
   <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
