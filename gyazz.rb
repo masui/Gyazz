@@ -154,9 +154,9 @@ post '/__tellauth' do
   if useranswer == correctanswer then # 認証成功!
     # Cookie設定
     if title == ALL_AUTH then
-      response.set_cookie(all_cookie(name), {:value => 'authorized', :path => '/' })
+      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
     elsif title == WRITE_AUTH then
-      response.set_cookie(write_cookie(name), {:value => 'authorized', :path => '/' })
+      response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
     end
   end
 end
@@ -259,11 +259,11 @@ get '/:name/*/text' do
   # この場所でやるべきか?
   #
   if auth_page_exist?(name,ALL_AUTH) then
-    if !all_authorized?(name) then
+    if !cookie_authorized?(name,ALL_AUTH) then
       data = randomize(data)
     end
   elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !write_authorized?(name) then
+    if !cookie_authorized?(name,WRITE_AUTH) then
       data = randomize(data)
     end
   end
@@ -280,11 +280,11 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   # 「認証」のときはデータを並びかえる
   #
   if auth_page_exist?(name,ALL_AUTH) then
-    if !all_authorized?(name) then
+    if !cookie_authorized?(name,ALL_AUTH) then
       data = randomize(data)
     end
   elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !write_authorized?(name) then
+    if !cookie_authorized?(name,WRITE_AUTH) then
       data = randomize(data)
     end
   end
@@ -408,28 +408,28 @@ get '/:name/*' do
   write_authorized = true
   if auth_page_exist?(name,ALL_AUTH) then
     if title != ALL_AUTH then
-      if !all_authorized?(name) then
+      if !cookie_authorized?(name,ALL_AUTH) then
         redirect "/401.html"
       end
     else
-      if !all_authorized?(name) then
+      if !cookie_authorized?(name,ALL_AUTH) then
         write_authorized = false
       end
     end
   else
     if title == ALL_AUTH then
-      response.set_cookie(all_cookie(name), {:value => 'authorized', :path => '/' })
+      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
     end
 
     if auth_page_exist?(name,WRITE_AUTH) then
       #if title != WRITE_AUTH then
-        if !write_authorized?(name) then
+        if !cookie_authorized?(name,WRITE_AUTH) then
           write_authorized = false
         end
       #end
     else
       if title == WRITE_AUTH then
-        response.set_cookie(write_cookie(name), {:value => 'authorized', :path => '/' })
+        response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
       end
     end
   end

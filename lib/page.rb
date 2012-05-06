@@ -19,12 +19,12 @@ def page(name,title,write_authorized)
   if File.exist?(datafile(name,title)) then
     @rawdata = File.read(datafile(name,title))
     if title == ALL_AUTH then
-      if !all_authorized?(name) then
+      if !cookie_authorized?(name,ALL_AUTH) then
         @rawdata = randomize(@rawdata)
         @do_auth = true
       end
     elsif title == WRITE_AUTH then
-      if !write_authorized?(name) then
+      if !cookie_authorized?(name,WRITE_AUTH) then
         @rawdata = randomize(@rawdata)
         @do_auth = true
       end
