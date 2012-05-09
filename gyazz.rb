@@ -20,28 +20,28 @@ require 'access'
 require 'modify'
 require 'auth'
 
-helpers do
+#helpers do
   #
   # Basic認証のためのヘルパー
   #                                                                                                                                                                             
-  def protected!(name)
-    unless authorized?(name)
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-      throw(:halt, [401, "Not authorized.\n"])
-    end
-  end
-  
-  def authorized?(name)
-    file = datafile(name,".passwd") || datafile(name,".password")
-    return true unless File.exist?(file)
-    a = File.read(file).split
-    user = a.shift
-    pass = a.shift
-    return true if user.to_s == '' || pass.to_s == ''
-    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [user,pass]
-  end
-end
+#  def protected!(name)
+#    unless authorized?(name)
+#      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+#      throw(:halt, [401, "Not authorized.\n"])
+#    end
+#  end
+#  
+#  def authorized?(name)
+#    file = datafile(name,".passwd") || datafile(name,".password")
+#    return true unless File.exist?(file)
+#    a = File.read(file).split
+#    user = a.shift
+#    pass = a.shift
+#    return true if user.to_s == '' || pass.to_s == ''
+#    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+#    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [user,pass]
+#  end
+#end
 
 get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
@@ -65,14 +65,42 @@ end
 
 get '/:name/*/search' do          # /増井研/合宿/search 
   name = params[:name]
-  protected!(name)
+  #protected!(name)
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
+
+  authorized_by_cookie = true
+  if auth_page_exist?(name,ALL_AUTH) then
+    if !cookie_authorized?(name,ALL_AUTH) then
+      authorized_by_cookie = false
+    end
+  end
+  if !password_authorized?(name) then
+    if !authorized_by_cookie then
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized.\n"])
+    end
+  end
+
   search(name,q)
 end
 
 get "/__search/:name" do |name|
-  protected!(name)
+  # protected!(name)
   q = params[:q]
+
+  authorized_by_cookie = true
+  if auth_page_exist?(name,ALL_AUTH) then
+    if !cookie_authorized?(name,ALL_AUTH) then
+      authorized_by_cookie = false
+    end
+  end
+  if !password_authorized?(name) then
+    if !authorized_by_cookie then
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized.\n"])
+    end
+  end
+
   redirect q == '' ? "#{URLROOT}/#{name}" : "#{URLROOT}/#{name}/#{q}/search"
 end
 
@@ -81,14 +109,14 @@ end
 post '/__write' do
   postdata = params[:data].split(/\n/)
   name = postdata[0]
-  protected!(name)
+  check_auth(name)
   writedata(postdata)
 end
 
 post '/__write__' do # 無条件書き込み
   postdata = params[:data].split(/\n/)
   name = postdata[0]
-  protected!(name)
+  check_auth(name)
   __writedata(postdata)
 end
 
@@ -189,7 +217,7 @@ end
 #
 
 get "/:name/.settings" do |name|
-  protected!(name)
+  check_auth(name)
   attr(name)
 end
 
@@ -197,42 +225,58 @@ end
 # リスト表示
 #
 
+def check_auth(name)
+  authorized_by_cookie = true
+  if auth_page_exist?(name,ALL_AUTH) then
+    if !cookie_authorized?(name,ALL_AUTH) then
+      authorized_by_cookie = false
+    end
+  end
+  if !password_authorized?(name) then
+    if !authorized_by_cookie then
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized.\n"])
+    end
+  end
+end
+
 get "/:name" do |name|
-  protected!(name)
+  check_auth(name)
   search(name)
 end
 
 get "/:name/" do |name|
-  protected!(name)
+  check_auth(name)
   search(name)
 end
 
 get "/:name/__sort" do |name|
-  protected!(name)
+  check_auth(name)
   search(name,'',true)
 end
 
 get "/:name/__list" do |name|
-  protected!(name)
+  # protected!(name)
+  check_auth(name)
   list(name)
 end
 
 get '/:name/*/__access' do
   name = params[:name]
-  protected!(name)
   title = params[:splat].join('/')
+  check_auth(name)
   access(name,title)
 end
 
 get '/:name/*/__modify' do
   name = params[:name]
-  protected!(name)
   title = params[:splat].join('/')
+  check_auth(name)
   modify(name,title)
 end
 
 get "/:name/__random" do |name|
-  protected!(name)
+  check_auth(name)
   t = titles(name)
   len = t.length
   ignore = len / 2 # 新しい方からignore個は選ばない
@@ -241,7 +285,7 @@ get "/:name/__random" do |name|
 end
 
 get "/:name/rss.xml" do |name|
-  protected!(name)
+  check_auth(name)
   rss(name)
 end
 
@@ -250,7 +294,7 @@ end
 #
 get '/:name/*/text' do
   name = params[:name]
-  protected!(name)
+#  protected!(name)
   title = params[:splat].join('/')
   data = readdata(name,title)
 
@@ -259,11 +303,11 @@ get '/:name/*/text' do
   # この場所でやるべきか?
   #
   if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) then
+    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
       data = randomize(data)
     end
   elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !cookie_authorized?(name,WRITE_AUTH) then
+    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
       data = randomize(data)
     end
   end
@@ -272,7 +316,7 @@ end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
-  protected!(name)
+#  protected!(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
   data = readdata(name,title,version)
@@ -280,11 +324,11 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   # 「認証」のときはデータを並びかえる
   #
   if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) then
+    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
       data = randomize(data)
     end
   elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !cookie_authorized?(name,WRITE_AUTH) then
+    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
       data = randomize(data)
     end
   end
@@ -340,8 +384,8 @@ end
 
 get '/:name/*/related' do
   name = params[:name]
-  protected!(name)
   title = params[:splat].join('/')
+  check_auth(name)
 
 #  pagekeywords = []
 #  filename = datafile(name,title,0)
@@ -376,21 +420,21 @@ end
 
 get '/:name/*/edit' do
   name = params[:name]
-  protected!(name)
   title = params[:splat].join('/')
+  check_auth(name)
   redirect "/#{name}/#{title}"
 end
 
 get '/:name/*/__edit' do
   name = params[:name]
-  protected!(name)
   title = params[:splat].join('/')
+  check_auth(name)
   edit(name,title)
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   name = params[:name]
-  protected!(name)
+  check_auth(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
   edit(name,title,version)
@@ -402,14 +446,17 @@ end
 
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
-  protected!(name)
+#  protected!(name)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
+  authorized_by_cookie = false
   write_authorized = true
   if auth_page_exist?(name,ALL_AUTH) then
     if title != ALL_AUTH then
       if !cookie_authorized?(name,ALL_AUTH) then
-        redirect "/401.html"
+        # redirect "/401.html"
+      else
+        authorized_by_cookie = true
       end
     else
       if !cookie_authorized?(name,ALL_AUTH) then
@@ -431,6 +478,17 @@ get '/:name/*' do
       if title == WRITE_AUTH then
         response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
       end
+    end
+  end
+
+  if !password_authorized?(name) then
+    if title != ALL_AUTH then
+      if !authorized_by_cookie then
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Not authorized.\n"])
+      end
+    else
+      # write_authorized = false
     end
   end
 

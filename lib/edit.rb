@@ -15,7 +15,10 @@ def edit(name,title,version=0)
   # @text =~ /^\s*$/ ? "(empty)" : @text
   @text.gsub!(/&/,'&amp;') # 2012/04/23 04:44:29 masui ????
   @orig_md5 = md5(@text) # 2012/5/3 masui
-  @write_authorized = (cookie_authorized?(name,WRITE_AUTH) ? true : false)
+  @write_authorized = false
+  @write_authorized = true if password_authorized?(name)
+  @write_authorized = true if cookie_authorized?(name,ALL_AUTH)
+  @write_authorized = true if cookie_authorized?(name,WRITE_AUTH)
 
   erb :edit
 end
