@@ -605,10 +605,12 @@ function tag(s,line){
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
 	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
-	    matched.push('<a href="' + t[1] + '" target="_blank">' + t[3] + '</a>');
+	    target = t[1].replace(/"/g,'%22');
+	    matched.push('<a href="' + target + '" target="_blank">' + t[3] + '</a>');
 	}
         else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
-	    matched.push('<a href="' + t[1] + '" class="link" target="_blank">' + t[1] + '</a>');
+	    target = t[1].replace(/"/g,'%22');
+	    matched.push('<a href="' + target + '" class="link" target="_blank">' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^@([a-zA-Z0-9_]+)$/)){ // @名前 を twitterへのリンクにする
 	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">@' + t[1] + '</a>');
