@@ -74,6 +74,10 @@ def enc(s)
 end
 
 def related_html(name,title)
+  top = topdir(name)
+  unless File.exist?(top) then
+    Dir.mkdir(top)
+  end
   repimage = SDBM.open("#{topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
     # @target_url = "#{URLROOT}/#{name}/#{t}"
@@ -96,10 +100,10 @@ def related_html(name,title)
 end
 
 if $0 == __FILE__ then
-  puts related_html("増井研","合宿")
+#  puts related_html("増井研","合宿")
+  puts related_html("増井研","ブックマークレット")
 
   _weight("増井研","合宿").collect { |title,val|
     puts "#{title}\t#{val}"
   }
 end
-

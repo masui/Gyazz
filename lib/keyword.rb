@@ -7,13 +7,13 @@ class String
     end
     while s.sub!(/\[\[([^\[\n\r ]+\/) [^\]]+\]\]/,'') do
       kw = $1
-      if kw !~ /^http/ && kw !~ /pdf / && kw !~ /^@/ && kw !~ /::/ && kw !~ /^[a-fA-F0-9]{32}/ then
+      if kw !~ /^http/ && kw !~ /^javascript:/ && kw !~ /pdf / && kw !~ /^@/ && kw !~ /::/ && kw !~ /^[a-fA-F0-9]{32}/ then
         a << kw
       end
     end
     while s.sub!(/\[\[([^\[\n\r]+)\]\]/,'') do
       kw = $1
-      if kw !~ /^http/ && kw !~ /pdf / && kw !~ /^@/ && kw !~ /::/ && kw !~ /^[a-fA-F0-9]{32}/ then
+      if kw !~ /^http/ && kw !~ /^javascript:/ && kw !~ /pdf / && kw !~ /^@/ && kw !~ /::/ && kw !~ /^[a-fA-F0-9]{32}/ then
         a << kw
       end
     end

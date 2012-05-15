@@ -29,6 +29,8 @@ var sendTimeout;                     // 放置すると書き込み
 var reloadTimeout = null;            // 放っておくとリロードするように
 var reloadInterval = 10 * 60 * 1000; // 10分ごとにリロード
 
+var editTimeout = null;
+
 var searchmode = false;
 
 var edited = false;
@@ -120,8 +122,19 @@ function addblankline(line,indent){
 }
 
 $(document).mouseup(function(event){
+	if(editTimeout) clearTimeout(editTimeout);
 	eline = -1;
     });
+
+$(document).mousemove(function(event){
+	if(editTimeout) clearTimeout(editTimeout);
+    });
+
+function longmousedown(){
+    editline = eline;
+    calcdoi();
+    display(true);
+}
 
 $(document).mousedown(function(event){
 	if(reloadTimeout) clearTimeout(reloadTimeout);
@@ -133,9 +146,16 @@ $(document).mousedown(function(event){
 	    return true;
 	}
 	searchmode = false;
-	editline = eline;
-	calcdoi();
-	display(true);
+
+	if(eline == -1){
+	    editline = eline;
+	    calcdoi();
+	    display(true);
+	}
+	else {
+	    if(editTimeout) clearTimeout(editTimeout);
+	    editTimeout = setTimeout(longmousedown,300);
+	}
     });
 
 function indent(line){ // 先頭の空白文字の数
