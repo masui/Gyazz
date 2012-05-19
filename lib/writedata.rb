@@ -7,8 +7,9 @@ require 'pair'
 require 'set'
 
 def writable?(name,gyazoid)
+  return true;
+
   attr = SDBM.open("#{topdir(name)}/attr",0644);
-  return true if attr['protected'] != 'true'
 
   gyazoids = Set.new
   imageid = SDBM.open("#{FILEROOT}/imageid",0644)

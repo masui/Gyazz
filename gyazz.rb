@@ -20,29 +20,6 @@ require 'access'
 require 'modify'
 require 'auth'
 
-#helpers do
-  #
-  # Basic認証のためのヘルパー
-  #                                                                                                                                                                             
-#  def protected!(name)
-#    unless authorized?(name)
-#      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-#      throw(:halt, [401, "Not authorized.\n"])
-#    end
-#  end
-#  
-#  def authorized?(name)
-#    file = datafile(name,".passwd") || datafile(name,".password")
-#    return true unless File.exist?(file)
-#    a = File.read(file).split
-#    user = a.shift
-#    pass = a.shift
-#    return true if user.to_s == '' || pass.to_s == ''
-#    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-#    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [user,pass]
-#  end
-#end
-
 get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
 end

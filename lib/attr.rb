@@ -1,6 +1,6 @@
 def attr(name)
   attr = SDBM.open("#{topdir(name)}/attr",0644);
-  @protected = (attr['protected'] == 'true' ? "checked" : "")
+  @sortbydate = (attr['sortbydate'] == 'true' ? "checked" : "")
   @searchable = (attr['searchable'] == 'true' ? "checked" : "")
 
   @urlroot = URLROOT

@@ -102,6 +102,11 @@
       <% @matchids.each { |id| %>
         <% title = @id2title[id] %>
         <% shorttitle = title.sub(/\[\[http.*\s+(.*)\]\]/){ $1 } %>
+	<% if @sortbydate then %>
+	<%   @createtime[id] =~ /(....)(..)(..)(..)(..)(..)/ %>
+	<%   datestr = "#{$1}/#{$2}/#{$3} #{$4}:#{$5}:#{$6}" %>
+	<%   shorttitle = datestr + ' ' + shorttitle %>
+	<% end %>
         <% url = "#{@urltop}/#{title}" %>
         <div class="listedit0__xxx">
           <span id="<%= "id"+id %>"></span>

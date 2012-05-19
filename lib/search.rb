@@ -61,23 +61,45 @@ def search(name,query='',namesort=false)
     modtime[id] = File.mtime("#{top}/#{id}")
   }
 
-  hotids = 
+  @sortbydate = false
+  if File.exist?("#{topdir(name)}/attr.dir") then
+    attr = SDBM.open("#{topdir(name)}/attr",0644);
+    @sortbydate = (attr['sortbydate'] == 'true' ? true : false)
+    attr.close
+  end
+
+  hotids =
     if namesort then
       ids.sort { |a,b|
         @id2title[b] <=> @id2title[a]
       }
+    elsif @sortbydate then
+      File.open("/tmp/logsort","a"){ |ff|
+      ff.puts md5(name)
+      @createtime = {}
+      ids.each { |id|
+        t = modtime[id].strftime('%Y%m%d%H%M%S')
+        title = @id2title[id]
+        if File.exist?(backupdir(name,title)) then
+          Dir.open(backupdir(name,title)).each { |f|
+            t = f if f =~ /^[0-9a-fA-F]{14}$/ && f < t
+          }
+        end
+        @createtime[id] = t
+        ff.puts "#{title} #{id} #{t}"
+      }
+    }
+      ids.sort { |a,b|
+        @createtime[b] <=> @createtime[a]
+      }
     else
       ids.sort { |a,b|
-        modtime[b] <=> modtime[a]
-      }
+      modtime[b] <=> modtime[a]
+    }
     end
 
   @q = query
   @matchids = hotids
-#  @matchids = hotids.find_all { |id|
-#    title = @id2title[id]
-#    title != '時空間を超えた指輪進化論〜宇宙飛行士の指輪'
-#  }
   if @q != '' then
     @matchids = hotids.find_all { |id|
       title = @id2title[id]
@@ -98,12 +120,6 @@ def search(name,query='',namesort=false)
       ''
     end
   }.join('')
-
-  #@matchhistories = {}
-  #@matchids.each { |id|
-  #  title = @id2title[id]
-  #  @matchhistories[id] = history(name,title)
-  #}
 
   @urltop = topurl(name)
   @name = name

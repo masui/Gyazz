@@ -17,8 +17,8 @@ function setchange(id){
 }
 
 $(document).ready(function(){
-  setchange('protected');
   setchange('searchable');
+  setchange('sortbydate');
 })
 </script>
 </head>
@@ -33,8 +33,8 @@ $(document).ready(function(){
 </div>
 
 <p>
-<input <%= @protected %> type='checkbox' id='protected'>編集を制限する<p>
-<input <%= @searchable %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する
+<input <%= @searchable %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
+<input <%= @sortbydate %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
 
 </body>
 </html>
