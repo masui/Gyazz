@@ -60,6 +60,10 @@ def search(name,query='',namesort=false)
   ids.each { |id|
     modtime[id] = File.mtime("#{top}/#{id}")
   }
+  atime = {}
+  ids.each { |id|
+    atime[id] = File.atime("#{top}/#{id}")
+  }
 
   @sortbydate = false
   if File.exist?("#{topdir(name)}/attr.dir") then
@@ -74,8 +78,6 @@ def search(name,query='',namesort=false)
         @id2title[b] <=> @id2title[a]
       }
     elsif @sortbydate then
-      File.open("/tmp/logsort","a"){ |ff|
-      ff.puts md5(name)
       @createtime = {}
       ids.each { |id|
         t = modtime[id].strftime('%Y%m%d%H%M%S')
@@ -86,17 +88,21 @@ def search(name,query='',namesort=false)
           }
         end
         @createtime[id] = t
-        ff.puts "#{title} #{id} #{t}"
       }
-    }
       ids.sort { |a,b|
         @createtime[b] <=> @createtime[a]
       }
     else
       ids.sort { |a,b|
-      modtime[b] <=> modtime[a]
+      #modtime[b] <=> modtime[a]
+      atime[b] <=> atime[a]
     }
     end
+
+  # 先頭が"."のものはリストしない
+  hotids = hotids.find_all { |id|
+    @id2title[id] !~ /^\./
+  }
 
   @q = query
   @matchids = hotids

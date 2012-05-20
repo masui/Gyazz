@@ -13,7 +13,7 @@ def _weight(name,title)
   filename = datafile(name,title,0)
   if File.exist?(filename) then
     pagekeywords = File.read(filename).keywords
-    File.utime(Time.now,Time.now,filename)
+    # File.utime(Time.now,Time.now,filename) # 何故こうしてたのか?
   end
 
   #

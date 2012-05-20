@@ -6,6 +6,11 @@ require 'related'
 require 'auth'
 
 def page(name,title,write_authorized)
+  allaccess = SDBM.open("#{FILEROOT}/access",0644);
+  s = "#{name}(#{md5(name)})/#{title}(#{md5(title)})"
+  allaccess[s] = (allaccess[s].to_i + 1).to_s
+  allaccess.close
+
   searchable = false
   if File.exist?("#{topdir(name)}/attr.dir") then
     attr = SDBM.open("#{topdir(name)}/attr",0644);
@@ -15,8 +20,9 @@ def page(name,title,write_authorized)
   @robotspec = (searchable ? "index,follow" : "noindex,nofollow")
 
   @do_auth = false
-  if File.exist?(datafile(name,title)) then
-    @rawdata = File.read(datafile(name,title))
+  data_file = datafile(name,title)
+  if File.exist?(data_file) then
+    @rawdata = File.read(data_file)
     if title == ALL_AUTH then
       if !cookie_authorized?(name,ALL_AUTH) then
         @rawdata = randomize(@rawdata)
