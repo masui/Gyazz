@@ -5,88 +5,6 @@
   <link rel="stylesheet" href="<%= @urlroot %>/stylesheets/gyazz.css" type="text/css">
   <link rel="alternate" href="<%= @urlroot %>/<%= @name %>/rss.xml" title="<%= @name %> RSS" type="application/rss+xml" />
   <link rel="shortcut icon" href="<%= @urlroot %>/favicon.ico">
-  <script language="JavaScript" src='<%= @srcroot %>/javascripts/jquery-1.5.1.js'></script>
-  <script language="JavaScript" src='<%= @srcroot %>/javascripts/jquery.sparkline.js'></script>
-  <script type="text/javascript">
-  function showsparkline(id){
-    return function(retdata){
-      var data = eval(retdata);
-      var dispdata = [];
-      var colormap = [];
-      for(var i=0;i<data.length;i++){
-        dispdata[i] = data[i];
-        if(dispdata[i] >= 10) dispdata[i] = 10;
-        var c = 8 - Math.floor(data[i]/10);
-        if(c < 0) c = 0;
-        c = String(c);
-        colormap[i] = "#"+c+c+c;
-      }
-      var hot = false;
-      var hotcolors = ['#ff0', '#ff4', '#ff8', '#ffc'];
-      var hotcolor;
-      for(var j=3;j>=0;j--){
-        if(data[data.length-j-1] > 0){
-          hot = true;
-          hotcolor = hotcolors[j];
-        }
-      }
-      if(hot){
-        $('#id'+id).sparkline([10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-            {type:'bar', chartRangeMin:0, chartRangeMax:11, barSpacing:0, barWidth:3, barColor:hotcolor});
-        $('#id'+id).sparkline(dispdata, {composite:true, type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
-      }
-      else {
-        $('#id'+id).sparkline(dispdata, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
-      }
-    }
-  }
-
-  function showsparkline2(id,retdata){
-      var data = eval(retdata);
-      var dispdata = [];
-      var colormap = [];
-      for(var i=0;i<data.length;i++){
-        dispdata[i] = data[i];
-        if(dispdata[i] >= 10) dispdata[i] = 10;
-        var c = 8 - Math.floor(data[i]/10);
-        if(c < 0) c = 0;
-        c = String(c);
-        colormap[i] = "#"+c+c+c;
-      }
-      var hot = false;
-      var hotcolors = ['#ff0', '#ff4', '#ff8', '#ffc'];
-      var hotcolor;
-      for(var j=3;j>=0;j--){
-        if(data[data.length-j-1] > 0){
-          hot = true;
-          hotcolor = hotcolors[j];
-        }
-      }
-      if(hot){
-        $('#id'+id).sparkline([10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-            {type:'bar', chartRangeMin:0, chartRangeMax:11, barSpacing:0, barWidth:3, barColor:hotcolor});
-        $('#id'+id).sparkline(dispdata, {composite:true, type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
-      }
-      else {
-        $('#id'+id).sparkline(dispdata, {type:'bar', chartRangeMax:11, barSpacing:0, colorMap:colormap, barWidth:3});
-      }
-  }
-
-  $(function() {
-     var limit = 100;
-     <% @matchids.each { |id| %>
-       <% title = @id2title[id].gsub(/"/,'\"') %>
-       if(limit > 0){
-         $.ajax({
-           type: "GET",
-           url: "/<%= @name %>/<%= title %>/history",
-           success: showsparkline('<%= id %>')
-         });
-       }
-       limit -= 1;
-     <% } %>
-  })
-  </script>
 </head>
 <body>
   <div class="title">
@@ -109,7 +27,7 @@
 	<% end %>
         <% url = "#{@urltop}/#{title}" %>
         <div class="listedit0__xxx">
-          <span id="<%= "id"+id %>"></span>
+          <img src="/<%= @name %>/<%= title %>/access.png" width=50 height=12>
           <a href="<%= url %>" class='tag'><%= shorttitle %></a>
         </div>
       <% } %>

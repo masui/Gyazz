@@ -37,7 +37,7 @@ end
 get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
-  history(name,title)
+  history_json(name,title)
 end
 
 get '/:name/*/search' do          # /増井研/合宿/search 
@@ -236,6 +236,14 @@ get "/:name/__list" do |name|
   # protected!(name)
   check_auth(name)
   list(name)
+end
+
+get '/:name/*/access.png' do
+  name = params[:name]
+  title = params[:splat].join('/')
+  # history(name,title)
+  # send_file "#{backupdir(name,title)}/access.png"
+  history_png(name,title)
 end
 
 get '/:name/*/__access' do
