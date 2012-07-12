@@ -23,7 +23,7 @@ require 'readdata'
 #
   def protected!(name)
     unless password_authorized?(name)
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
