@@ -48,6 +48,27 @@ var authbuf = [];
 //	setup();
 //	getdata();
 //    })
+
+
+//    data = ["abc", "def", "ghi"];
+//    name = "test";
+//    title = "test";
+//    orig_md5 = "kkkkkk";
+//    datastr = data.join("\n").replace(/\n+$/,'')+"\n";
+//    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
+//    $.ajax({
+//          type: "POST",
+//          async: true,
+//          url: 'http://Gyazz.com' + "/__write",
+//          data: postdata,
+//          success: function(msg){
+//              alert(msg);
+//          },
+//          error: function(msg){
+//              alert("ERROR! " + msg);
+//          }
+//        });
+
     
 // keypressを定義しておかないとFireFox上で矢印キーを押してときカーソルが動いてしまう
 $(document).keypress(function(event){
@@ -134,7 +155,7 @@ function longmousedown(){
     editline = eline;
     calcdoi();
     display(true);
-}
+}		  
 
 $(document).mousedown(function(event){
 	if(reloadTimeout) clearTimeout(reloadTimeout);
@@ -677,11 +698,32 @@ function writedata(){
     if(!write_authorized) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
+
+//    $.ajax({
+//          type: "POST",
+//          async: true,
+//          url: 'http://Gyazz.com' + "/__write",
+//          data: postdata,
+//          success: function(msg){
+//              alert(msg);
+//          },
+//          error: function(msg){
+//              alert("ERROR! " + msg);
+//          }
+//        });
+
     $.ajax({
 	    type: "POST",
 	    async: true,
 	    url: root + "/__write",
 	    data: postdata,
+
+	    beforeSend: function(xhr,settings){
+              //alert(xhr);
+              //xhr.setRequestHeader("Content-Type" , "text/html; charset=utf-8");
+              return true;
+            },
+
 	    success: function(msg){
 		$("#newtext").css('background-color','#ddd');
 		if(msg.match(/^conflict/)){
@@ -692,13 +734,13 @@ function writedata(){
 		    // 再読み込み
 		    alert("このページは編集できません");
 		    getdata();
-		    }
-		    else {
-			orig_md5 = MD5_hexhash(utf16to8(datastr));
-		    }
 		}
-	    })
-	}
+		else {
+		    orig_md5 = MD5_hexhash(utf16to8(datastr));
+                }
+            }
+    })
+}
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({

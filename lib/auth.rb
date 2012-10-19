@@ -23,7 +23,7 @@ require 'readdata'
 #
   def protected!(name)
     unless password_authorized?(name)
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
@@ -48,7 +48,7 @@ ALL_AUTH = '.完全認証'
 WRITE_AUTH = '.書込認証'
 
 def auth_page_exist?(name,title)
-  File.exist?(datafile(name,title)) && File.read(datafile(name,title)) != ""
+  File.exist?(datafile(name,title)) && File.read(datafile(name,title)).gsub(/[\n\s]/,'') != ""
 end
 
 def auth_cookie(name,title)

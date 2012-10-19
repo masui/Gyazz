@@ -53,6 +53,9 @@ def page(name,title,write_authorized)
   @urlroot = URLROOT
   @srcroot = SRCROOT
   @related = related_html(@name,@title)
+
+  # response["Access-Control-Allow-Origin"] = "*"
+
   erb :page
 end
 

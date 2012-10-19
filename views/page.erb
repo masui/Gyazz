@@ -3,7 +3,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><%= @name %> / <%= @title %></title>
   <link rel="stylesheet" href="<%= @srcroot %>/stylesheets/gyazz.css" type="text/css">
-  <link rel="stylesheet" href="<%= @srcroot %>/stylesheets/gyazz.css" type="text/css">
   <link rel="apple-touch-icon" href="<%= @srcroot %>/gyazz.png">
   <link rel="shortcut icon" href="<%= @urlroot %>/favicon.ico">
   <meta name="robots" content="<%= @robotspec %>">
@@ -26,6 +25,29 @@
 
   var do_auth = <%= @do_auth %>;
   var write_authorized = <%= @write_authorized %>;
+
+  function wwwww(){
+    data = ["abc", "def", "ghi"];
+    name = "test";
+    title = "test";
+    orig_md5 = "kkkkkk";
+    datastr = data.join("\n").replace(/\n+$/,'')+"\n";
+    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
+    $.ajax({
+          type: "POST",
+          async: true,
+          url: 'http://Gyazz.com' + "/__write",
+          data: postdata,
+          success: function(msg){
+              alert(msg);
+          },
+          error: function(msg){
+              alert("ERROR! " + msg);
+          }
+        });
+  }
+  // wwwww();
+
 
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();

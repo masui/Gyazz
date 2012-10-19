@@ -1,3 +1,5 @@
+s3backup:
+	cd /Users/masui/Gyazz; /opt/local/bin/ruby /Users/masui/bin/s3backup data GyazzData/GyazzData
 clean:
 	/bin/rm -f *~ */*~ */*/*~
 push:

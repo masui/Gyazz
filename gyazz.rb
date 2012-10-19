@@ -3,6 +3,7 @@
 
 require 'rubygems'
 require 'sinatra'
+require 'json'
 
 enable :sessions   # Cookieを使うのに要るらしい
 
@@ -53,7 +54,7 @@ get '/:name/*/search' do          # /増井研/合宿/search
   end
   if !password_authorized?(name) then
     if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
@@ -73,7 +74,7 @@ get "/__search/:name" do |name|
   end
   if !password_authorized?(name) then
     if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
@@ -211,7 +212,7 @@ def check_auth(name)
   end
   if !password_authorized?(name) then
     if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
@@ -275,6 +276,17 @@ get "/:name/rss.xml" do |name|
 end
 
 #
+# JSON 
+#
+get '/:name/*/json' do
+  name = params[:name]
+  title = params[:splat].join('/')
+  data = readdata(name,title)
+  response["Access-Control-Allow-Origin"] = "*"
+  data.split(/\n/).to_json
+end
+
+#
 # データテキスト取得
 #
 get '/:name/*/text' do
@@ -296,6 +308,7 @@ get '/:name/*/text' do
       data = randomize(data)
     end
   end
+  # response["Access-Control-Allow-Origin"] = "*"
   data
 end
 
@@ -454,6 +467,7 @@ get '/:name/*' do
     end
 
     if auth_page_exist?(name,WRITE_AUTH) then
+      rawdata = File.read(datafile(name,WRITE_AUTH))
       #if title != WRITE_AUTH then
         if !cookie_authorized?(name,WRITE_AUTH) then
           write_authorized = false
@@ -469,7 +483,7 @@ get '/:name/*' do
   if !password_authorized?(name) then
     if title != ALL_AUTH then
       if !authorized_by_cookie then
-        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        response['WWW-Authenticate'] = %(Basic realm="#{name}")
         throw(:halt, [401, "Not authorized.\n"])
       end
     else
