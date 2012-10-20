@@ -11,4 +11,5 @@
 ## インストール
 
 * Sinatraをインストール
+* データ格納ディレクトリをつくる
 * 環境にあわせて lib/config_template.rb から lib/config.rb をつくる
