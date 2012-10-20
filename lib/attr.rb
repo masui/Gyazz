@@ -4,7 +4,7 @@ def attr(name)
   @searchable = (attr['searchable'] == 'true' ? "checked" : "")
 
   @urlroot = URLROOT
-  @srcroot = SRCROOT
+  @srcroot = URLROOT
   @name = name
   erb :attr
 end
