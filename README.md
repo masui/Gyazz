@@ -11,4 +11,4 @@
 ## インストール
 
 * Sinatraをインストール
-* 環境にあわせて lib/config.rb を変更
+* 環境にあわせて lib/config_template.rb から lib/config.rb をつくる
