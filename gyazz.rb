@@ -9,6 +9,7 @@ require 'date'
 enable :sessions   # Cookieを使うのに要るらしい
 
 $: << 'lib'
+require 'lib'
 require 'config'
 require 'search'
 require 'writedata'
@@ -23,13 +24,8 @@ require 'modify'
 require 'auth'
 require 'contenttype'
 
-def app_root()
-  "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}#{env['SCRIPT_NAME']}"
-end
-
 get '/' do
   redirect "#{app_root}/Gyazz/目次"
-#  redirect "#{URLROOT}/Gyazz/目次"
 end
 
 get '/programs/*' do
@@ -86,7 +82,7 @@ get "/__search/:name" do |name|
     end
   end
 
-  redirect q == '' ? "#{URLROOT}/#{name}" : "#{URLROOT}/#{name}/#{q}/search"
+  redirect q == '' ? "#{app_root}/#{name}" : "#{app_root}/#{name}/#{q}/search"
 end
 
 # データ書込み 

@@ -2,6 +2,10 @@
 require 'config'
 require 'digest/md5'
 
+def app_root()
+  "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}#{env['SCRIPT_NAME']}"
+end
+
 def md5(s)
    Digest::MD5.new.hexdigest(s).to_s
 end
@@ -11,7 +15,7 @@ def topdir(name)
 end
 
 def topurl(name)
-  "#{URLROOT}/#{name}"
+  "#{app_root}/#{name}"
 end
 
 def backupdir(name,title=nil)

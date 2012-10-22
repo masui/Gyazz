@@ -50,7 +50,7 @@ def page(name,title,write_authorized)
 
   @name = name
   @title = title
-  @urlroot = URLROOT
+  @urlroot = app_root
   @related = related_html(@name,@title)
 
   # response["Access-Control-Allow-Origin"] = "*"

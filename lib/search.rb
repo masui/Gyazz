@@ -118,7 +118,7 @@ def search(name,query='',namesort=false)
   @matchimages = @matchids.collect { |id|
     title = @id2title[id]
     if repimage[title] then
-      @target_url = "#{URLROOT}/#{name}/#{title}"
+      @target_url = "#{app_root}/#{name}/#{title}"
       @target_title = title
       @imageurl = "http://gyazo.com/#{repimage[title]}.png"
       erb :icon
@@ -129,7 +129,7 @@ def search(name,query='',namesort=false)
 
   @urltop = topurl(name)
   @name = name
-  @urlroot = URLROOT
+  @urlroot = app_root
   @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
   erb :search

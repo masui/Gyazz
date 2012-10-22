@@ -3,7 +3,7 @@ def attr(name)
   @sortbydate = (attr['sortbydate'] == 'true' ? "checked" : "")
   @searchable = (attr['searchable'] == 'true' ? "checked" : "")
 
-  @urlroot = URLROOT
+  @urlroot = app_root
   @name = name
   erb :attr
 end
