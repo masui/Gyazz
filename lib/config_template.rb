@@ -7,17 +7,18 @@
 # URLROOT = "http://gyazz.sfc.keio.ac.jp"          # ユーザから見えるURLのトップ
 # FILEROOT = "/Users/masui/Gyazz/data"             # Gyazzデータディレクトリ
 
-# local試験環境
-# % ruby gyazz.rb で動かしたとき
-# URLROOT = "http://localhost:4567"
-# FILEROOT = "/tmp/data"
+# Gyazz.com運用環境
+# URLROOT = "http://gyazz.com"
+# FILEROOT = "/Users/masui/Gyazz/data"
 
 # local試験環境
 # Passengerで動かしたとき
 # URLROOT = "http://localhost/Gyazz"
 # FILEROOT = "/Users/masui/Gyazz/data"
 
-# 運用環境
-URLROOT = "http://gyazz.com"
-FILEROOT = "/Users/masui/Gyazz/data"
+# local試験環境
+# % ruby gyazz.rb で動かしたとき
+# % rackup config.ru -p 4567 でもOK
 
+URLROOT = "http://localhost:4567"
+FILEROOT = "/tmp"
