@@ -402,7 +402,14 @@ function setup(){ // 初期化
     //	    //hideMessage();
     //	    return false;
     //	});
-    $('body').bind("drop", function(e) {
+    b = $('body');
+    b.bind("dragover", function(e) {
+	return false;
+	});
+    b.bind("dragend", function(e) {
+	return false;
+	});
+    b.bind("drop", function(e) {
         var files;
         e.preventDefault(); // デフォルトは「ファイルを開く」
         files = e.originalEvent.dataTransfer.files;
