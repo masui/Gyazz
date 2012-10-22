@@ -4,6 +4,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require 'date'
 
 enable :sessions   # Cookieを使うのに要るらしい
 
@@ -20,6 +21,45 @@ require 'lib/rss'
 require 'access'
 require 'modify'
 require 'auth'
+
+contenttype={}
+contenttype['.txt'] = 'text/plain'
+contenttype['.csv'] = 'text/csv'
+contenttype['.tsv'] = 'text/tab-separated-values'
+contenttype['.doc'] = 'application/msword'
+contenttype['.xls'] = 'application/vnd.ms-excel'
+contenttype['.ppt'] = 'application/vnd.ms-powerpoint'
+contenttype['.pdf'] = 'application/pdf'
+contenttype['.xdw'] = 'application/vnd.fujixerox.docuworks'
+contenttype['.html'] = 'text/html'
+contenttype['.html'] = 'text/html'
+contenttype['.css'] = 'text/css'
+contenttype['.js'] = 'text/javascript'
+contenttype['.hdml'] = 'text/x-hdml'
+contenttype['.jpg'] = 'image/jpeg'
+contenttype['.jpeg'] = 'image/jpeg'
+contenttype['.png'] = 'image/png'
+contenttype['.gif'] = 'image/gif'
+contenttype['.bmp'] = 'image/bmp'
+contenttype['.ai'] = 'application/postscript'
+contenttype['.mp3'] = 'audio/mpeg'
+contenttype['.m4a'] = 'audio/mp4'
+contenttype['.wav'] = 'audio/x-wav'
+contenttype['.mid'] = 'audio/midi'
+contenttype['.midi'] = 'audio/midi'
+contenttype['.mmf'] = 'application/x-smaf'
+contenttype['.mpg'] = 'video/mpeg'
+contenttype['.mpeg'] = 'video/mpeg'
+contenttype['.wmv'] = 'video/x-ms-wmv'
+contenttype['.swf'] = 'application/x-shockwave-flash'
+contenttype['.3g2'] = 'video/3gpp2'
+contenttype['.zip'] = 'application/zip'
+contenttype['.lha'] = 'application/x-lzh'
+contenttype['.lzh'] = 'application/x-lzh'
+contenttype['.tar'] = 'application/x-tar'
+contenttype['.tgz'] = 'application/x-tar'
+contenttype['.exe'] = 'application/octet-stream'
+contenttype[''] = ''
 
 get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
@@ -172,22 +212,59 @@ end
 #  /__gyazoupload/(Gyazo ID)/(Gyazo URL) というリクエストが来る
 #  Gyazo IDは各GyazoアプリのユニークID
 #
-get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
-  # GyazoID(アプリのID)とurlの対応関係を保存しておく
-  url =~ /([\da-f]{32})/
-  id = $1
-  idimage = SDBM.open("#{FILEROOT}/idimage",0644)
-  idimage[gyazoid] = idimage[gyazoid].to_s.split(/,/).unshift(id)[0,5].join(',')
+#get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
+#  # GyazoID(アプリのID)とurlの対応関係を保存しておく
+#  url =~ /([\da-f]{32})/
+#  id = $1
+#  idimage = SDBM.open("#{FILEROOT}/idimage",0644)
+#  idimage[gyazoid] = idimage[gyazoid].to_s.split(/,/).unshift(id)[0,5].join(',')
+#
+#  # 画像URLとGyazoIDの対応も保存する
+#  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
+#  imageid[id] = gyazoid
+#
+#  # CookieをセットしてGyazo.comに飛ぶ
+#  # response.set_cookie("GyazoID", gyazoid)
+#  response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
+#
+#  redirect url
+#end
 
-  # 画像URLとGyazoIDの対応も保存する
-  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
-  imageid[id] = gyazoid
+post '/upload' do
+  param = params[:uploadfile]
+  if param
+    # アップロードされたファイルはTempfileクラスになる
+    tempfile = param[:tempfile]
+    file_contents = tempfile.read
+    file_ext = File.extname(param[:filename]).to_s
+    tempfile.close # 消してしまう
 
-  # CookieをセットしてGyazo.comに飛ぶ
-  # response.set_cookie("GyazoID", gyazoid)
-  response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
+    UPLOADDIR = "#{FILEROOT}/upload"
+    Dir.mkdir(UPLOADDIR) unless File.exist?(UPLOADDIR)
 
-  redirect url
+    hash = md5(file_contents)
+    savefile = "#{hash}#{file_ext}"
+    savepath = "#{UPLOADDIR}/#{savefile}"
+    File.open(savepath, 'wb'){ |f| f.write(file_contents) }
+
+
+#    File.open("/tmp/loglog","w"){ |f|
+#      f.puts params[:uploadfile][:tempfile].methods
+#    }
+
+    # new_filename = DateTime.now.strftime('%s') + File.extname(params[:uploadfile][:filename])
+    # save_file = '/tmp/' + new_filename
+    # File.open(save_file, 'wb'){ |f| f.write(params[:file][:upfile].read) }
+    # File.open(save_file, 'wb'){ |f| f.write(params[:uploadfile][:tempfile].read) }
+    # File.open(save_file, 'wb'){ |f| f.print "aaaaaa" }
+    savefile
+  end
+end
+
+get "/upload/:filename" do |filename|
+  UPLOADDIR = "#{FILEROOT}/upload"
+  content_type contenttype[File.extname(filename)]
+  File.read("#{UPLOADDIR}/#{filename}")
 end
 
 #

@@ -43,33 +43,6 @@ var KC = {
 
 var authbuf = [];
 
-//$(document).ready(function(){
-//	$('#rawdata').hide();
-//	setup();
-//	getdata();
-//    })
-
-
-//    data = ["abc", "def", "ghi"];
-//    name = "test";
-//    title = "test";
-//    orig_md5 = "kkkkkk";
-//    datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-//    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
-//    $.ajax({
-//          type: "POST",
-//          async: true,
-//          url: 'http://Gyazz.com' + "/__write",
-//          data: postdata,
-//          success: function(msg){
-//              alert(msg);
-//          },
-//          error: function(msg){
-//              alert("ERROR! " + msg);
-//          }
-//        });
-
-    
 // keypressを定義しておかないとFireFox上で矢印キーを押してときカーソルが動いてしまう
 $(document).keypress(function(event){
 	var kc = event.which;
@@ -410,8 +383,6 @@ function linefunc(n){
 function setup(){ // 初期化
     name_id = MD5_hexhash(utf16to8(name));
     title_id = MD5_hexhash(utf16to8(title));
-    // <div id='listbg0'>
-    //   <span id='list0'>
     for(var i=0;i<1000;i++){
 	var y = $('<div>').attr('id','listbg'+i);
 	var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
@@ -420,6 +391,24 @@ function setup(){ // 初期化
     reloadTimeout = setTimeout(reload,reloadInterval);
     
     $('#querydiv').css('display','none');
+
+    //b = $('body');
+    //b.bind("dragover", function(e) {
+    //	    //alert("Drop It!!");
+    //	    //showMessage();
+    //	    return false;
+    //	});
+    //b.bind("dragend", function(e) {
+    //	    //hideMessage();
+    //	    return false;
+    //	});
+    $('body').bind("drop", function(e) {
+        var files;
+        e.preventDefault(); // デフォルトは「ファイルを開く」
+        files = e.originalEvent.dataTransfer.files;
+        sendfiles(files);
+        return false;
+    });
 }
 
 function display(delay){
@@ -846,4 +835,50 @@ function reload()
     // display(); getdata()で呼ばれるはず
     if(reloadTimeout) clearTimeout(reloadTimeout);
     reloadTimeout = setTimeout(reload,reloadInterval);
+}
+
+function sendfiles(files){
+    for (_i = 0, _len = files.length; _i < _len; _i++) {
+	file = files[_i];
+	sendfile(file, function(filename) {
+		editline = data.length;
+		if(filename.match(/\.(jpg|jpeg|png|gif)$/)){
+		    data[editline] = '[[[' + root + "/upload/" + filename + ']]]';
+		}
+		else {
+		    data[editline] = '[[' + root + "/upload/" + filename + ' ' + file.name + ']]';
+		}
+		writedata();
+		editline = -1;
+		display(true);
+	    });
+    }
+}
+
+function sendfile(file, callback){
+    var fd;
+    fd = new FormData;
+    fd.append('uploadfile', file);
+    $.ajax({
+	    url: root + "/upload",
+		type: "POST",
+		data: fd,
+		processData: false,
+		contentType: false,
+		dataType: 'text',
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+		  // 通常はここでtextStatusやerrorThrownの値を見て処理を切り分けるか、
+		  // 単純に通信に失敗した際の処理を記述します。
+		  alert('upload fail');
+		  // alert(XMLHttpRequest);
+		  // alert(textStatus);
+		  // alert(errorThrown);
+  		  this; // thisは他のコールバック関数同様にAJAX通信時のオプションを示します。
+	        },
+		success: function(data) {
+		//return callback.call(this);
+           	    return callback(data);
+                }
+	});
+    return false;
 }

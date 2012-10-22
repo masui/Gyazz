@@ -25,7 +25,7 @@ class PngTest < Test::Unit::TestCase
     }
     file = `file #{TMPFILE}`
     # assert file.index("PNG image, 2 x 2, 8-bit/color RGB, non-interlaced")
-    assert file =~ %r!PNG.*2 x 2, 8-bit/color RGB, non-interlaced!
+    assert file =~ %r{PNG.*2 x 2, 8-bit/color RGB, non-interlaced}
   end
 
   def test_2

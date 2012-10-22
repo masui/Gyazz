@@ -26,29 +26,6 @@
   var do_auth = <%= @do_auth %>;
   var write_authorized = <%= @write_authorized %>;
 
-//  function wwwww(){
-//    data = ["abc", "def", "ghi"];
-//    name = "test";
-//    title = "test";
-//    orig_md5 = "kkkkkk";
-//    datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-//    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
-//    $.ajax({
-//          type: "POST",
-//          async: true,
-//          url: 'http://Gyazz.com' + "/__write",
-//          data: postdata,
-//          success: function(msg){
-//              alert(msg);
-//          },
-//          error: function(msg){
-//              alert("ERROR! " + msg);
-//          }
-//        });
-//  }
-  // wwwww();
-
-
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();
     setup();
