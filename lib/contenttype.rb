@@ -47,4 +47,17 @@ def contenttype(ext)
   ContentType::TYPE[ext]
 end
 
+if $0 == __FILE__
+  require 'test/unit'
+  $test = true
+end
+
+if defined?($test) && $test
+  class ContentTypeTest < Test::Unit::TestCase
+    def test_1
+      assert_equal contenttype('.exe'), 'application/octet-stream'
+      assert_equal contenttype('.txt'), 'text/plain'
+    end
+  end
+end
 

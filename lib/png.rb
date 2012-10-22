@@ -1,7 +1,7 @@
 # coding: UTF-8
 # http://d.hatena.ne.jp/ku-ma-me/20091003/p1
 #
-# 自力でPNGを作るライブラリ
+# 自力でPNGを作る
 #
 
 require "zlib"
@@ -23,16 +23,50 @@ class PNG
   end
 end
 
-if __FILE__ == $0 then
-  data = [
-          [[255,0,0], [0,255,0]],
-          [[0,0,255], [0,0,0]]
-         ]
-  png = PNG.png(data)
-  File.open("/Volumes/share/Web/tmp/junk.png","w"){ |f|
-    f.print png
-  }
+if $0 == __FILE__
+  require 'test/unit'
+  $test = true
 end
 
+if defined?($test) && $test
+  class PngTest < Test::Unit::TestCase
+    TMPFILE = "/tmp/pngtest#{$$}.png"
+    
+    def setup
+    end
+    
+    def teardown
+      File.delete TMPFILE
+    end
+    
+    def test_1
+      data = [
+              [[255,0,0], [0,255,0]],
+              [[0,0,255], [0,0,0]]
+             ]
+      png = PNG.png(data)
+      File.open(TMPFILE,"w"){ |f|
+        f.print png
+      }
+      file = `file #{TMPFILE}`
+      # assert file.index("PNG image, 2 x 2, 8-bit/color RGB, non-interlaced")
+      assert file =~ %r{PNG.*2 x 2, 8-bit/color RGB, non-interlaced}
+    end
+    
+    def test_2
+      data = [
+              [[255,0,0], [0,255,0]],
+              [[0,0,255], [0,0,0]],
+              [[0,0,255], [0,0,0]]
+             ]
+      png = PNG.png(data)
+      File.open(TMPFILE,"w"){ |f|
+        f.print png
+      }
+      file = `file #{TMPFILE}`
+      assert !file.index("PNG image, 2 x 2, 8-bit/color RGB, non-interlaced")
+    end
+  end
+end
 
 
