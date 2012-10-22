@@ -21,45 +21,11 @@ require 'lib/rss'
 require 'access'
 require 'modify'
 require 'auth'
+require 'contenttype'
 
-contenttype={}
-contenttype['.txt'] = 'text/plain'
-contenttype['.csv'] = 'text/csv'
-contenttype['.tsv'] = 'text/tab-separated-values'
-contenttype['.doc'] = 'application/msword'
-contenttype['.xls'] = 'application/vnd.ms-excel'
-contenttype['.ppt'] = 'application/vnd.ms-powerpoint'
-contenttype['.pdf'] = 'application/pdf'
-contenttype['.xdw'] = 'application/vnd.fujixerox.docuworks'
-contenttype['.html'] = 'text/html'
-contenttype['.html'] = 'text/html'
-contenttype['.css'] = 'text/css'
-contenttype['.js'] = 'text/javascript'
-contenttype['.hdml'] = 'text/x-hdml'
-contenttype['.jpg'] = 'image/jpeg'
-contenttype['.jpeg'] = 'image/jpeg'
-contenttype['.png'] = 'image/png'
-contenttype['.gif'] = 'image/gif'
-contenttype['.bmp'] = 'image/bmp'
-contenttype['.ai'] = 'application/postscript'
-contenttype['.mp3'] = 'audio/mpeg'
-contenttype['.m4a'] = 'audio/mp4'
-contenttype['.wav'] = 'audio/x-wav'
-contenttype['.mid'] = 'audio/midi'
-contenttype['.midi'] = 'audio/midi'
-contenttype['.mmf'] = 'application/x-smaf'
-contenttype['.mpg'] = 'video/mpeg'
-contenttype['.mpeg'] = 'video/mpeg'
-contenttype['.wmv'] = 'video/x-ms-wmv'
-contenttype['.swf'] = 'application/x-shockwave-flash'
-contenttype['.3g2'] = 'video/3gpp2'
-contenttype['.zip'] = 'application/zip'
-contenttype['.lha'] = 'application/x-lzh'
-contenttype['.lzh'] = 'application/x-lzh'
-contenttype['.tar'] = 'application/x-tar'
-contenttype['.tgz'] = 'application/x-tar'
-contenttype['.exe'] = 'application/octet-stream'
-contenttype[''] = ''
+#File.open("/tmp/root","w"){ |f|
+#  f.puts ENV['SERVER_NAME']
+#}
 
 get '/' do
   redirect "#{URLROOT}/Gyazz/目次"
@@ -247,23 +213,13 @@ post '/upload' do
     savepath = "#{UPLOADDIR}/#{savefile}"
     File.open(savepath, 'wb'){ |f| f.write(file_contents) }
 
-
-#    File.open("/tmp/loglog","w"){ |f|
-#      f.puts params[:uploadfile][:tempfile].methods
-#    }
-
-    # new_filename = DateTime.now.strftime('%s') + File.extname(params[:uploadfile][:filename])
-    # save_file = '/tmp/' + new_filename
-    # File.open(save_file, 'wb'){ |f| f.write(params[:file][:upfile].read) }
-    # File.open(save_file, 'wb'){ |f| f.write(params[:uploadfile][:tempfile].read) }
-    # File.open(save_file, 'wb'){ |f| f.print "aaaaaa" }
     savefile
   end
 end
 
 get "/upload/:filename" do |filename|
   UPLOADDIR = "#{FILEROOT}/upload"
-  content_type contenttype[File.extname(filename)]
+  content_type contenttype(File.extname(filename))
   File.read("#{UPLOADDIR}/#{filename}")
 end
 
