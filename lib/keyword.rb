@@ -20,3 +20,27 @@ class String
     a
   end
 end
+
+if $0 == __FILE__
+  require 'test/unit'
+  $test = true
+end
+
+if defined?($test) && $test
+  class KeywordTest < Test::Unit::TestCase
+    def test_1
+      s = "[[abc]] [[def]] などはキーワード"
+      keywords = s.keywords
+      assert_equal keywords.length, 2
+      assert keywords.member?('abc')
+      assert keywords.member?('def')
+    end
+
+    def test_2
+      s = "[[http://example.org/]] [[@masui]] などはキーワードにならない"
+      keywords = s.keywords
+      assert_equal keywords.length, 0
+    end
+  end
+end
+

@@ -25,12 +25,12 @@ require 'auth'
 require 'contenttype'
 
 get '/' do
-  redirect "#{app_root}/Gyazz/目次"
+  redirect "#{app_root}#{DEFAULTPAGE}"
 end
 
-get '/programs/*' do
-  ''
-end
+# get '/programs/*' do
+#   ''
+# end
 
 #
 # API
@@ -100,11 +100,6 @@ post '/__write__' do # 無条件書き込み
   check_auth(name)
   __writedata(postdata)
 end
-
-#get '/__write__' do # 無条件書き込み
-#  postdata = params[:data].split(/\n/)
-#  __writedata(postdata)
-#end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|
   attr = SDBM.open("#{topdir(name)}/attr",0644);
@@ -193,7 +188,7 @@ end
 #  redirect url
 #end
 
-post '/upload' do
+post '/__upload' do
   param = params[:uploadfile]
   if param
     # アップロードされたファイルはTempfileクラスになる

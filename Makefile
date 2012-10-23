@@ -8,4 +8,6 @@ push:
 test:
 	ruby lib/contenttype.rb
 	ruby lib/png.rb
+	ruby lib/keyword.rb
+	ruby lib/pair.rb
 	ruby tests/run_suite.rb

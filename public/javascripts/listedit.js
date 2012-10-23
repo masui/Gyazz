@@ -867,7 +867,7 @@ function sendfile(file, callback){
     fd = new FormData;
     fd.append('uploadfile', file);
     $.ajax({
-	    url: root + "/upload",
+	    url: root + "/__upload",
 		type: "POST",
 		data: fd,
 		processData: false,
