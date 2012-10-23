@@ -432,7 +432,7 @@ get '/:name/*/related' do
   $KCODE = "u"
   "[\n" +
     relatedkeywords.keys.collect { |keyword|
-    "  \"#{keyword.gsub(/"/,'\"')}\""
+    "  \"#{keyword.gsub(/\"/,'\"')}\""
   }.join(",\n") +
     "\n]\n"
 end
