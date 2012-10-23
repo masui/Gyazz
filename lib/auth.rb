@@ -28,16 +28,16 @@ require 'readdata'
     end
   end
 
-#  def password_required?(name)
-#    file = datafile(name,".passwd") || datafile(name,".password")
-#    File.exist?(file) ? file : nil
-#  end
+  def password_required?(name)
+    file = datafile(name,".passwd") || datafile(name,".password")
+    File.exist?(file) ? file : nil
+  end
   
   def password_authorized?(name)
-    file = datafile(name,".passwd") || datafile(name,".password")
-    return true unless File.exist?(file)
-    # file = password_required?(name)
-    # return true unless file
+    # file = datafile(name,".passwd") || datafile(name,".password")
+    # return true unless File.exist?(file)
+    file = password_required?(name)
+    return true unless file
     a = File.read(file).split
     user = a.shift
     pass = a.shift

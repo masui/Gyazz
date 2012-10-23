@@ -296,7 +296,7 @@ get "/:name/__random" do |name|
 end
 
 get "/:name/rss.xml" do |name|
-  check_auth(name)
+  # check_auth(name)
   rss(name)
 end
 

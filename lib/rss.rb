@@ -50,8 +50,8 @@ def rss(name)
       title = @id2title[id]
       i.title = title
       i.link = "http://Gyazz.com/#{name}/#{title}"
-      # i.description = (password_required?(name) ? '' : readdata(name,title,0))
-      i.description = readdata(name,title,0)
+      i.description = (password_required?(name) ? '' : readdata(name,title,0))
+      # i.description = readdata(name,title,0)
       i.date = @modtime[id]
     }
   end
