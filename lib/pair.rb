@@ -8,6 +8,14 @@ class Pair
   end
 
   def clear
+#    @pairs.close
+#    begin
+#      File.unlink "#{@dbmfile}.pag"
+#      File.unlink "#{@dbmfile}.dir"
+#      File.unlink "#{@dbmfile}.db"
+#    rescue
+#    end
+#    @pairs = SDBM.open(@dbmfile,0666)
     @pairs.each { |key,val|
       @pairs.delete(key)
     }
@@ -25,10 +33,6 @@ class Pair
     @pairs.delete(str(s1,s2))
   end
 
-  def size
-    @pairs.keys.length
-  end
-
   def each(keyword = nil)
     if keyword then
       @pairs.each { |key,val|
@@ -40,18 +44,14 @@ class Pair
         end
       }
     else
-      set = {}
       @pairs.each { |key,val|
         a = key.split(DELIM)
-        yield a[0] unless set[a[0]]
-        set[a[0]] = true
-        yield a[1] unless set[a[1]]
-        set[a[1]] = true
+        yield a[0], a[1]
       }
     end
   end
 
-  def collect(keyword = nil)
+  def collect(keyword)
     ret = []
     each(keyword){ |key|
       ret << key
@@ -73,58 +73,27 @@ class Pair
   end
 end
 
-if $0 == __FILE__
-  require 'test/unit'
-  $test = true
+if __FILE__ == $0 then
+  pair = Pair.new('testdbm')
+  pair.clear
+  pair.add('a','b')
+  pair.add('aho','baka')
+  pair.add('baka','aho')
+  pair.add('a','bcd')
+  pair.delete('aho','baka')
+  pair.each { |s1,s2|
+    puts s1
+    puts s2
+    puts "-----"
+  }
+  puts "================"
+  pair.each('a') { |s|
+    puts s
+    puts "-----"
+  }
+  puts pair.collect('a').join('---')
+  puts "================"
+  puts pair.keys.join('-')
+
+  pair.close
 end
-
-if defined?($test) && $test
-  class PairTest < Test::Unit::TestCase
-    def setup
-      @pair = Pair.new("/tmp/testpair")
-    end
-
-    def teardown
-      File.delete "/tmp/testpair.pag"
-      File.delete "/tmp/testpair.dir"
-    end
-
-    def test_1
-      @pair.add('a','b')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.add('a','b')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.add('b','a')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.add('b','c')
-      assert @pair.collect.length == 3
-      assert @pair.size == 2
-      assert @pair.collect('b').length == 2
-      @pair.delete('b','c')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.add('b','c')
-      assert @pair.collect.length == 3
-      assert @pair.size == 2
-      @pair.delete('c','b')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.add('x','y')
-      assert @pair.collect.length == 4
-      assert @pair.size == 2
-    end
-
-    def test_2
-      @pair.add('a','b')
-      assert @pair.collect.length == 2
-      assert @pair.size == 1
-      @pair.clear
-      assert @pair.collect.length == 0
-      assert @pair.size == 0
-    end
-  end
-end
-

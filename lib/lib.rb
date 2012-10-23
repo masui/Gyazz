@@ -7,7 +7,7 @@ def app_root()
 end
 
 def md5(s)
-   Digest::MD5.new.hexdigest(s).to_s
+   Digest::MD5.new.hexdigest(s.to_s).to_s
 end
 
 def topdir(name)
