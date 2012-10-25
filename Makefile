@@ -6,8 +6,9 @@ push:
 	git push pitecan.com:/home/masui/git/Gyazz.git
 	git push git@github.com:masui/Gyazz.git
 test:
-	ruby lib/contenttype.rb
-	ruby lib/png.rb
-	ruby lib/keyword.rb
-	ruby lib/pair.rb
-	ruby tests/run_suite.rb
+	ruby -Ilib lib/lib.rb
+#	ruby lib/contenttype.rb
+#	ruby lib/png.rb
+#	ruby lib/keyword.rb
+#	ruby lib/pair.rb
+#	ruby tests/run_suite.rb

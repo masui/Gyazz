@@ -57,4 +57,3 @@ def page(name,title,write_authorized)
 
   erb :page
 end
-

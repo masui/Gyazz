@@ -21,7 +21,7 @@
   <body>
     <div class='title'>
       <span class='wordtitle'>
-        <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>'><%= @title %></a>
+        <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>'><%= sanitize(@title) %></a>
       </span>
       <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
         <input height='20' name='q' type='text' value='<%= @q %>'>
@@ -29,7 +29,7 @@
       </form>
     </div>
     <p>
-    <textarea id='contents' rows='40' cols='100'><%= @text %></textarea>
+    <textarea id='contents' rows='40' cols='100'><%= sanitize(@text) %></textarea>
     <script type='text/javascript'>
     var textarea = document.getElementById('contents');
     data = textarea.value;

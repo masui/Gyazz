@@ -6,6 +6,10 @@ def app_root()
   "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}#{env['SCRIPT_NAME']}"
 end
 
+def sanitize(s)
+  s.gsub(/&/,'&amp;').gsub(/</,'&lt;')
+end
+
 def md5(s)
    Digest::MD5.new.hexdigest(s.to_s).to_s
 end
@@ -59,14 +63,29 @@ def datafile(name,title,version=0)
   end
 end
 
-if $0 == __FILE__ then
-  puts datafile('増井研','合宿')
-  puts datafile('増井研','合宿',0)
-  puts datafile('増井研','合宿',1)
-  puts datafile('増井研','合宿',2)
-  puts datafile('増井研','合宿',3)
-  puts datafile('増井研','合宿',10)
-  puts datafile('増井研','合宿',20)
-  puts datafile('増井研','合宿',30)
+if $0 == __FILE__
+  require 'test/unit'
+  $test = true
 end
+
+if defined?($test) && $test
+  class LibTest < Test::Unit::TestCase
+    def test_1
+      assert_equal sanitize('<ab>'), '&lt;ab>'
+      assert_equal sanitize('&&'), '&amp;&amp;'
+    end
+  end
+end
+
+
+#if $0 == __FILE__ then
+#  puts datafile('増井研','合宿')
+#  puts datafile('増井研','合宿',0)
+#  puts datafile('増井研','合宿',1)
+#  puts datafile('増井研','合宿',2)
+#  puts datafile('増井研','合宿',3)
+#  puts datafile('増井研','合宿',10)
+#  puts datafile('増井研','合宿',20)
+#  puts datafile('増井研','合宿',30)
+#end
 

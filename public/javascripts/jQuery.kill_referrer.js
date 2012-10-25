@@ -1,4 +1,5 @@
 // jQuery.kill_referrer  Version 1.03
+// http://logic.moo.jp/memo.php/category/3/tag/jQuery/
 
 // Initialization
 jQuery.kill_referrer = {

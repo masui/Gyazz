@@ -13,7 +13,7 @@
   <script language="JavaScript" src='<%= @urlroot %>/javascripts/md5.js'></script>
 
   <script language="JavaScript" src='<%= @urlroot %>/javascripts/jquery.js'></script>
-  <script language="JavaScript" src='<%= @urlroot %>/javascripts/jQuery.kill_referrer.js'></script>
+  <!-- <script language="JavaScript" src='<%= @urlroot %>/javascripts/jQuery.kill_referrer.js'></script> -->
 
   <script language="JavaScript" src='<%= @urlroot %>/javascripts/listedit.js'></script>
 
@@ -39,11 +39,11 @@
 <div class='title'>
   <span class='wordtitle'>
     <% if @write_authorized then %>
-      <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/__edit' id='title'>
-      <%= @title %>
+      <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>/__edit/0' id='title'>
+      <%= sanitize(@title) %>
       </a>
     <% else %>
-      <%= @title %>
+      <%= sanitize(@title) %>
     <% end %>
   </span>
 
