@@ -42,6 +42,8 @@ module ContentType
   TYPE['.tar'] = 'application/x-tar'
   TYPE['.tgz'] = 'application/x-tar'
   TYPE['.exe'] = 'application/octet-stream'
+  TYPE['.eps'] = 'application/postscript',
+  TYPE['.ps'] = 'application/postscript',
   TYPE[''] = ''
 end
 
