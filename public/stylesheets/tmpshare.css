@@ -1,0 +1,30 @@
+body {
+  background-color: #ffeeee;
+  /* font-family: "Lucida Grande", "Lucida", "Lucida Sans", "Tahoma", Verdana, Arial, sans-serif; */
+}
+
+a {
+  text-decoration: none;
+}
+
+.highlight {
+  color:#22aa22;
+  font-weight:bold;
+}
+
+div.title {
+  background-color: #ddd;
+  padding: 5pt;
+  margin: 5pt;
+}
+
+div.title2 {
+  background-color: #fff;
+  padding: 4pt 4pt 4pt 7pt;
+  margin: 0pt;
+}
+
+span.title {
+  font-size:24;
+  font-weight:bold;
+}

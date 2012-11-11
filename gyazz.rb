@@ -24,6 +24,8 @@ require 'modify'
 require 'auth'
 require 'contenttype'
 
+# require 'tmpshare'
+
 get '/' do
   redirect "#{app_root}#{DEFAULTPAGE}"
 end
