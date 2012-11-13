@@ -25,15 +25,19 @@ module ContentType
   TYPE['.bmp'] = 'image/bmp'
   TYPE['.ai'] = 'application/postscript'
   TYPE['.mp3'] = 'audio/mpeg'
-  TYPE['.m4a'] = 'audio/mp4'
-  TYPE['.mp4'] = 'audio/mp4'
   TYPE['.wav'] = 'audio/x-wav'
+  TYPE['.m4a'] = 'video/mp4'
+  TYPE['.mp4'] = 'video/mp4'
   TYPE['.mid'] = 'audio/midi'
   TYPE['.midi'] = 'audio/midi'
   TYPE['.mmf'] = 'application/x-smaf'
   TYPE['.mpg'] = 'video/mpeg'
   TYPE['.mpeg'] = 'video/mpeg'
+  TYPE['.mov'] = 'video/quicktime'
   TYPE['.wmv'] = 'video/x-ms-wmv'
+  TYPE['.flv'] = 'video/flv'
+  TYPE['.wmv'] = 'video/x-ms-wmv'
+  TYPE['.avi'] = 'video/x-msvideo'
   TYPE['.swf'] = 'application/x-shockwave-flash'
   TYPE['.3g2'] = 'video/3gpp2'
   TYPE['.zip'] = 'application/zip'
@@ -42,13 +46,14 @@ module ContentType
   TYPE['.tar'] = 'application/x-tar'
   TYPE['.tgz'] = 'application/x-tar'
   TYPE['.exe'] = 'application/octet-stream'
-  TYPE['.eps'] = 'application/postscript',
-  TYPE['.ps'] = 'application/postscript',
+  TYPE['.eps'] = 'application/postscript'
+  TYPE['.ps'] = 'application/postscript'
+  TYPE['.'] = ''
   TYPE[''] = ''
 end
 
 def contenttype(ext)
-  ContentType::TYPE[ext]
+  ContentType::TYPE[ext.downcase]
 end
 
 if $0 == __FILE__
