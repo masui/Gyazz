@@ -84,7 +84,7 @@ get "/__search/:name" do |name|
     end
   end
 
-  redirect q == '' ? "#{app_root}/#{name}" : "#{app_root}/#{name}/#{q}/search"
+  redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
 end
 
 # データ書込み 
