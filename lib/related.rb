@@ -83,6 +83,7 @@ def related_html(name,title)
     # @target_url = "#{app_root}/#{name}/#{t}"
     @target_url = "#{app_root}/#{name}/#{enc(t)}"
     @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
+    @target_title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
     if repimage[t] then
       @imageurl = "http://gyazo.com/#{repimage[t]}.png"
       erb :icon

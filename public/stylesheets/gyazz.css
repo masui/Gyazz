@@ -170,6 +170,10 @@ a.links {
   font-weight: bold;
 }
 
+a:visited {
+  color:blue;
+}
+
 td.td2 {
   background-color: #ffffff;
 }

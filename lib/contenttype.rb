@@ -48,6 +48,7 @@ module ContentType
   TYPE['.exe'] = 'application/octet-stream'
   TYPE['.eps'] = 'application/postscript'
   TYPE['.ps'] = 'application/postscript'
+  TYPE['.graffle'] = 'application/x-omnigraffle'
   TYPE['.'] = ''
   TYPE[''] = ''
 end
