@@ -26,6 +26,10 @@ require 'contenttype'
 
 # require 'tmpshare'
 
+configure do
+  set :protection, :except => :frame_options
+end
+
 get '/' do
   redirect "#{app_root}#{DEFAULTPAGE}"
 end
