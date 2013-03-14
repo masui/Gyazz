@@ -890,7 +890,7 @@ function sendfiles(files){
 	file = files[_i];
 	sendfile(file, function(filename) {
 		editline = data.length;
-		if(filename.match(/\.(jpg|jpeg|png|gif)$/)){
+		if(filename.match(/\.(jpg|jpeg|png|gif)$/i)){
 		    data[editline] = '[[[' + root + "/upload/" + filename + ']]]';
 		}
 		else {
