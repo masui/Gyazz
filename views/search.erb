@@ -19,7 +19,8 @@
     <div style="float:left;">
       <% @matchids.each { |id| %>
         <% title = @id2title[id] %>
-        <% shorttitle = title.sub(/\[\[http.*\s+(.*)\]\]/){ $1 } %>
+	<% disptitle = @disptitle[id] %>
+        <% shorttitle = disptitle.sub(/\[\[http.*\s+(.*)\]\]/){ $1 } %>
 	<% if @sortbydate then %>
 	<%   @createtime[id] =~ /(....)(..)(..)(..)(..)(..)/ %>
 	<%   datestr = "#{$1}/#{$2}/#{$3} #{$4}:#{$5}:#{$6}" %>

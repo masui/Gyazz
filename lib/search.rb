@@ -132,6 +132,15 @@ def search(name,query='',namesort=false)
   @urlroot = app_root
   @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
+  @disptitle = {}
+  @id2title.each { |id,title|
+    @disptitle[id] = title
+    if title =~ /^[0-9]{14}$/ then
+      file = "#{topdir(name)}/#{id}"
+      @disptitle[id] = title + " " + File.read(file).split(/\n/)[0]
+    end
+  }
+
   erb :search
 
 end

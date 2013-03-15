@@ -82,6 +82,10 @@ def related_html(name,title)
   related(name,title).collect{ |t|
     # @target_url = "#{app_root}/#{name}/#{t}"
     @target_url = "#{app_root}/#{name}/#{enc(t)}"
+    if t =~ /^[0-9]{14}/ then
+      file = "#{topdir(name)}/#{md5(t)}"
+      t = File.read(file).split(/\n/)[0]
+    end
     @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
     @target_title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
     if repimage[t] then
