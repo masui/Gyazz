@@ -49,6 +49,7 @@ module ContentType
   TYPE['.eps'] = 'application/postscript'
   TYPE['.ps'] = 'application/postscript'
   TYPE['.graffle'] = 'application/x-omnigraffle'
+  TYPE['.apk'] = 'application/vnd.android.package-archive'
   TYPE['.'] = ''
   TYPE[''] = ''
 end

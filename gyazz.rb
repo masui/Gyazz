@@ -54,40 +54,14 @@ get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
   #protected!(name)
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
-
-  authorized_by_cookie = true
-  if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) then
-      authorized_by_cookie = false
-    end
-  end
-  if !password_authorized?(name) then
-    if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="#{name}")
-      throw(:halt, [401, "Not authorized.\n"])
-    end
-  end
-
+  check_auth(name)
   search(name,q)
 end
 
 get "/__search/:name" do |name|
   # protected!(name)
   q = params[:q]
-
-  authorized_by_cookie = true
-  if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) then
-      authorized_by_cookie = false
-    end
-  end
-  if !password_authorized?(name) then
-    if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="#{name}")
-      throw(:halt, [401, "Not authorized.\n"])
-    end
-  end
-
+  check_auth(name)
   redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
 end
 
@@ -101,6 +75,13 @@ post '/__write' do
 end
 
 post '/__write__' do # 無条件書き込み
+  postdata = params[:data].split(/\n/)
+  name = postdata[0]
+  check_auth(name)
+  __writedata(postdata)
+end
+
+get '/__write__' do # 無条件書き込み
   postdata = params[:data].split(/\n/)
   name = postdata[0]
   check_auth(name)
@@ -235,12 +216,20 @@ end
 #
 
 def check_auth(name)
-  authorized_by_cookie = true
+  authorized_by_cookie = false
   if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) then
-      authorized_by_cookie = false
+    if cookie_authorized?(name,ALL_AUTH) then
+      authorized_by_cookie = true
     end
   end
+  # 前はこうなっていた。変だと思うが何故放置されてたのか...? (2013/03/16 11:40:44)
+  #authorized_by_cookie = true
+  #if auth_page_exist?(name,ALL_AUTH) then
+  #  if !cookie_authorized?(name,ALL_AUTH) then
+  #    authorized_by_cookie = false
+  #  end
+  #end
+
   if !password_authorized?(name) then
     if !authorized_by_cookie then
       response['WWW-Authenticate'] = %(Basic realm="#{name}")
@@ -297,6 +286,7 @@ get "/:name/__random" do |name|
   t = titles(name)
   len = t.length
   ignore = len / 2 # 新しい方からignore個は選ばない
+  ignore = 0
   title = t[ignore + rand(len-ignore)]
   page(name,title)
 end
@@ -338,6 +328,8 @@ get '/:name/*/text' do
     if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
       data = randomize(data)
     end
+  else
+    check_auth(name)
   end
   # response["Access-Control-Allow-Origin"] = "*"
   data
@@ -363,6 +355,21 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   end
   data
 end
+
+#
+# GETでデータ書込みできるようにしてみる
+#
+#get '/:name/*/__write__/:data' do
+#  name = params[:name]
+##  protected!(name)
+#  title = params[:splat].join('/')
+#  data = params[:data]
+#  File.open("/tmp/log","w"){ |f|
+#    f.puts name
+#    f.puts title
+#    f.puts data
+#  }
+#end
 
 #get "/:name/__related" do |name|
 #  protected!(name)

@@ -5,7 +5,7 @@ require 'lib'
 require 'related'
 require 'auth'
 
-def page(name,title,write_authorized)
+def page(name,title,write_authorized=false)
   allaccess = SDBM.open("#{FILEROOT}/access",0644);
   s = "#{name}(#{md5(name)})/#{title}(#{md5(title)})"
   allaccess[s] = (allaccess[s].to_i + 1).to_s

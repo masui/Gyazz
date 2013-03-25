@@ -137,7 +137,9 @@ def search(name,query='',namesort=false)
     @disptitle[id] = title
     if title =~ /^[0-9]{14}$/ then
       file = "#{topdir(name)}/#{id}"
-      @disptitle[id] = title + " " + File.read(file).split(/\n/)[0]
+      if File.exist?(file) then
+        @disptitle[id] = title + " " + File.read(file).split(/\n/)[0]
+      end
     end
   }
 
