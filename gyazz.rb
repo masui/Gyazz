@@ -8,7 +8,7 @@ require 'date'
 
 enable :sessions   # Cookieを使うのに要るらしい
 
-$: << 'lib'
+$:.unshift File.expand_path 'lib', File.dirname(__FILE__)
 require 'lib'
 require 'config'
 require 'search'
@@ -18,7 +18,7 @@ require 'edit'
 require 'page'
 require 'attr'
 require 'history'
-require 'lib/rss'
+require 'rss'
 require 'access'
 require 'modify'
 require 'auth'

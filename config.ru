@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
   
-require 'gyazz.rb'
+require File.expand_path 'gyazz', File.dirname(__FILE__)
 
 run Sinatra::Application
