@@ -7,7 +7,11 @@
 
 ## インストール
 
-* Sinatraをインストール
+* 必要なrubygemをインストール
+
+    % gem install bundler
+    % bundle install
+
 * データ格納ディレクトリをつくる
 * 環境にあわせて lib/config_template.rb から lib/config.rb をつくる
 

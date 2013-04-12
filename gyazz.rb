@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # -*- ruby -*-
 
-require 'rubygems'
-require 'sinatra'
 require 'json'
 require 'date'
 
