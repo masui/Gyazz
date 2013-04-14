@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
-require 'gyazz'
+require 'sinatra'
+require File.expand_path '../gyazz', File.dirname(__FILE__)
 require 'test/unit'
 require 'rack/test'
 

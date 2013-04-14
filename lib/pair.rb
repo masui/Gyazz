@@ -32,7 +32,7 @@ class Pair
   def each(keyword = nil)
     if keyword then
       @pairs.each { |key,val|
-        a = key.split(DELIM)
+        a = key.split(DELIM) rescue next
         if a[0] == keyword then
           yield a[1]
         elsif a[1] == keyword then
@@ -41,7 +41,7 @@ class Pair
       }
     else
       @pairs.each { |key,val|
-        a = key.split(DELIM)
+        a = key.split(DELIM) rescue next
         yield a[0], a[1]
       }
     end
