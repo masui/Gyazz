@@ -33,7 +33,7 @@ function parseloc(s){ // 'E130.43.19.70N31.47.47.34Z2' => {130.7221, 31.79648, 2
     o.zoom = 1;
     o.lat = 0.0;
     o.lng = 0.0;
-    while(a = s.match(/^([EWNSZ])([0-9\.]+)(.*)$/)){
+    while(a = s.match(/^([EWNSZ])([1-9][0-9\.]*)(.*)$/)){
 	var v;
 	if(a[2].match(/\..*\./)){
 	    v = loc2val(a[2]);
