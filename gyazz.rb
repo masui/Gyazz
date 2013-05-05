@@ -351,6 +351,16 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
       data = randomize(data)
     end
   end
+  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
+  if !data or data.strip.empty? or data.strip == "(empty)"
+    similar_titles = similar_page_titles(name, title)
+    unless similar_titles.empty?
+      suggest_title = similar_titles.sort{|a,b|
+        readdata(name, b).size <=> readdata(name, a).size  # 一番大きいページをサジェスト
+      }.first
+      data = "\n-> [[#{suggest_title}]]" if suggest_title
+    end
+  end
   data
 end
 
