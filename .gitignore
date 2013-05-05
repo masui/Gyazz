@@ -3,3 +3,6 @@
 data
 lib/config.rb
 .ruby-version
+.SyncID
+.SyncIgnore
+
