@@ -12,7 +12,7 @@ class String
           kw !~ /pdf / && 
           kw !~ /^@/ && 
           kw !~ /::/ && 
-          kw !~ /^([EWNSZ][0-9\.]+)+$/ &&
+          kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
           kw !~ /^[a-fA-F0-9]{32}/ then
         a << kw
       end
@@ -24,7 +24,7 @@ class String
           kw !~ /pdf / && 
           kw !~ /^@/ && 
           kw !~ /::/ && 
-          kw !~ /^([EWNSZ][0-9\.]+)+$/ &&
+          kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
           kw !~ /^[a-fA-F0-9]{32}/ then
         a << kw
       end

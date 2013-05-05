@@ -677,7 +677,7 @@ function tag(s,line){
 	else if(t = inner.match(/^([a-fA-F0-9]{32})\.(\w+) (.*)$/)){ // (MD5).ext をpitecan.com上のデータにリンク (2010 5/1)
 	    matched.push('<a href="http://masui.sfc.keio.ac.jp/' + t[1] + '.' + t[2] + '" class="link">' + t[3] + '</a>');
 	}
-	else if(t = inner.match(/^([EWNSZ])([0-9\.]+)(.*)$/)){
+	else if(t = inner.match(/^([EWNSZ])([1-9][0-9\.]*)(.*)$/)){
 	    var o = parseloc(inner);
 	    var s = "\
               <div id='map' style='width:300px;height:300px'></div>\
@@ -706,7 +706,7 @@ function tag(s,line){
                      o.lat = latlng.lat();\
                      o.zoom = map.getZoom();\
                      for(var i=0;i<data.length;i++){\
-                       data[i] = data[i].replace(/\\[\\[([EWNSZ][0-9\.]+)+\\]\\]/,'[['+locstr(o)+']]');\
+                       data[i] = data[i].replace(/\\[\\[([EWNSZ][1-9][0-9\.]*)+\\]\\]/,'[['+locstr(o)+']]');\
                      }\
                      writedata();\
                   });\
