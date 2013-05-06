@@ -5,6 +5,7 @@ require 'lib'
 require 'pair'
 require 'sdbm'
 require 'history'
+require 'asearch'
 
 def titles(name)
   top = topdir(name)
@@ -190,4 +191,42 @@ def list(name)
     "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\"]"
  }.join(",\n") +
     "\n]\n"
+end
+
+## 似たページ名を探す
+## "macruby", "Mac Ruby", "mac ruby" -> MacRuby
+## "IPWebcam", "ip webcam", "IP WebCam" -> IP Webcam
+def similar_page_titles(wiki_name, title)
+  top = topdir wiki_name
+  Dir.mkdir top unless File.exist? top
+
+  pair = Pair.new "#{top}/pair"
+  titles = pair.keys
+  pair.close
+
+  id2title = {}
+  titles.each do |i|
+    id2title[md5(i)] = i
+  end
+
+  ids = Dir.open(top).find_all { |file|
+    file =~ /^[\da-f]{32}$/ && id2title[file].to_s != ''
+  }
+
+  pattern = Asearch.new title.strip
+  similar_titles = []
+  ids.each do |id|
+    s = id2title[id].dup
+    ss = s.dup
+    title_ = ""
+    while s.sub!(/^(.)/,'') do
+      c = $1
+      u = c.unpack("U")[0]
+      title_ += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
+    end
+    if title_ != title and pattern.match(title_, 1)
+      similar_titles << title_.gsub(/"/,'\"')
+    end
+  end
+  similar_titles
 end
