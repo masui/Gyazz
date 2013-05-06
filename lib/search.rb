@@ -213,9 +213,7 @@ def similar_page_titles(wiki_name, title)
     file =~ /^[\da-f]{32}$/ && id2title[file].to_s != ''
   }
 
-  pattern = Asearch.new title.strip
-  similar_titles = []
-  ids.each do |id|
+  titles = ids.map do |id|
     s = id2title[id].dup
     ss = s.dup
     title_ = ""
@@ -224,9 +222,18 @@ def similar_page_titles(wiki_name, title)
       u = c.unpack("U")[0]
       title_ += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
     end
-    if title_ != title and pattern.match(title_, 1)
-      similar_titles << title_.gsub(/"/,'\"')
+    title_
+  end
+
+  pattern = Asearch.new title.strip
+  similar_titles = []
+  1.upto(2) do |level|
+    titles.each do |i|
+      if i != title and pattern.match(i, level)
+        similar_titles << i.gsub(/"/,'\"')
+      end
     end
+    break unless similar_titles.empty?
   end
   similar_titles
 end
