@@ -657,6 +657,19 @@ function tag(s,line){
 	else if(t = inner.match(/^@([a-zA-Z0-9_]+)$/)){ // @名前 を twitterへのリンクにする
 	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">@' + t[1] + '</a>');
 	}
+	else if(t = inner.match(/^@([a-zA-Z0-9_]+) x([0-9]+)$/)){ // @名前 x個数 でリンク付きtwitter iconを出力する
+	    var count = t[2];
+	    if(count != '0') {
+	        var icons = "";
+	        for(var i=0; i < count; i++){
+	            icons += '<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank"><img src="http://twiticon.herokuapp.com/' + t[1] + '"></a>';
+	        }
+	        matched.push(icons);
+	    }
+	    else {
+	        matched.push('<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">@' + t[1] + '</a>');
+	    }
+	}
 	else if(t = inner.match(/^(.+)::$/)){ //  Wikiname:: で他Wikiに飛ぶ (2011 4/17)
 	    matched.push('<a href="' + root + '/' + t[1] + '" class="link" target="_blank" title="' + t[1] + '">' + t[1] + '</a>');
 	}
