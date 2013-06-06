@@ -333,6 +333,23 @@ get '/:name/*/text' do
   data
 end
 
+
+## ページの代表画像があればリダイレクトする
+get '/:name/*/icon' do
+  name = params[:name]
+  title = params[:splat].join('/')
+  repimage = SDBM.open("#{topdir(name)}/repimage")
+  img = repimage[title]
+  halt 404, "image not found" if img.to_s.empty?
+  redirect case img
+           when /^https?:\/\/.+\.(png|jpe?g|gif)$/i
+             img
+           else
+             "http://gyazo.com/#{img}.png"
+           end
+end
+
+
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
 #  protected!(name)
