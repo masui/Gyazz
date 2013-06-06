@@ -647,14 +647,36 @@ function tag(s,line){
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
     else if(t = inner.match(/^(.+)\.(png|icon)$/i)){ // ページ名.icon or ページ名.pngでアイコン表示
-        var link_to = t[1];
-        matched.push('<a href="'+root+'/'+name+'/'+link_to+'" class="link" target="_blank"><img src="'+root+'/'+name+'/'+link_to+'/icon" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
+        var link_to = null;
+        var img_url = null;
+        if(t[1].match(/^@[\da-z_]+$/i)){
+            var screen_name = t[1].replace(/^@/,"");
+            link_to = "http://twitter.com/"+screen_name;
+            img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
+        }
+        else{
+            link_to = root+"/"+name+"/"+t[1];
+            img_url = link_to+"/icon";
+        }
+        matched.push('<a href="'+link_to+'" class="link" target="_blank"><img src="'+img_url+'" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
     }
-    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)x([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
-        var link_to = t[1].match(/^https?:\/\/.+$/) ? t[1]+'.'+t[2] : root+'/'+'/'+name+'/'+t[1];
+    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
+        var link_to = null;
+        var img_url = null;
+        if(t[1].match(/^@[\da-z_]+$/i)){
+            var screen_name = t[1].replace(/^@/,"");
+            link_to = "http://twitter.com/"+screen_name;
+            img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
+        }
+        else if(t[1].match(/^https?:\/\/.+$/)){
+            img_url = link_to = t[1]+"."+t[2];
+        }
+        else{
+            link_to = root+"/"+name+"/"+t[1];
+            img_url = link_to+"/icon";
+        }
         var count = Number(t[3]);
         var icons = '<a href="'+link_to+'" class="link" target="_blank">';
-        var img_url = t[1].match(/^https?:\/\/.+$/) ? link_to : link_to+'/icon';
         for(var i = 0; i < count; i++){
             icons += '<img src="'+img_url+'" class="icon" height="24" border="0" alt="'+t[1]+'" title="'+t[1]+'" />';
         }
