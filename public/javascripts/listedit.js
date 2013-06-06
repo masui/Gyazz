@@ -662,7 +662,7 @@ function tag(s,line){
 	    if(count != '0') {
 	        var icons = "";
 	        for(var i=0; i < count; i++){
-	            icons += '<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank"><img src="http://twiticon.herokuapp.com/' + t[1] + '"></a>';
+	            icons += '<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank"><img src="http://twiticon.herokuapp.com/' + t[1] + '/mini"></a>';
 	        }
 	        matched.push(icons);
 	    }
