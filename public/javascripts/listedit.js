@@ -625,10 +625,10 @@ function tag(s,line){
 	//if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
 	//    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
 	//}
-	if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)/i)){ // [[[http:... ....jpg]]]
+	if(t = inner.match(/^(https?:\/\/[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
 	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
 	}
-	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)/i)){ // [[[http...jpg]]]
+	else if(t = inner.match(/^(https?:\/\/.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http...jpg]]]
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none" height=80></a>');
 	}
 	else { // [[[abc]]]
@@ -646,39 +646,36 @@ function tag(s,line){
 	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[http://example.com/abc.jpg]
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
+    else if(t = inner.match(/^(.+)\.(png|icon)$/i)){ // ページ名.icon or ページ名.pngでアイコン表示
+        var link_to = t[1];
+        matched.push('<a href="'+root+'/'+name+'/'+link_to+'" class="link" target="_blank"><img src="'+root+'/'+name+'/'+link_to+'/icon" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
+    }
+    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)x([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
+        var link_to = t[1].match(/^https?:\/\/.+$/) ? t[1]+'.'+t[2] : root+'/'+'/'+name+'/'+t[1];
+        var count = Number(t[3]);
+        var icons = '<a href="'+link_to+'" class="link" target="_blank">';
+        var img_url = t[1].match(/^https?:\/\/.+$/) ? link_to : link_to+'/icon';
+        for(var i = 0; i < count; i++){
+            icons += '<img src="'+img_url+'" class="icon" height="24" border="0" alt="'+t[1]+'" title="'+t[1]+'" />';
+        }
+        if(t[4].length > 0){
+            var odd = Number("0"+t[4]);
+            icons += '<img src="'+img_url+'" class="icon" height="24" width="'+24*odd+'" border="0" alt="'+link_to+'" title="'+link_to+'" />';
+        }
+        icons += '</a>';
+        matched.push(icons);
+    }
 	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
 	    target = t[1].replace(/"/g,'%22');
 	    matched.push('<a href="' + target + '" target="_blank">' + t[3] + '</a>');
 	}
-        else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
+    else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
 	    target = t[1].replace(/"/g,'%22');
 	    matched.push('<a href="' + target + '" class="link" target="_blank">' + t[1] + '</a>');
 	}
 	else if(t = inner.match(/^@([a-zA-Z0-9_]+)$/)){ // @名前 を twitterへのリンクにする
 	    matched.push('<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">@' + t[1] + '</a>');
 	}
-	else if(t = inner.match(/^@([a-zA-Z0-9_]+) x([1-9][0-9]*)$/)){ // @名前 x個数 でリンク付きtwitter iconを出力する
-	    var count = Number(t[2]);
-	    if(count > 0) {
-	        var icons = '<a href="http://twitter.com/' + t[1] + '" class="link" target="_blank">';
-	        for(var i=0; i < count; i++){
-	            icons += '<img src="http://twiticon.herokuapp.com/' + t[1] + '/mini" class="icon" height="24" border="0" />';
-	        }
-            icons += '</a>';
-	        matched.push(icons);
-	    }
-	}
-    else if(t = inner.match(/^([^\s]+) x([1-9][0-9]*)$/)){ // ページ名 x個数でページの代表画像を大量に表示する
-        var count = Number(t[2]);
-        if(count > 0){
-            var icons = '<a href="'+root+'/'+name+'/'+t[1]+'" class="link" target="_blank">';
-            for(var i = 0; i < count; i++ ){
-                icons += '<img src="'+root+'/'+name+'/'+t[1]+'/icon" class="icon" height="24" border="0" alt="'+t[1]+'" title="'+t[1]+'" />';
-            }
-            icons += '</a>';
-            matched.push(icons);
-        }
-    }
 	else if(t = inner.match(/^(.+)::$/)){ //  Wikiname:: で他Wikiに飛ぶ (2011 4/17)
 	    matched.push('<a href="' + root + '/' + t[1] + '" class="link" target="_blank" title="' + t[1] + '">' + t[1] + '</a>');
 	}
