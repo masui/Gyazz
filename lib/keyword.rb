@@ -14,6 +14,7 @@ class String
           kw !~ /::/ && 
           kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
           kw !~ /^[a-fA-F0-9]{32}/ then
+        kw.sub!(/\.(png|icon|gif|jpe?g)((\*|x|×)[\d\.]*)?$/i,'')
         a << kw
       end
     end
@@ -26,6 +27,7 @@ class String
           kw !~ /::/ && 
           kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
           kw !~ /^[a-fA-F0-9]{32}/ then
+        kw.sub!(/\.(png|icon|gif|jpe?g)((\*|x|×)[\d\.]*)?$/i,'')
         a << kw
       end
     end
@@ -59,6 +61,16 @@ if defined?($test) && $test
       keywords = s.keywords
       assert_equal keywords.length, 0
     end
+
+    def test_4
+      s = "[[abc.iconx4]] [[def.icon*4]] [[増井.icon×3]] などはキーワード?"
+      keywords = s.keywords
+      assert_equal keywords.length, 3
+      assert keywords.member?('abc')
+      assert keywords.member?('def')
+      assert keywords.member?('増井')
+    end
+
   end
 end
 

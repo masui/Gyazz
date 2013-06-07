@@ -660,7 +660,7 @@ function tag(s,line){
         }
         matched.push('<a href="'+link_to+'" class="link" target="_blank"><img src="'+img_url+'" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
     }
-    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
+    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[\*x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
         var link_to = null;
         var img_url = null;
         if(t[1].match(/^@[\da-z_]+$/i)){
