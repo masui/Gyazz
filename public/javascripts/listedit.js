@@ -718,9 +718,11 @@ function tag(s,line){
 	else if(t = inner.match(/^([a-fA-F0-9]{32})\.(\w+) (.*)$/)){ // (MD5).ext をpitecan.com上のデータにリンク (2010 5/1)
 	    matched.push('<a href="http://masui.sfc.keio.ac.jp/' + t[1] + '.' + t[2] + '" class="link">' + t[3] + '</a>');
 	}
-	else if(t = inner.match(/^([EWNSZ])([1-9][0-9\.]*)(.*)$/)){
-	    var o = parseloc(inner);
-	    var s = "\
+    // googlemapの表示
+    // [[E135.0W35.0]] や [[W35.0.0E135.0.0Z12]] のような記法で地図を表示
+    else if(inner.match(/^([EW]\d+\.\d+[\d\.]*[NS]\d+\.\d+[\d\.]*|[NS]\d+\.\d+[\d\.]+[EW]\d+\.\d+[\d\.]*)(Z\d+)?$/)){
+      var o = parseloc(inner);
+      var s = "\
               <div id='map' style='width:300px;height:300px'></div>\
               <div id='line1' style='position:absolute;width:300px;height:4px;background-color:rgba(200,200,200,0.3);'></div>\
               <div id='line2' style='position:absolute;width:4px;height:300px;background-color:rgba(200,200,200,0.3);'></div>\
@@ -747,7 +749,7 @@ function tag(s,line){
                      o.lat = latlng.lat();\
                      o.zoom = map.getZoom();\
                      for(var i=0;i<data.length;i++){\
-                       data[i] = data[i].replace(/\\[\\[([EWNSZ][1-9][0-9\.]*)+\\]\\]/,'[['+locstr(o)+']]');\
+                       data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
                      }\
                      writedata();\
                   });\
