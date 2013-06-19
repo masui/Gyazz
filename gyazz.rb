@@ -4,8 +4,6 @@
 require 'json'
 require 'date'
 
-enable :sessions   # Cookieを使うのに要るらしい
-
 $:.unshift File.expand_path 'lib', File.dirname(__FILE__)
 require 'lib'
 require 'config'
@@ -23,6 +21,15 @@ require 'auth'
 require 'contenttype'
 
 # require 'tmpshare'
+
+## sessionを使う
+use Rack::Session::Cookie, {
+  :key => SESSION_KEY,
+  :domain => SESSION_DOMAIN,
+  :path => '/',
+  :expire_after => 60*60*24*14, # 2 weeks
+  :secret => SESSION_SECRET
+}
 
 configure do
   set :protection, :except => :frame_options
