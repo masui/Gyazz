@@ -532,10 +532,15 @@ function display(delay){
     
     input.css('display',(editline == -1 ? 'none' : 'block'));
 
+    for(i=0;i<data.length;i++){
+	posy[i] = $('#list'+i).position().top;
+	//posy[i] = $("#e" + i + "_0").offset().top;
+    }
+
     /*    
     for(i=0;i<data.length;i++){
 	//posy[i] = $('#list'+i).position().top;
-	posy[i] = $("#e" + i + "_0").offset().top;
+	//posy[i] = $("#e" + i + "_0").offset().top;
     }
     for(i=0;i<data.length;i++){
     	for(var j=0;j<=spaces[i];i++){
@@ -604,11 +609,29 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 	}
 	maxwidth[i] = max;
     }
+
+    /*
+    var colpos = pos[line][0];
+    for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
+	for(var line=begin;line<begin+lines;line++){
+	    var id = "#e" + line + "_" + (i + indent(line));
+	    //$(id).css('position','absolute').css('top',posy[line]);
+	    //   $(id).css('position','absolute').css('left',colpos).css('top',posy[line]);
+	    $(id).css('position','absolute').css('line-height','').css('left',colpos).css('top',posy[line]);
+
+	    //$("#listbg"+line).css('line-height','');
+	}
+	colpos += maxwidth[i];
+    }
+    */
     var colpos = pos[begin][0];
     for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
 	for(var line=begin;line<begin+lines;line++){
 	    var id = "#e" + line + "_" + (i + indent(line));
-	    $(id).css('position','absolute').css('line-height','').css('left',colpos); // .css('top',posy[line]);
+	    //$(id).css('position','absolute').css('top',posy[line]);
+	    $(id).css('position','absolute').css('left',colpos);
+	    //$(id).css('position','absolute').css('line-height','').css('left',colpos).css('top',posy[line]);
+
 	    //$("#listbg"+line).css('line-height','');
 	}
 	colpos += maxwidth[i];

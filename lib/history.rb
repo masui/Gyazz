@@ -68,6 +68,7 @@ def history_png(name,title)
     hv = v[j].to_i
     bgcolor = hotcolors[j] if hv > 0
   }
+  #####bgcolor = [200,200,200]
   (0...MAXH).each { |y|
     data[y] = []
     (0...MAX).each { |x|
