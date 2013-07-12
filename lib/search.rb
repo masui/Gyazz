@@ -121,7 +121,11 @@ def search(name,query='',namesort=false)
     if repimage[title] then
       @target_url = "#{app_root}/#{name}/#{title}"
       @target_title = title
-      @imageurl = "http://gyazo.com/#{repimage[title]}.png"
+      if repimage[t] =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
+        @imageurl = repimage[t]
+      else
+        @imageurl = "http://gyazo.com/#{repimage[t]}.png"
+      end
       erb :icon
     else
       ''

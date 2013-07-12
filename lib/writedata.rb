@@ -123,6 +123,8 @@ def writedata(data)
   repimage = SDBM.open("#{topdir(name)}/repimage")
   if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
     repimage[title] = $1
+  elsif data[0] =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
+    repimage[title] = "#{$1}.#{$2}"
   else
     repimage.delete(title)
   end
@@ -194,6 +196,8 @@ def __writedata(data) # 無条件書き込み
   repimage = SDBM.open("#{topdir(name)}/repimage")
   if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
     repimage[title] = $1
+  elsif data[0] =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
+    repimage[title] = "#{$1}.#{$2}"
   else
     repimage.delete(title)
   end
