@@ -48,7 +48,7 @@ get '/:name/*/history' do
   history_json(name,title)
 end
 
-get '/:name/*/search' do          # /増井研/合宿/search 
+get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
   #protected!(name)
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
@@ -63,7 +63,7 @@ get "/__search/:name" do |name|
   redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
 end
 
-# データ書込み 
+# データ書込み
 
 post '/__write' do
   postdata = params[:data].split(/\n/)
@@ -95,7 +95,7 @@ end
 #
 # 認証の考え方
 #
-# 読み書き認証だけ設定されている場合 
+# 読み書き認証だけ設定されている場合
 #   読出しはOK
 #   書込みだけNG
 #   HPなどの場合
@@ -258,6 +258,7 @@ get "/:name/__list" do |name|
 end
 
 get '/:name/*/access.png' do
+  content_type 'image/png'
   name = params[:name]
   title = params[:splat].join('/')
   # history(name,title)
@@ -295,7 +296,7 @@ get "/:name/rss.xml" do |name|
 end
 
 #
-# JSON 
+# JSON
 #
 get '/:name/*/json' do
   name = params[:name]
