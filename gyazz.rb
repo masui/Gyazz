@@ -507,8 +507,19 @@ end
 
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
-#  protected!(name)
+  # protected!(name)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+#  request.fullpath =~ %r{/([^\/]+)/(.+)$}
+#  name = $1
+#  title = $2
+
+#get %r{/([^\/]+)/([\w\?]+)$} do
+#  name = params[:captures][0]
+#  title = params[:captures][1]
+
+#  File.open("/tmp/captures","w"){ |f|
+#    f.puts params[:captures][2]
+#  }
 
   authorized_by_cookie = false
   write_authorized = true
