@@ -215,6 +215,7 @@ $(document).keydown(function(event){
 	var kc = event.which;
 	var sk = event.shiftKey;
 	var ck = event.ctrlKey;
+	var cd = event.metaKey && !ck;
 	var i;
 	var m,m2;
 	var dst;
@@ -345,7 +346,7 @@ $(document).keydown(function(event){
 		getdata();
 	    }
 	}
-	else if(kc >= 0x30 && kc <= 0x7e && editline < 0){
+	else if(kc >= 0x30 && kc <= 0x7e && editline < 0 && !cd && !ck){
 	    $('#querydiv').css('visibility','visible').css('display','block');
 	    $('#query').focus();
 	}
