@@ -21,6 +21,7 @@ require 'access'
 require 'modify'
 require 'auth'
 require 'contenttype'
+require 'helper'
 
 # require 'tmpshare'
 
