@@ -243,7 +243,18 @@ $(document).keydown(function(event){
 		}
 	    }
 	}
-	if(kc == KC.down && !sk){ // ↓ = カーソル移動
+    else if(kc == KC.down && ck && editline >= 0 && editline < data.length-1){ // Ctrl+↓ = 下の行と入れ替え
+        var current_line_data = data[editline];
+        data[editline] = data[editline+1];
+        data[editline+1] = current_line_data;
+        setTimeout(function(){
+            editline += 1;
+            deleteblankdata();
+            display();
+            edited = true;
+        }, 1);
+    }
+	else if(kc == KC.down && !sk){ // ↓ = カーソル移動
 	    if(editline >= 0 && editline < data.length-1){
 		var i;
 		for(i=editline+1;i<data.length;i++){
@@ -256,7 +267,7 @@ $(document).keydown(function(event){
 		}
 	    }
 	}
-	if(kc == KC.up && sk){ // 上にブロック移動
+	else if(kc == KC.up && sk){ // 上にブロック移動
 	    if(editline > 0){
 		m = movelines(editline);
 		dst = destline_up();
@@ -272,7 +283,18 @@ $(document).keydown(function(event){
 		}
 	    }
 	}
-	if(kc == KC.up && !sk){
+    else if(kc == KC.up && ck && editline > 0){ // Ctrl+↑= 上の行と入れ替え
+        var current_line_data = data[editline];
+        data[editline] = data[editline-1];
+        data[editline-1] = current_line_data;
+        setTimeout(function(){
+            editline -= 1;
+            deleteblankdata();
+            display();
+            edited = true;
+        }, 1);
+    }
+	else if(kc == KC.up && !sk){
 	    if(editline > 0){
 		var i;
 		for(i=editline-1;i>=0;i--){
