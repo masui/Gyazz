@@ -4,4 +4,4 @@
 FILEROOT = "/tmp"
 
 # DEFAULTPAGE = "/index.html"
-DEFAULTPAGE = "/Gyazz/目次"
+DEFAULTPAGE = "/Gyazz/#{URI.encode('目次')}"

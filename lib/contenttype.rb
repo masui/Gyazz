@@ -50,6 +50,7 @@ module ContentType
   TYPE['.ps'] = 'application/postscript'
   TYPE['.graffle'] = 'application/x-omnigraffle'
   TYPE['.apk'] = 'application/vnd.android.package-archive'
+  TYPE['.dmg'] = 'application/x-apple-diskimage'
   TYPE['.'] = ''
   TYPE[''] = ''
 end
