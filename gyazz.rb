@@ -4,8 +4,6 @@
 require 'json'
 require 'date'
 
-enable :sessions   # Cookieを使うのに要るらしい
-
 $:.unshift File.expand_path 'lib', File.dirname(__FILE__)
 require 'lib'
 require 'config'
@@ -24,6 +22,10 @@ require 'contenttype'
 require 'helper'
 
 # require 'tmpshare'
+
+# Cookieを使う
+enable :sessions
+set :session_secret, SESSION_SECRET # 塩
 
 configure do
   set :protection, :except => :frame_options

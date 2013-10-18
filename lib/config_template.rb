@@ -5,3 +5,5 @@ FILEROOT = "/tmp"
 
 # DEFAULTPAGE = "/index.html"
 DEFAULTPAGE = "/Gyazz/#{URI.encode('目次')}"
+
+SESSION_SECRET = "this is session secret (please change)" 
