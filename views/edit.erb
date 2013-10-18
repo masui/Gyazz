@@ -11,8 +11,8 @@
     <script language="JavaScript" src='<%= @urlroot %>/javascripts/md5.js'></script>
     <script language="JavaScript" src='<%= @urlroot %>/javascripts/edit.js'></script>
     <script type='text/javascript'>
-    var name = '<%= @name %>';
-    var title = '<%= @title %>';
+    var name = '<%= escape_html @name %>';
+    var title = '<%= escape_html @title %>';
     var root =  '<%= @urlroot %>';
     var orig_md5 = '<%= @orig_md5 %>';
     var write_authorized = <%= @write_authorized %>;
@@ -21,7 +21,9 @@
   <body>
     <div class='title'>
       <span class='wordtitle'>
-        <a href='<%= @urlroot %>/<%= @name %>/<%= @title %>'><%= sanitize(@title) %></a>
+        <a href="<%= @urlroot %>/<%= @name %>/<%= @title %>">
+          <%= sanitize(@title) %>
+        </a>
       </span>
       <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
         <input height='20' name='q' type='text' value='<%= @q %>'>
