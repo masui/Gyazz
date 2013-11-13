@@ -28,6 +28,7 @@ module ContentType
   TYPE['.wav'] = 'audio/x-wav'
   TYPE['.m4a'] = 'video/mp4'
   TYPE['.mp4'] = 'video/mp4'
+  TYPE['.m4v'] = 'video/m4v'
   TYPE['.mid'] = 'audio/midi'
   TYPE['.midi'] = 'audio/midi'
   TYPE['.mmf'] = 'application/x-smaf'
