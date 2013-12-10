@@ -179,7 +179,8 @@ def list(name)
   @hotids = ids.sort { |a,b|
     @modtime[b] <=> @modtime[a]
   }
-
+  # アイコン
+  @repimages = SDBM.open("#{topdir(name)}/repimage",0644)
   # JSON作成
   $KCODE = "u"
   "[\n" +
@@ -187,12 +188,14 @@ def list(name)
     s = @id2title[id].dup
     ss = s.dup
     title = ""
+    icon_url = ""
     while s.sub!(/^(.)/,'') do
       c = $1
       u = c.unpack("U")[0]
       title += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
+      icon_url = @repimages[title] ? @repimages[title] : ""
     end
-    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\"]"
+    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\", \"#{icon_url}\" ]"
  }.join(",\n") +
     "\n]\n"
 end
