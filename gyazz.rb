@@ -51,7 +51,7 @@ get '/:name/*/history' do
   history_json(name,title)
 end
 
-get '/:name/*/search' do          # /増井研/合宿/search 
+get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
   #protected!(name)
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
@@ -66,11 +66,27 @@ get "/__search/:name" do |name|
   redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
 end
 
-# データ書込み 
+# データ書込み
 
 post '/__write' do
-  postdata = params[:data].split(/\n/)
-  name = postdata[0]
+  postdata = []
+  name = ""
+  if params.has_key? :name
+    # パラメタ利用でのの書き込み by @keroxp 2013/12/10
+    # @params name
+    # @params title
+    # @params orig_md5
+    # @params data
+    name = params[:name]
+    title = params[:title]
+    orig_md5 = params[:orig_md5]
+    data = params[:data]
+    postdata = [name,title,orig_md5,data]
+  else
+    # 旧式の書き込み
+    postdata = params[:data].split(/\n/)
+    name = postdata[0]
+  end
   check_auth(name)
   writedata(postdata)
 end
@@ -98,7 +114,7 @@ end
 #
 # 認証の考え方
 #
-# 読み書き認証だけ設定されている場合 
+# 読み書き認証だけ設定されている場合
 #   読出しはOK
 #   書込みだけNG
 #   HPなどの場合
@@ -298,7 +314,7 @@ get "/:name/rss.xml" do |name|
 end
 
 #
-# JSON 
+# JSON
 #
 get '/:name/*/json' do
   name = params[:name]
