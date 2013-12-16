@@ -38,7 +38,8 @@ var edited = false;
 var orig_md5; // getdata()したときのMD5
 
 var KC = {
-    tab:9, enter:13, ctrlD:17, left:37, up:38, right:39, down:40
+    tab:9, enter:13, ctrlD:17, left:37, up:38, right:39, down:40,
+    p:80, n:78
 };
 
 var authbuf = [];
@@ -255,7 +256,7 @@ $(document).keydown(function(event){
             edited = true;
         }, 1);
     }
-	else if(kc == KC.down && !sk){ // ↓ = カーソル移動
+	else if((kc == KC.down && !sk) || (kc == KC.n && !sk && ck)){ // ↓ = カーソル移動
 	    if(editline >= 0 && editline < data.length-1){
 		var i;
 		for(i=editline+1;i<data.length;i++){
@@ -295,7 +296,7 @@ $(document).keydown(function(event){
             edited = true;
         }, 1);
     }
-	else if(kc == KC.up && !sk){
+	else if((kc == KC.up && !sk) || (kc == KC.p && !sk && ck)){ // 上にカーソル移動
 	    if(editline > 0){
 		var i;
 		for(i=editline-1;i>=0;i--){
