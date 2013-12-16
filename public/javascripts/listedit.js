@@ -579,6 +579,7 @@ function display(delay){
     // http://logic.moo.jp/data/filedir/569_3.js
     //
     //jQuery.kill_referrer.rewrite.init();
+    follow_scroll();
 }
 
 
@@ -1020,3 +1021,21 @@ function sendfile(file, callback){
 	});
     return false;
 }
+
+// 編集中の行が画面外に移動した時に、ブラウザをスクロールして追随する
+function follow_scroll(){
+
+  // 編集中かどうかチェック
+  if(editline < 0) return;
+
+  var currentLinePos = $("#newtext").offset().top;
+  if( !(currentLinePos && currentLinePos > 0) ) return;
+  var currentScrollPos = $("body").scrollTop();
+  var windowHeight = window.innerHeight;
+
+  // 編集中の行が画面内にある場合、スクロールする必要が無い
+  if(currentScrollPos < currentLinePos &&
+     currentLinePos < currentScrollPos+windowHeight) return;
+
+  $("body").stop().animate({'scrollTop': currentLinePos - windowHeight/2}, 200);
+};
