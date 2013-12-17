@@ -417,16 +417,6 @@ function setup(){ // 初期化
     
     $('#querydiv').css('display','none');
 
-    //b = $('body');
-    //b.bind("dragover", function(e) {
-    //	    //alert("Drop It!!");
-    //	    //showMessage();
-    //	    return false;
-    //	});
-    //b.bind("dragend", function(e) {
-    //	    //hideMessage();
-    //	    return false;
-    //	});
     b = $('body');
     b.bind("dragover", function(e) {
 	return false;
@@ -638,20 +628,6 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 	maxwidth[i] = max;
     }
 
-    /*
-    var colpos = pos[line][0];
-    for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
-	for(var line=begin;line<begin+lines;line++){
-	    var id = "#e" + line + "_" + (i + indent(line));
-	    //$(id).css('position','absolute').css('top',posy[line]);
-	    //   $(id).css('position','absolute').css('left',colpos).css('top',posy[line]);
-	    $(id).css('position','absolute').css('line-height','').css('left',colpos).css('top',posy[line]);
-
-	    //$("#listbg"+line).css('line-height','');
-	}
-	colpos += maxwidth[i];
-    }
-    */
     var colpos = pos[begin][0];
     for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
 	for(var line=begin;line<begin+lines;line++){
@@ -830,19 +806,6 @@ function writedata(){
     if(!write_authorized) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
-
-//    $.ajax({
-//          type: "POST",
-//          async: true,
-//          url: 'http://Gyazz.com' + "/__write",
-//          data: postdata,
-//          success: function(msg){
-//              alert(msg);
-//          },
-//          error: function(msg){
-//              alert("ERROR! " + msg);
-//          }
-//        });
 
     $.ajax({
 	    type: "POST",
