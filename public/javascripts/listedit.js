@@ -154,6 +154,7 @@ $(document).mousedown(function(event){
     });
 
 function indent(line){ // 先頭の空白文字の数
+    if(typeof data[line] !== "string") return 0;
     return data[line].match(/^( *)/)[1].length;
 }
 
@@ -368,7 +369,7 @@ $(document).keydown(function(event){
 
 function deleteblankdata(){ // 空白行を削除
     for(i=0;i<data.length;i++){
-	if(data[i].match(/^ *$/)){
+	if(typeof data[i] === "string" && data[i].match(/^ *$/)){
 	    data.splice(i,1);
 	}
     }
@@ -485,7 +486,7 @@ function display(delay){
 	    }
 	    else {
 		var lastchar = '';
-		if(i > 0) lastchar = data[i-1][data[i-1].length-1];
+		if(i > 0 && typeof data[i-1] === "string") lastchar = data[i-1][data[i-1].length-1];
 		if(editline == -1 && lastchar == '\\'){ // 継続行
 		    if(contline < 0) contline = i-1;
 		    s = '';
@@ -501,7 +502,9 @@ function display(delay){
 		}
 		else { // 通常行
 		    contline = -1;
-		    if(m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i)){ // gistエンベッド
+            var m;
+		    if(typeof data[i] === "string" &&
+               ( m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i) )){ // gistエンベッド
 			// https://gist.github.com/1748966 のやり方
 			var gisturl = m[1];
 			var gistFrame = document.createElement("iframe");
@@ -664,6 +667,7 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 }
 
 function tag(s,line){
+    if(typeof s !== "string") return;
     matched = [];
     s = s.replace(/</g,'&lt;');
     while(m = s.match(/^(.*)\[\[\[(([^\]]|\][^\]]|[^\]]\])*)\]\]\](.*)$/)){ // [[[....]]]
