@@ -46,24 +46,24 @@ var authbuf = [];
 
 // keypressを定義しておかないとFireFox上で矢印キーを押してときカーソルが動いてしまう
 $(document).keypress(function(event){
-	var kc = event.which;
-	if(kc == KC.enter)  event.preventDefault();
-	if(kc == KC.enter){
-	    // 1行追加 
-	    // IME確定でもkeydownイベントが出てしまうのでここで定義が必要!
-	    if(editline >= 0){
-		addblankline(editline+1,indent(editline));
-		zoomlevel = 0;
-		calcdoi();
-		display();
-	    }
-	    return false;
+    var kc = event.which;
+    if(kc == KC.enter)  event.preventDefault();
+    if(kc == KC.enter){
+	// 1行追加 
+	// IME確定でもkeydownイベントが出てしまうのでここで定義が必要!
+	if(editline >= 0){
+	    addblankline(editline+1,indent(editline));
+	    zoomlevel = 0;
+	    calcdoi();
+	    display();
 	}
-	// カーソルキーやタブを無効化
-	if(!event.shiftKey && (kc == KC.down || kc == KC.up || kc == KC.tab)){
-	    return false;
-	}
-    });
+	return false;
+    }
+    // カーソルキーやタブを無効化
+    if(!event.shiftKey && (kc == KC.down || kc == KC.up || kc == KC.tab)){
+	return false;
+    }
+});
 
 function hex2(v){
     return ("0" + v.toString(16)).slice(-2);
@@ -72,19 +72,19 @@ function hex2(v){
 function bgcol(t){
     // データの古さに応じて行の色を変える
     var table = [
-		 [0,                                  256,256,256],
-		 [10,                                 240,240,240],
-		 [10*10,                              220,220,220],
-		 [10*10*10,                           200,200,200],
-		 [10*10*10*10,                        180,180,180],
-		 [10*10*10*10*10,                     160,160,160],
-		 [10*10*10*10*10*10,                  140,140,140],
-		 [10*10*10*10*10*10*10,               120,120,120],
-		 [10*10*10*10*10*10*10*10,            100,100,100],
-		 [10*10*10*10*10*10*10*10*10,          80, 80, 80],
-		 [10*10*10*10*10*10*10*10*10*10,       60, 60, 60],
-		 [10*10*10*10*10*10*10*10*10*10*10,    40, 40, 40]
-		 ];
+	[0,                                  256,256,256],
+	[10,                                 240,240,240],
+	[10*10,                              220,220,220],
+	[10*10*10,                           200,200,200],
+	[10*10*10*10,                        180,180,180],
+	[10*10*10*10*10,                     160,160,160],
+	[10*10*10*10*10*10,                  140,140,140],
+	[10*10*10*10*10*10*10,               120,120,120],
+	[10*10*10*10*10*10*10*10,            100,100,100],
+	[10*10*10*10*10*10*10*10*10,          80, 80, 80],
+	[10*10*10*10*10*10*10*10*10*10,       60, 60, 60],
+	[10*10*10*10*10*10*10*10*10*10*10,    40, 40, 40]
+    ];
     for(i=0;i<table.length-1;i++){
 	var t1 = table[i][0];
 	var t2 = table[i+1][0];
@@ -117,13 +117,13 @@ function addblankline(line,indent){
 }
 
 $(document).mouseup(function(event){
-	if(editTimeout) clearTimeout(editTimeout);
-	eline = -1;
-    });
+    if(editTimeout) clearTimeout(editTimeout);
+    eline = -1;
+});
 
 $(document).mousemove(function(event){
-	if(editTimeout) clearTimeout(editTimeout);
-    });
+    if(editTimeout) clearTimeout(editTimeout);
+});
 
 function longmousedown(){
     editline = eline;
@@ -132,26 +132,26 @@ function longmousedown(){
 }		  
 
 $(document).mousedown(function(event){
-	if(reloadTimeout) clearTimeout(reloadTimeout);
-	reloadTimeout = setTimeout(reload,reloadInterval);
-	
-	y = event.pageY;
-	if(y < 40){
-	    searchmode = true;
-	    return true;
-	}
-	searchmode = false;
-
-	if(eline == -1){
-	    editline = eline;
-	    calcdoi();
-	    display(true);
-	}
-	else {
-	    if(editTimeout) clearTimeout(editTimeout);
-	    editTimeout = setTimeout(longmousedown,300);
-	}
-    });
+    if(reloadTimeout) clearTimeout(reloadTimeout);
+    reloadTimeout = setTimeout(reload,reloadInterval);
+    
+    y = event.pageY;
+    if(y < 40){
+	searchmode = true;
+	return true;
+    }
+    searchmode = false;
+    
+    if(eline == -1){
+	editline = eline;
+	calcdoi();
+	display(true);
+    }
+    else {
+	if(editTimeout) clearTimeout(editTimeout);
+	editTimeout = setTimeout(longmousedown,300);
+    }
+});
 
 function indent(line){ // 先頭の空白文字の数
     if(typeof data[line] !== "string") return 0;
@@ -194,26 +194,26 @@ function destline_down(){
 }
 
 $(document).keyup(function(event){
-	var kc = event.which;
-	var sk = event.shiftKey;
-	
-	// 入力途中の文字列を確定 
-	data[editline] = $("#newtext").val();
-	
-	// 数秒入力がなければデータ書き込み
-	if(version == 0 && !event.ctrlKey && edited){
-	    if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
-		if(sendTimeout) clearTimeout(sendTimeout);
-		sendTimeout = setTimeout("writedata()",1300);
-		$("#newtext").css('background-color','#f0f0d0');
-	    }
+    var kc = event.which;
+    var sk = event.shiftKey;
+    
+    // 入力途中の文字列を確定 
+    data[editline] = $("#newtext").val();
+    
+    // 数秒入力がなければデータ書き込み
+    if(version == 0 && !event.ctrlKey && edited){
+	if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
+	    if(sendTimeout) clearTimeout(sendTimeout);
+	    sendTimeout = setTimeout("writedata()",1300);
+	    $("#newtext").css('background-color','#f0f0d0');
 	}
-    });
+    }
+});
 
 $(document).keydown(function(event){
     if(reloadTimeout) clearTimeout(reloadTimeout);
     reloadTimeout = setTimeout(reload,reloadInterval);
-	
+    
     var kc = event.which;
     var sk = event.shiftKey;
     var ck = event.ctrlKey;
@@ -224,7 +224,7 @@ $(document).keydown(function(event){
     var tmp = [];
     
     if(searchmode) return true;
-
+    
     edited = false;
     
     if(ck && kc == 0x53 && editline >= 0){
@@ -418,14 +418,14 @@ function setup(){ // 初期化
     reloadTimeout = setTimeout(reload,reloadInterval);
     
     $('#querydiv').css('display','none');
-
+    
     b = $('body');
     b.bind("dragover", function(e) {
 	return false;
-	});
+    });
     b.bind("dragend", function(e) {
 	return false;
-	});
+    });
     b.bind("drop", function(e) {
         var files;
         e.preventDefault(); // デフォルトは「ファイルを開く」
@@ -438,8 +438,8 @@ function setup(){ // 初期化
 function display(delay){
     // zoomlevelに応じてバックグラウンドの色を変える
     var bgcolor = zoomlevel == 0 ? '#eeeeff' :
-	zoomlevel == -1 ? '#e0e0c0' :
-	zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
+	    zoomlevel == -1 ? '#e0e0c0' :
+	    zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
     $("body").css('background-color',bgcolor);
     $('#datestr').text(datestr);
     $('#title').attr('href',root + "/" + name + "/" + title + "/" + "__edit" + "/" + version);
@@ -494,9 +494,9 @@ function display(delay){
 		}
 		else { // 通常行
 		    contline = -1;
-            var m;
+		    var m;
 		    if(typeof data[i] === "string" &&
-               ( m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i) )){ // gistエンベッド
+		       ( m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i) )){ // gistエンベッド
 			// https://gist.github.com/1748966 のやり方
 			var gisturl = m[1];
 			var gistFrame = document.createElement("iframe");
@@ -507,7 +507,7 @@ function display(delay){
 			t.children().remove(); // 子供を全部消す
 			t.append(gistFrame);
 			var gistFrameHTML = '<html><body onload="parent.adjustIframeSize(document.body.scrollHeight,'+i+
-			    ')"><scr' + 'ipt type="text/javascript" src="' + gisturl + '"></sc'+'ript></body></html>';
+				')"><scr' + 'ipt type="text/javascript" src="' + gisturl + '"></sc'+'ript></body></html>';
 			// Set iframe's document with a trigger for this document to adjust the height
 			var gistFrameDoc = gistFrame.document;
 			if (gistFrame.contentDocument) {
@@ -515,7 +515,7 @@ function display(delay){
 			} else if (gistFrame.contentWindow) {
 			    gistFrameDoc = gistFrame.contentWindow.document;
 			}
-
+			
 			gistFrameDoc.open();
 			gistFrameDoc.writeln(gistFrameHTML);
 			gistFrameDoc.close(); 
@@ -542,13 +542,13 @@ function display(delay){
     }
     
     input.css('display',(editline == -1 ? 'none' : 'block'));
-
+    
     for(i=0;i<data.length;i++){
 	posy[i] = $('#list'+i).position().top;
 	//posy[i] = $("#e" + i + "_0").offset().top;
     }
     aligncolumns();
-
+    
     // リファラを消すプラグイン
     // http://logic.moo.jp/memo.php/archive/569
     // http://logic.moo.jp/data/filedir/569_3.js
@@ -605,7 +605,7 @@ function do_swap(beginline,lines,indent){  // begin番目からlines個の行の
     for(i=0;i<cols;i++){
 	newlines[i] = indentstr;
     }
-
+    
     for(y=0;y<lines;y++){
 	var pre,post,inner;
 	var m;
@@ -648,7 +648,7 @@ function do_swap(beginline,lines,indent){  // begin番目からlines個の行の
     for(i=0;i<newlines.length;i++){
 	data.splice(beginline+i,0,newlines[i]);
     }
-
+    
     writedata();
     editline = -1;
     display(true);
@@ -698,7 +698,7 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 	}
 	maxwidth[i] = max;
     }
-
+    
     var colpos = pos[begin][0];
     for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
 	for(var line=begin;line<begin+lines;line++){
@@ -706,7 +706,7 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 	    //$(id).css('position','absolute').css('top',posy[line]);
 	    $(id).css('position','absolute').css('left',colpos);
 	    //$(id).css('position','absolute').css('line-height','').css('left',colpos).css('top',posy[line]);
-
+	    
 	    //$("#listbg"+line).css('line-height','');
 	}
 	colpos += maxwidth[i];
@@ -846,8 +846,8 @@ function tag(s,line){
             o.lat = latlng.lat();\
             o.zoom = map.getZoom();\
             for(var i=0;i<data.length;i++){\
-                data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
-            }\
+            data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
+        }\
             writedata();\
         });\
             </script>";
@@ -875,63 +875,63 @@ function writedata(){
     if(!write_authorized) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
-
+    
     $.ajax({
-	    type: "POST",
-	    async: true,
-	    url: root + "/__write",
-	    data: postdata,
-
-	    beforeSend: function(xhr,settings){
-              //alert(xhr);
-              //xhr.setRequestHeader("Content-Type" , "text/html; charset=utf-8");
-              return true;
-            },
-
-	    success: function(msg){
-		$("#newtext").css('background-color','#ddd');
-		if(msg.match(/^conflict/)){
-		    // 再読み込み
-		    getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
-		}
-		else if(msg == 'protected'){
-		    // 再読み込み
-		    alert("このページは編集できません");
-		    getdata();
-		}
-		else {
-		    orig_md5 = MD5_hexhash(utf16to8(datastr));
-                }
+	type: "POST",
+	async: true,
+	url: root + "/__write",
+	data: postdata,
+	
+	beforeSend: function(xhr,settings){
+            //alert(xhr);
+            //xhr.setRequestHeader("Content-Type" , "text/html; charset=utf-8");
+            return true;
+        },
+	
+	success: function(msg){
+	    $("#newtext").css('background-color','#ddd');
+	    if(msg.match(/^conflict/)){
+		// 再読み込み
+		getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
+	    }
+	    else if(msg == 'protected'){
+		// 再読み込み
+		alert("このページは編集できません");
+		getdata();
+	    }
+	    else {
+		orig_md5 = MD5_hexhash(utf16to8(datastr));
             }
+        }
     });
 }
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({
-	    async: false,
-		url: root + "/" + name + "/" + title + "/text/" + version,
-		success: function(msg){
-		d = msg.split(/\n/);
-		datestr = d.shift();
-		data = [];
-		dt = [];
-		for(var i=0;i<d.length;i++){
-		    s = d[i]
-			if(s != ''){
-			    t = 0;
-			    if(version > 0){
-				s.match(/^(.*) ([0-9]*)$/);
-				s = RegExp.$1;
-				t = RegExp.$2;
-			    }
-			    dt.push(Number(t));
-			    data.push(s);
-			}
+	async: false,
+	url: root + "/" + name + "/" + title + "/text/" + version,
+	success: function(msg){
+	    d = msg.split(/\n/);
+	    datestr = d.shift();
+	    data = [];
+	    dt = [];
+	    for(var i=0;i<d.length;i++){
+		s = d[i]
+		if(s != ''){
+		    t = 0;
+		    if(version > 0){
+			s.match(/^(.*) ([0-9]*)$/);
+			s = RegExp.$1;
+			t = RegExp.$2;
+		    }
+		    dt.push(Number(t));
+		    data.push(s);
 		}
-		orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
-		search();
 	    }
-	});
+	    orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
+	    search();
+	}
+    });
 }
 
 function maxindent(){
@@ -948,7 +948,7 @@ function calcdoi(){
     var pbs = new POBoxSearch(assocwiki_pobox_dict);
     var re = null;
     if(q && q.value != '') re = pbs.regexp(q.value,false);
-
+    
     var maxind = maxindent();
     for(var i=0;i<data.length;i++){
 	if(re ? re.exec(data[i]) : true){
@@ -1016,17 +1016,17 @@ function sendfiles(files){
     for (_i = 0, _len = files.length; _i < _len; _i++) {
 	file = files[_i];
 	sendfile(file, function(filename) {
-		editline = data.length;
-		if(filename.match(/\.(jpg|jpeg|png|gif)$/i)){
-		    data[editline] = '[[[' + root + "/upload/" + filename + ']]]';
-		}
-		else {
-		    data[editline] = '[[' + root + "/upload/" + filename + ' ' + file.name + ']]';
-		}
-		writedata();
-		editline = -1;
-		display(true);
-	    });
+	    editline = data.length;
+	    if(filename.match(/\.(jpg|jpeg|png|gif)$/i)){
+		data[editline] = '[[[' + root + "/upload/" + filename + ']]]';
+	    }
+	    else {
+		data[editline] = '[[' + root + "/upload/" + filename + ' ' + file.name + ']]';
+	    }
+	    writedata();
+	    editline = -1;
+	    display(true);
+	});
     }
 }
 
@@ -1035,43 +1035,43 @@ function sendfile(file, callback){
     fd = new FormData;
     fd.append('uploadfile', file);
     $.ajax({
-	    url: root + "/__upload",
-		type: "POST",
-		data: fd,
-		processData: false,
-		contentType: false,
-		dataType: 'text',
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		  // 通常はここでtextStatusやerrorThrownの値を見て処理を切り分けるか、
-		  // 単純に通信に失敗した際の処理を記述します。
-		  alert('upload fail');
-		  // alert(XMLHttpRequest);
-		  // alert(textStatus);
-		  // alert(errorThrown);
-  		  this; // thisは他のコールバック関数同様にAJAX通信時のオプションを示します。
-	        },
-		success: function(data) {
-		//return callback.call(this);
-           	    return callback(data);
-                }
-	});
+	url: root + "/__upload",
+	type: "POST",
+	data: fd,
+	processData: false,
+	contentType: false,
+	dataType: 'text',
+	error: function(XMLHttpRequest, textStatus, errorThrown) {
+	    // 通常はここでtextStatusやerrorThrownの値を見て処理を切り分けるか、
+	    // 単純に通信に失敗した際の処理を記述します。
+	    alert('upload fail');
+	    // alert(XMLHttpRequest);
+	    // alert(textStatus);
+	    // alert(errorThrown);
+  	    this; // thisは他のコールバック関数同様にAJAX通信時のオプションを示します。
+	},
+	success: function(data) {
+	    //return callback.call(this);
+            return callback(data);
+        }
+    });
     return false;
 }
 
 // 編集中の行が画面外に移動した時に、ブラウザをスクロールして追随する
 function follow_scroll(){
-
-  // 編集中かどうかチェック
-  if(editline < 0) return;
-
-  var currentLinePos = $("#newtext").offset().top;
-  if( !(currentLinePos && currentLinePos > 0) ) return;
-  var currentScrollPos = $("body").scrollTop();
-  var windowHeight = window.innerHeight;
-
-  // 編集中の行が画面内にある場合、スクロールする必要が無い
-  if(currentScrollPos < currentLinePos &&
-     currentLinePos < currentScrollPos+windowHeight) return;
-
-  $("body").stop().animate({'scrollTop': currentLinePos - windowHeight/2}, 200);
+    
+    // 編集中かどうかチェック
+    if(editline < 0) return;
+    
+    var currentLinePos = $("#newtext").offset().top;
+    if( !(currentLinePos && currentLinePos > 0) ) return;
+    var currentScrollPos = $("body").scrollTop();
+    var windowHeight = window.innerHeight;
+    
+    // 編集中の行が画面内にある場合、スクロールする必要が無い
+    if(currentScrollPos < currentLinePos &&
+       currentLinePos < currentScrollPos+windowHeight) return;
+    
+    $("body").stop().animate({'scrollTop': currentLinePos - windowHeight/2}, 200);
 };
