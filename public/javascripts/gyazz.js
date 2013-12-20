@@ -19,7 +19,7 @@ var data = [];
 var dt = [];          // 背景色
 var doi = [];
 var zoomlevel = 0;
-var spaces = [];
+var spaces = [];      // 行に空白がいくつ含まれているか (桁揃えに利用)
 
 var posy = [];
 
@@ -83,7 +83,7 @@ function bgcol(t){
 		 [10*10*10*10*10*10*10*10,            100,100,100],
 		 [10*10*10*10*10*10*10*10*10,          80, 80, 80],
 		 [10*10*10*10*10*10*10*10*10*10,       60, 60, 60],
-		 [10*10*10*10*10*10*10*10*10*10*10,    40, 40, 40],
+		 [10*10*10*10*10*10*10*10*10*10*10,    40, 40, 40]
 		 ];
     for(i=0;i<table.length-1;i++){
 	var t1 = table[i][0];
@@ -211,41 +211,44 @@ $(document).keyup(function(event){
     });
 
 $(document).keydown(function(event){
-	if(reloadTimeout) clearTimeout(reloadTimeout);
-	reloadTimeout = setTimeout(reload,reloadInterval);
+    if(reloadTimeout) clearTimeout(reloadTimeout);
+    reloadTimeout = setTimeout(reload,reloadInterval);
 	
-	var kc = event.which;
-	var sk = event.shiftKey;
-	var ck = event.ctrlKey;
-	var cd = event.metaKey && !ck;
-	var i;
-	var m,m2;
-	var dst;
-	var tmp = [];
+    var kc = event.which;
+    var sk = event.shiftKey;
+    var ck = event.ctrlKey;
+    var cd = event.metaKey && !ck;
+    var i;
+    var m,m2;
+    var dst;
+    var tmp = [];
+    
+    if(searchmode) return true;
 
-	if(searchmode) return true;
-
-	edited = false;
-	
-	if(kc == KC.enter){
-	    $('#query').val('');
-	}
-	if(kc == KC.down && sk){ // Shift+↓ = 下にブロック移動
-	    if(editline >= 0 && editline < data.length-1){
-		m = movelines(editline);
-		dst = destline_down();
-		if(dst >= 0){
-		    m2 = movelines(dst);
-		    for(i=0;i<m;i++)  tmp[i] = data[editline+i];
-		    for(i=0;i<m2;i++) data[editline+i] = data[dst+i];
-		    for(i=0;i<m;i++)  data[editline+m2+i] = tmp[i];
-		    editline = editline + m2;
-		    deleteblankdata();
-		    display();
-		    edited = true;
-		}
+    edited = false;
+    
+    if(ck && kc == 0x53 && editline >= 0){
+	swap();
+    }
+    else if(kc == KC.enter){
+	$('#query').val('');
+    }
+    else if(kc == KC.down && sk){ // Shift+↓ = 下にブロック移動
+	if(editline >= 0 && editline < data.length-1){
+	    m = movelines(editline);
+	    dst = destline_down();
+	    if(dst >= 0){
+		m2 = movelines(dst);
+		for(i=0;i<m;i++)  tmp[i] = data[editline+i];
+		for(i=0;i<m2;i++) data[editline+i] = data[dst+i];
+		for(i=0;i<m;i++)  data[editline+m2+i] = tmp[i];
+		editline = editline + m2;
+		deleteblankdata();
+		display();
+		edited = true;
 	    }
 	}
+    }
     else if(kc == KC.down && ck && editline >= 0 && editline < data.length-1){ // Ctrl+↓ = 下の行と入れ替え
         var current_line_data = data[editline];
         data[editline] = data[editline+1];
@@ -257,35 +260,35 @@ $(document).keydown(function(event){
             edited = true;
         }, 1);
     }
-	else if((kc == KC.down && !sk) || (kc == KC.n && !sk && ck)){ // ↓ = カーソル移動
-	    if(editline >= 0 && editline < data.length-1){
-		var i;
-		for(i=editline+1;i<data.length;i++){
-		    if(doi[i] >= -zoomlevel){
-			editline = i;
-			deleteblankdata();
-			display();
-			break;
-		    }
-		}
-	    }
-	}
-	else if(kc == KC.up && sk){ // 上にブロック移動
-	    if(editline > 0){
-		m = movelines(editline);
-		dst = destline_up();
-		if(dst >= 0){
-		    m2 = editline-dst;
-		    for(i=0;i<m2;i++) tmp[i] = data[dst+i];
-		    for(i=0;i<m;i++)  data[dst+i] = data[editline+i];
-					  for(i=0;i<m2;i++) data[dst+m+i] = tmp[i];
-		    editline = dst;
+    else if((kc == KC.down && !sk) || (kc == KC.n && !sk && ck)){ // ↓ = カーソル移動
+	if(editline >= 0 && editline < data.length-1){
+	    var i;
+	    for(i=editline+1;i<data.length;i++){
+		if(doi[i] >= -zoomlevel){
+		    editline = i;
 		    deleteblankdata();
 		    display();
-		    edited = true;
+		    break;
 		}
 	    }
 	}
+    }
+    else if(kc == KC.up && sk){ // 上にブロック移動
+	if(editline > 0){
+	    m = movelines(editline);
+	    dst = destline_up();
+	    if(dst >= 0){
+		m2 = editline-dst;
+		for(i=0;i<m2;i++) tmp[i] = data[dst+i];
+		for(i=0;i<m;i++)  data[dst+i] = data[editline+i];
+		for(i=0;i<m2;i++) data[dst+m+i] = tmp[i];
+		editline = dst;
+		deleteblankdata();
+		display();
+		edited = true;
+	    }
+	}
+    }
     else if(kc == KC.up && ck && editline > 0){ // Ctrl+↑= 上の行と入れ替え
         var current_line_data = data[editline];
         data[editline] = data[editline-1];
@@ -297,74 +300,74 @@ $(document).keydown(function(event){
             edited = true;
         }, 1);
     }
-	else if((kc == KC.up && !sk) || (kc == KC.p && !sk && ck)){ // 上にカーソル移動
-	    if(editline > 0){
-		var i;
-		for(i=editline-1;i>=0;i--){
-		    if(doi[i] >= -zoomlevel){
-			editline = i;
-			deleteblankdata();
-			display();
-			break;
-		    }
+    else if((kc == KC.up && !sk) || (kc == KC.p && !sk && ck)){ // 上にカーソル移動
+	if(editline > 0){
+	    var i;
+	    for(i=editline-1;i>=0;i--){
+		if(doi[i] >= -zoomlevel){
+		    editline = i;
+		    deleteblankdata();
+		    display();
+		    break;
 		}
 	    }
 	}
-	if(kc == KC.tab && !sk || kc == KC.right && sk){ // indent
-	    if(editline >= 0 && editline < data.length){
-		data[editline] = ' ' + data[editline];
-		display();
-	    }
+    }
+    if(kc == KC.tab && !sk || kc == KC.right && sk){ // indent
+	if(editline >= 0 && editline < data.length){
+	    data[editline] = ' ' + data[editline];
+	    display();
 	}
-	if(kc == KC.tab && sk || kc == KC.left && sk){ // undent
-	    if(editline >= 0 && editline < data.length){
-		var s = data[editline]
-		    if(s.substring(0,1) == ' '){
-			data[editline] = s.substring(1,s.length)
-		    }
-		display();
+    }
+    if(kc == KC.tab && sk || kc == KC.left && sk){ // undent
+	if(editline >= 0 && editline < data.length){
+	    var s = data[editline];
+	    if(s.substring(0,1) == ' '){
+		data[editline] = s.substring(1,s.length);
 	    }
+	    display();
 	}
-	if(kc == KC.left && !sk && !ck && editline < 0){ // zoom out
-	    if(-zoomlevel < maxindent()){
-		zoomlevel -= 1;
-		display();
-	    }
+    }
+    if(kc == KC.left && !sk && !ck && editline < 0){ // zoom out
+	if(-zoomlevel < maxindent()){
+	    zoomlevel -= 1;
+	    display();
 	}
-	if(kc == KC.right && !sk && !ck && editline < 0){ // zoom in
-	    //if(zoomlevel < maxindent()){
-	    if(zoomlevel < 0){
-		zoomlevel += 1;
-		display();
-	    }
+    }
+    if(kc == KC.right && !sk && !ck && editline < 0){ // zoom in
+	//if(zoomlevel < maxindent()){
+	if(zoomlevel < 0){
+	    zoomlevel += 1;
+	    display();
 	}
-	if(ck && kc == KC.left){ // 古いバージョンゲット
-	    version += 1;
+    }
+    if(ck && kc == KC.left){ // 古いバージョンゲット
+	version += 1;
+	getdata();
+    }
+    else if(ck && kc == KC.right){
+	if(version > 0){
+	    version -= 1;
 	    getdata();
 	}
-	else if(ck && kc == KC.right){
-	    if(version > 0){
-		version -= 1;
-		getdata();
-	    }
-	}
-	else if(kc >= 0x30 && kc <= 0x7e && editline < 0 && !cd && !ck){
-	    $('#querydiv').css('visibility','visible').css('display','block');
-	    $('#query').focus();
-	}
-	else if(ck && kc == 0x68){
-	    edited = true;
-	}
-	else if(kc == 0x08){
-	    edited = true;
-	}
-	else if(ck){
-	    edited = false;
-	}
-	else {
-	    edited = true;
-	}
-    });
+    }
+    else if(kc >= 0x30 && kc <= 0x7e && editline < 0 && !cd && !ck){
+	$('#querydiv').css('visibility','visible').css('display','block');
+	$('#query').focus();
+    }
+    else if(ck && kc == 0x68){
+	edited = true;
+    }
+    else if(kc == 0x08){
+	edited = true;
+    }
+    else if(ck){
+	edited = false;
+    }
+    else {
+	edited = true;
+    }
+});
 
 function deleteblankdata(){ // 空白行を削除
     for(i=0;i<data.length;i++){
@@ -384,7 +387,7 @@ function tell_auth(){
 	async: true,
 	url: root + "/__tellauth",
 	data: postdata
-    })
+    });
 }
 
 // こうすると動的に関数を定義できる (クロージャ)
@@ -401,7 +404,7 @@ function linefunc(n){
 	if(event.shiftKey){
 	    addblankline(n,indent(n));  // 上に行を追加
 	}
-    }
+    };
 }
 
 function setup(){ // 初期化
@@ -562,6 +565,95 @@ function adjustIframeSize(newHeight,i) {
     console.log("size adjusted", newHeight);
 }
 
+function swap(){ // 同じパタンが連続した行の行と桁を入れ換える
+    if(editline < 0) return; // 編集中じゃない
+    var i;
+    var beginline = 0;
+    var lastspaces = -1;
+    var lastindent = -1;
+    for(i=0;i<data.length;i++){
+	if(spaces[i] > 0 && spaces[i] == lastspaces && indent(i) == lastindent){ // cont
+	}
+	else {
+	    if(lastspaces > 1 && i-beginline > 1){ // 同じパタンの連続を検出
+		if(editline >= beginline && editline < i){
+		    do_swap(beginline,i-beginline,indent(beginline));
+		    return;
+		}
+	    }
+	    beginline = i;
+	}
+	lastspaces = spaces[i];
+	lastindent = indent(i);
+    }
+    if(lastspaces > 1 && i-beginline > 1){ //  同じパタンの連続を検出
+	if(editline >= beginline && editline < i){
+	    do_swap(beginline,i-beginline,indent(beginline));
+	    return;
+	}
+    }
+}
+
+function do_swap(beginline,lines,indent){  // begin番目からlines個の行の行と桁を入れ換え
+    // alert("swap from " + beginline + ", " + lines + " lines.");
+    var x,y;
+    var cols = spaces[beginline] + 1;
+    var newlines = [];
+    var indentstr = '';
+    var i;
+    for(i=0;i<indent;i++) indentstr += ' ';
+    for(i=0;i<cols;i++){
+	newlines[i] = indentstr;
+    }
+
+    for(y=0;y<lines;y++){
+	var pre,post,inner;
+	var m;
+	var matched2 = [];
+	var matched3 = [];
+	var s = data[beginline+y];
+	s = s.replace(/^\s*/,'');
+	s = s.replace(/</g,'&lt;');
+	while(m = s.match(/^(.*)\[\[\[(([^\]]|\][^\]]|[^\]]\])*)\]\]\](.*)$/)){ // [[[....]]]
+	    pre =   m[1];
+	    inner = m[2];
+	    post =  m[4];
+	    matched3.push(inner);
+	    s = pre + '<<3<' + (matched3.length-1) + '>3>>' + post;
+	}
+	while(m = s.match(/^(.*)\[\[(([^\]]|\][^\]]|[^\]]\])*)\]\](.*)$/)){ // [[....]]
+	    pre =   m[1];
+	    inner = m[2];
+	    post =  m[4];
+	    matched2.push(inner);
+	    s = pre + '<<2<' + (matched2.length-1) + '>2>>' + post;
+	}
+	var elements = s.split(/ /);
+	for(i=0;i<elements.length;i++){
+	    var a;
+	    while(a = elements[i].match(/^(.*)<<3<(\d+)>3>>(.*)$/)){
+		elements[i] = a[1] + "[[[" + matched3[a[2]] + "]]]" + a[3];
+	    }
+	    while(a = elements[i].match(/^(.*)<<2<(\d+)>2>>(.*)$/)){
+		elements[i] = a[1] + "[[" + matched2[a[2]] + "]]" + a[3];
+	    }
+	}
+	for(i=0;i<elements.length;i++){
+	    if(y != 0) newlines[i] += " ";
+	    newlines[i] += elements[i];
+	}
+    }
+    // data[] の beginlineからlines行をnewlines[]で置き換える
+    data.splice(beginline,lines);
+    for(i=0;i<newlines.length;i++){
+	data.splice(beginline+i,0,newlines[i]);
+    }
+
+    writedata();
+    editline = -1;
+    display(true);
+}
+
 function aligncolumns(){ // 同じパタンの連続を検出して桁を揃える
     var i;
     var beginline = 0;
@@ -622,6 +714,7 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 }
 
 function tag(s,line){
+    // [[....]], [[[...]]]を[解析]
     if(typeof s !== "string") return;
     matched = [];
     s = s.replace(/</g,'&lt;');
@@ -629,9 +722,6 @@ function tag(s,line){
 	pre =   m[1];
 	inner = m[2];
 	post =  m[4];
-	//if(t = inner.match(/^(http[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
-	//    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
-	//}
 	if(t = inner.match(/^(https?:\/\/[^ ]+) (.*)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[[http:... ....jpg]]]
 	    matched.push('<a href="' + t[1] + '"><img src="' + t[2] + '.' + t[3] + '" border="none" target="_blank" height=80></a>');
 	}
@@ -653,52 +743,52 @@ function tag(s,line){
 	else if(t = inner.match(/^(http.+)\.(jpg|jpeg|jpe|png|gif)$/i)){ // [[http://example.com/abc.jpg]
 	    matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
 	}
-    else if(t = inner.match(/^(.+)\.(png|icon)$/i)){ // ページ名.icon or ページ名.pngでアイコン表示
-        var link_to = null;
-        var img_url = null;
-        if(t[1].match(/^@[\da-z_]+$/i)){
-            var screen_name = t[1].replace(/^@/,"");
-            link_to = "http://twitter.com/"+screen_name;
-            img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
-        }
-        else{
-            link_to = root+"/"+name+"/"+t[1];
-            img_url = link_to+"/icon";
-        }
-        matched.push('<a href="'+link_to+'" class="link" target="_blank"><img src="'+img_url+'" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
-    }
-    else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[\*x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
-        var link_to = null;
-        var img_url = null;
-        if(t[1].match(/^@[\da-z_]+$/i)){
-            var screen_name = t[1].replace(/^@/,"");
-            link_to = "http://twitter.com/"+screen_name;
-            img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
-        }
-        else if(t[1].match(/^https?:\/\/.+$/)){
-            img_url = link_to = t[1]+"."+t[2];
-        }
-        else{
-            link_to = root+"/"+name+"/"+t[1];
-            img_url = link_to+"/icon";
-        }
-        var count = Number(t[3]);
-        var icons = '<a href="'+link_to+'" class="link" target="_blank">';
-        for(var i = 0; i < count; i++){
-            icons += '<img src="'+img_url+'" class="icon" height="24" border="0" alt="'+t[1]+'" title="'+t[1]+'" />';
-        }
-        if(t[4].length > 0){
-            var odd = Number("0"+t[4]);
-            icons += '<img src="'+img_url+'" class="icon" height="24" width="'+24*odd+'" border="0" alt="'+link_to+'" title="'+link_to+'" />';
-        }
-        icons += '</a>';
-        matched.push(icons);
-    }
+	else if(t = inner.match(/^(.+)\.(png|icon)$/i)){ // ページ名.icon or ページ名.pngでアイコン表示
+            var link_to = null;
+            var img_url = null;
+            if(t[1].match(/^@[\da-z_]+$/i)){
+		var screen_name = t[1].replace(/^@/,"");
+		link_to = "http://twitter.com/"+screen_name;
+		img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
+            }
+            else{
+		link_to = root+"/"+name+"/"+t[1];
+		img_url = link_to+"/icon";
+            }
+            matched.push('<a href="'+link_to+'" class="link" target="_blank"><img src="'+img_url+'" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
+	}
+	else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[\*x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
+            var link_to = null;
+            var img_url = null;
+            if(t[1].match(/^@[\da-z_]+$/i)){
+		var screen_name = t[1].replace(/^@/,"");
+		link_to = "http://twitter.com/"+screen_name;
+		img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
+            }
+            else if(t[1].match(/^https?:\/\/.+$/)){
+		img_url = link_to = t[1]+"."+t[2];
+            }
+            else{
+		link_to = root+"/"+name+"/"+t[1];
+		img_url = link_to+"/icon";
+            }
+            var count = Number(t[3]);
+            var icons = '<a href="'+link_to+'" class="link" target="_blank">';
+            for(var i = 0; i < count; i++){
+		icons += '<img src="'+img_url+'" class="icon" height="24" border="0" alt="'+t[1]+'" title="'+t[1]+'" />';
+            }
+            if(t[4].length > 0){
+		var odd = Number("0"+t[4]);
+		icons += '<img src="'+img_url+'" class="icon" height="24" width="'+24*odd+'" border="0" alt="'+link_to+'" title="'+link_to+'" />';
+            }
+            icons += '</a>';
+            matched.push(icons);
+	}
 	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+) (.*)$/)){ // [[http://example.com/ example]]
 	    target = t[1].replace(/"/g,'%22');
 	    matched.push('<a href="' + target + '" target="_blank">' + t[3] + '</a>');
 	}
-    else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
+	else if(t = inner.match(/^((http[s]?|javascript):[^ ]+)$/)){ // [[http://example.com/]]
 	    target = t[1].replace(/"/g,'%22');
 	    matched.push('<a href="' + target + '" class="link" target="_blank">' + t[1] + '</a>');
 	}
@@ -756,8 +846,8 @@ function tag(s,line){
             o.lat = latlng.lat();\
             o.zoom = map.getZoom();\
             for(var i=0;i<data.length;i++){\
-            data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
-        }\
+                data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
+            }\
             writedata();\
         });\
             </script>";
@@ -776,7 +866,7 @@ function tag(s,line){
 	}
     }
     for(i=0;i<elements.length;i++){
-	elements[i] = "<span id='e"+line+'_'+i+"'>" + elements[i] + "</span>";
+	elements[i] = "<span id='e"+line+'_'+i+"'>" + elements[i] + "</span>"; // 各要素にidをつける jQuery風にすべき***
     }
     return elements.join(' ');
 }
@@ -813,7 +903,7 @@ function writedata(){
 		    orig_md5 = MD5_hexhash(utf16to8(datastr));
                 }
             }
-    })
+    });
 }
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
