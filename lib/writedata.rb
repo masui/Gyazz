@@ -111,8 +111,19 @@ def writedata(data)
 
   # リンク情報更新
   pair = Pair.new("#{topdir(name)}/pair")
-  curdata.keywords.each { |keyword|
-    pair.delete(title,keyword)
+  links = pair.collect(title) # 定義されているリンク全部
+  links.each { |link| # とりあえず全部消す
+    pair.delete(title,link)
+  }
+  #curdata.keywords.each { |keyword|
+  #pair.delete(title,keyword)
+  #}
+  links.each { |link| # 定義されてたリンク先からのリンクを全部再確認して追加
+    File.read(datafile(name,link)).keywords.each { |keyword|
+      if keyword == title then
+        pair.add(link,keyword)
+      end
+    }
   }
   newdata.keywords.each { |keyword|
     pair.add(title,keyword)
