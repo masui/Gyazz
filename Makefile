@@ -5,6 +5,8 @@ clean:
 push:
 	git push pitecan.com:/home/masui/git/Gyazz.git
 	git push git@github.com:masui/Gyazz.git
+testrun:
+	rackup config.ru -p 3000
 test:
 	ruby -Ilib lib/lib.rb
 #	ruby lib/contenttype.rb
