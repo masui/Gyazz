@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-require 'config'
-require 'lib'
-require 'pair'
-require 'keyword'
 require 'sdbm'
 
 def _weight(name,title)
-  pair = Pair.new("#{topdir(name)}/pair")
+  pair = Pair.new("#{Gyazz.topdir(name)}/pair")
 
   pagekeywords = []
-  filename = datafile(name,title,0)
+  filename = Gyazz.datafile(name,title,0)
   if File.exist?(filename) then
     pagekeywords = File.read(filename).keywords
     # File.utime(Time.now,Time.now,filename) # 何故こうしてたのか?
@@ -68,16 +64,16 @@ def related(name,title)
 end
 
 def related_html(name,title)
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
-  repimage = SDBM.open("#{topdir(name)}/repimage",0644)
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
     # @target_url = "#{app_root}/#{name}/#{t}"
     @target_url = "#{app_root}/#{name}/#{URI.encode(t)}"
     if t =~ /^[0-9]{14}/ then
-      file = "#{topdir(name)}/#{md5(t)}"
+      file = "#{Gyazz.topdir(name)}/#{Gyazz.md5(t)}"
       t = File.read(file).split(/\n/)[0]
     end
     @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
@@ -93,7 +89,7 @@ def related_html(name,title)
       length = t.split(//).length
       @fontsize = (length <= 2 ? 20 : length < 4 ? 14 : 10)
       @fontsize = 9
-      targetid = md5(t)
+      targetid = Gyazz.md5(t)
       @r = (targetid[0..1].hex.to_f * 0.5 + 16).to_i.to_s(16)
       @g = (targetid[2..3].hex.to_f * 0.5 + 16).to_i.to_s(16)
       @b = (targetid[4..5].hex.to_f * 0.5 + 16).to_i.to_s(16)

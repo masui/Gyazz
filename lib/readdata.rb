@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-
-require 'config'
-require 'lib'
-
 def readdata(name,title,version=nil)
-  file = datafile(name,title,version)
+  file = Gyazz.datafile(name,title,version)
   datestr = ""
   if version && version > 0 then
     file =~ /\/(\d{14})$/
@@ -13,7 +8,7 @@ def readdata(name,title,version=nil)
   data = File.exist?(file) ? File.read(file)  : ''
 
   if version && version > 0 then
-    dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
+    dbm = SDBM.open("#{Gyazz.backupdir(name,title)}/timestamp",0644)
     a = ''
     data.each_line { |line|
       l = line.chomp

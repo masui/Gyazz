@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-require 'config'
-require 'lib'
-require 'png'
-
 MAX = 25
 MAXH = 12
 
 def history(name,title)
-  dir = backupdir(name,title)
+  dir = Gyazz.backupdir(name,title)
   timestamps = Dir.open(dir).find_all { |file|
     file =~ /^\d{14}$/
   }

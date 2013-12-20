@@ -4,22 +4,6 @@
 require 'json'
 require 'date'
 
-$:.unshift File.expand_path 'lib', File.dirname(__FILE__)
-require 'lib'
-require 'config'
-require 'search'
-require 'writedata'
-require 'readdata'
-require 'edit'
-require 'page'
-require 'attr'
-require 'history'
-require 'rss'
-require 'access'
-require 'auth'
-require 'contenttype'
-require 'helper'
-
 # require 'tmpshare'
 
 # Cookieを使う
@@ -105,7 +89,7 @@ get '/__write__' do # 無条件書き込み
 end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|
-  attr = SDBM.open("#{topdir(name)}/attr",0644);
+  attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
   attr[key] = val
   attr.close
 end
@@ -203,7 +187,7 @@ post '/__upload' do
     UPLOADDIR = "#{FILEROOT}/upload"
     Dir.mkdir(UPLOADDIR) unless File.exist?(UPLOADDIR)
 
-    hash = md5(file_contents)
+    hash = Gyazz.md5(file_contents)
     savefile = "#{hash}#{file_ext}"
     savepath = "#{UPLOADDIR}/#{savefile}"
     File.open(savepath, 'wb'){ |f| f.write(file_contents) }
@@ -279,7 +263,7 @@ get '/:name/*/access.png' do
   name = params[:name]
   title = params[:splat].join('/')
   # history(name,title)
-  # send_file "#{backupdir(name,title)}/access.png"
+  # send_file "#{Gyazz.backupdir(name,title)}/access.png"
   history_png(name,title)
 end
 
@@ -356,7 +340,7 @@ end
 get '/:name/*/icon' do
   name = params[:name]
   title = params[:splat].join('/')
-  repimage = SDBM.open("#{topdir(name)}/repimage")
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
   img = repimage[title]
   halt 404, "image not found" if img.to_s.empty?
   redirect case img
@@ -417,7 +401,7 @@ end
 #get "/:name/__related" do |name|
 #  protected!(name)
 #
-#  top = topdir(name)
+#  top = Gyazz.topdir(name)
 #  unless File.exist?(top) then
 #    Dir.mkdir(top)
 #  end
@@ -428,7 +412,7 @@ end
 #
 #  @id2title = {}
 #  titles.each { |title|
-#    @id2title[md5(title)] = title
+#    @id2title[Gyazz.md5(title)] = title
 #  }
 #
 #  ids = Dir.open(top).find_all { |file|
@@ -467,12 +451,12 @@ get '/:name/*/related' do
   check_auth(name)
 
 #  pagekeywords = []
-#  filename = datafile(name,title,0)
+#  filename = Gyazz.datafile(name,title,0)
 #  if File.exist?(filename) then
 #    pagekeywords = File.read(filename).keywords
 #  end
 
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
@@ -548,7 +532,7 @@ get '/:name/*' do
     end
 
     if auth_page_exist?(name,WRITE_AUTH) then
-      rawdata = File.read(datafile(name,WRITE_AUTH))
+      rawdata = File.read(Gyazz.datafile(name,WRITE_AUTH))
       #if title != WRITE_AUTH then
         if !cookie_authorized?(name,WRITE_AUTH) then
           write_authorized = false

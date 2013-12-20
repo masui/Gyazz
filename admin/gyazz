@@ -7,10 +7,11 @@
 #   masuiにページをリストする
 #
 
-$:.unshift File.expand_path '../lib'
+$:.unshift File.expand_path '../lib', File.dirname(__FILE__)
 
 require 'uri'
 require 'lib'
+require 'config'
 require 'pair'
 require 'readdata'
 require 'writedata'
@@ -25,7 +26,7 @@ if cmd == 'list' then
   name = ARGV.shift
   exit unless name
 
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   pair = Pair.new("#{top}/pair")
   titles = pair.keys
   pair.close

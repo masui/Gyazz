@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-# -*- ruby -*-
 
-require 'rubygems'
-require 'sinatra'
 require 'digest/md5'
 require 'time'
 

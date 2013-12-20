@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-
-require 'config'
-require 'lib'
-require 'pair'
-require 'readdata'
-require 'auth'
 require 'rss/maker'
 
 def rss(name)
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
@@ -19,7 +12,7 @@ def rss(name)
 
   @id2title = {}
   titles.each { |title|
-    @id2title[md5(title)] = title
+    @id2title[Gyazz.md5(title)] = title
   }
 
   ids = Dir.open(top).find_all { |file|
