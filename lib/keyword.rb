@@ -13,6 +13,7 @@ class String
           kw !~ /^@/ && 
           kw !~ /::/ && 
           kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
+          kw !~ /\.icon((\*|x|×)[\d\.]*)?$/i &&
           kw !~ /^[a-fA-F0-9]{32}/ then
         kw.sub!(/\.(png|icon|gif|jpe?g)((\*|x|×)[\d\.]*)?$/i,'')
         a << kw
@@ -26,6 +27,7 @@ class String
           kw !~ /^@/ && 
           kw !~ /::/ && 
           kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
+          kw !~ /\.icon((\*|x|×)[\d\.]*)?$/i &&
           kw !~ /^[a-fA-F0-9]{32}/ then
         kw.sub!(/\.(png|icon|gif|jpe?g)((\*|x|×)[\d\.]*)?$/i,'')
         a << kw

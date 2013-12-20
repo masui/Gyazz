@@ -228,7 +228,7 @@ $(document).keydown(function(event){
     edited = false;
     
     if(ck && kc == 0x53 && editline >= 0){
-	swap();
+	transpose();
     }
     else if(kc == KC.enter){
 	$('#query').val('');
@@ -565,7 +565,7 @@ function adjustIframeSize(newHeight,i) {
     console.log("size adjusted", newHeight);
 }
 
-function swap(){ // 同じパタンが連続した行の行と桁を入れ換える
+function transpose(){ // 同じパタンが連続した行の行と桁を入れ換える
     if(editline < 0) return; // 編集中じゃない
     var i;
     var beginline = 0;
@@ -577,7 +577,7 @@ function swap(){ // 同じパタンが連続した行の行と桁を入れ換え
 	else {
 	    if(lastspaces > 1 && i-beginline > 1){ // 同じパタンの連続を検出
 		if(editline >= beginline && editline < i){
-		    do_swap(beginline,i-beginline,indent(beginline));
+		    do_transpose(beginline,i-beginline,indent(beginline));
 		    return;
 		}
 	    }
@@ -588,14 +588,13 @@ function swap(){ // 同じパタンが連続した行の行と桁を入れ換え
     }
     if(lastspaces > 1 && i-beginline > 1){ //  同じパタンの連続を検出
 	if(editline >= beginline && editline < i){
-	    do_swap(beginline,i-beginline,indent(beginline));
+	    do_transpose(beginline,i-beginline,indent(beginline));
 	    return;
 	}
     }
 }
 
-function do_swap(beginline,lines,indent){  // begin番目からlines個の行の行と桁を入れ換え
-    // alert("swap from " + beginline + ", " + lines + " lines.");
+function do_transpose(beginline,lines,indent){  // begin番目からlines個の行の行と桁を入れ換え
     var x,y;
     var cols = spaces[beginline] + 1;
     var newlines = [];
