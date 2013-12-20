@@ -517,11 +517,6 @@ function display(delay){
 			gistFrameDoc.writeln(gistFrameHTML);
 			gistFrameDoc.close(); 
 		    }
-		    //else if(m = data[i].match(/\[\[([EWNSZ0-9\.]*)\]\]/)){ // 地図
-		    // o = parseloc(m[1]);
-		    //	t.css('display','inline').css('visibility','visible').css('line-height','').html(o.lat);
-		    // p.attr('class','listedit'+ind).css('display','block').css('visibility','visible').css('line-height','');
-		    // }
 		    else {
 			t.css('display','inline').css('visibility','visible').css('line-height','').html(tag(data[i],i));
 			p.attr('class','listedit'+ind).css('display','block').css('visibility','visible').css('line-height','');
@@ -549,18 +544,6 @@ function display(delay){
 	posy[i] = $('#list'+i).position().top;
 	//posy[i] = $("#e" + i + "_0").offset().top;
     }
-
-    /*    
-    for(i=0;i<data.length;i++){
-	//posy[i] = $('#list'+i).position().top;
-	//posy[i] = $("#e" + i + "_0").offset().top;
-    }
-    for(i=0;i<data.length;i++){
-    	for(var j=0;j<=spaces[i];i++){
-    	    $("#e" + i + "_" + j).css('position','absolute').css('top',posy[line]);
-    	}
-    }
-    */
     aligncolumns();
 
     // リファラを消すプラグイン
@@ -742,42 +725,42 @@ function tag(s,line){
 	else if(t = inner.match(/^([a-fA-F0-9]{32})\.(\w+) (.*)$/)){ // (MD5).ext をpitecan.com上のデータにリンク (2010 5/1)
 	    matched.push('<a href="http://masui.sfc.keio.ac.jp/' + t[1] + '.' + t[2] + '" class="link">' + t[3] + '</a>');
 	}
-    // googlemapの表示
-    // [[E135.0W35.0]] や [[W35.0.0E135.0.0Z12]] のような記法で地図を表示
-    else if(inner.match(/^([EW]\d+\.\d+[\d\.]*[NS]\d+\.\d+[\d\.]*|[NS]\d+\.\d+[\d\.]+[EW]\d+\.\d+[\d\.]*)(Z\d+)?$/)){
-      var o = parseloc(inner);
-      var s = "\
-              <div id='map' style='width:300px;height:300px'></div>\
-              <div id='line1' style='position:absolute;width:300px;height:4px;background-color:rgba(200,200,200,0.3);'></div>\
-              <div id='line2' style='position:absolute;width:4px;height:300px;background-color:rgba(200,200,200,0.3);'></div>\
-              <script type='text/javascript'>\
-                  var mapOptions = {\
-                    center: new google.maps.LatLng("+o.lat+","+o.lng+"),\
-                    zoom: "+o.zoom+",\
-                    mapTypeId: google.maps.MapTypeId.ROADMAP\
-                  };\
-                  var mapdiv = document.getElementById('map');\
-                  var map = new google.maps.Map(mapdiv,mapOptions);\
-                  var linediv1 = document.getElementById('line1');\
-                  var linediv2 = document.getElementById('line2');\
-                  google.maps.event.addListener(map, 'idle', function() {\
-                     linediv1.style.top = mapdiv.offsetTop+150-2;\
-                     linediv1.style.left = mapdiv.offsetLeft;\
-                     linediv2.style.top = mapdiv.offsetTop;\
-                     linediv2.style.left = mapdiv.offsetLeft+150-2;\
-                  });\
-                  google.maps.event.addListener(map, 'mouseup', function() {\
-                     var latlng = map.getCenter();\
-                     var o = {};\
-                     o.lng = latlng.lng();\
-                     o.lat = latlng.lat();\
-                     o.zoom = map.getZoom();\
-                     for(var i=0;i<data.length;i++){\
-                       data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
-                     }\
-                     writedata();\
-                  });\
-              </script>";
+	// googlemapの表示
+	// [[E135.0W35.0]] や [[W35.0.0E135.0.0Z12]] のような記法で地図を表示
+	else if(inner.match(/^([EW]\d+\.\d+[\d\.]*[NS]\d+\.\d+[\d\.]*|[NS]\d+\.\d+[\d\.]+[EW]\d+\.\d+[\d\.]*)(Z\d+)?$/)){
+	    var o = parseloc(inner);
+	    var s = "\
+		<div id='map' style='width:300px;height:300px'></div>\
+		<div id='line1' style='position:absolute;width:300px;height:4px;background-color:rgba(200,200,200,0.3);'></div>\
+		<div id='line2' style='position:absolute;width:4px;height:300px;background-color:rgba(200,200,200,0.3);'></div>\
+		<script type='text/javascript'>\
+            var mapOptions = {\
+            center: new google.maps.LatLng("+o.lat+","+o.lng+"),\
+            zoom: "+o.zoom+",\
+            mapTypeId: google.maps.MapTypeId.ROADMAP\
+        };\
+            var mapdiv = document.getElementById('map');\
+            var map = new google.maps.Map(mapdiv,mapOptions);\
+            var linediv1 = document.getElementById('line1');\
+            var linediv2 = document.getElementById('line2');\
+            google.maps.event.addListener(map, 'idle', function() {\
+            linediv1.style.top = mapdiv.offsetTop+150-2;\
+            linediv1.style.left = mapdiv.offsetLeft;\
+            linediv2.style.top = mapdiv.offsetTop;\
+            linediv2.style.left = mapdiv.offsetLeft+150-2;\
+        });\
+            google.maps.event.addListener(map, 'mouseup', function() {\
+            var latlng = map.getCenter();\
+            var o = {};\
+            o.lng = latlng.lng();\
+            o.lat = latlng.lat();\
+            o.zoom = map.getZoom();\
+            for(var i=0;i<data.length;i++){\
+            data[i] = data[i].replace(/\\[\\[([EW]\\d+\\.\\d+[\\d\\.]*[NS]\\d+\\.\\d+[\\d\\.]*|[NS]\\d+\\.\\d+[\\d\\.]+[EW]\\d+\\.\\d+[\\d\\.]*)(Z\\d+)?\\]\\]/,'[['+locstr(o)+']]');\
+        }\
+            writedata();\
+        });\
+            </script>";
 	    matched.push(s);
 	}
 	else {
