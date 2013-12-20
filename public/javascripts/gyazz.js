@@ -277,7 +277,7 @@ $(document).keydown(function(event){
 		if(dst >= 0){
 		    m2 = editline-dst;
 		    for(i=0;i<m2;i++) tmp[i] = data[dst+i];
-		    for(i=0;i<m;i++)  data[dst+i] = data[editline+i]
+		    for(i=0;i<m;i++)  data[dst+i] = data[editline+i];
 					  for(i=0;i<m2;i++) data[dst+m+i] = tmp[i];
 		    editline = dst;
 		    deleteblankdata();
@@ -352,7 +352,6 @@ $(document).keydown(function(event){
 	    $('#querydiv').css('visibility','visible').css('display','block');
 	    $('#query').focus();
 	}
-	//else if(kc >= 0x20 && kc <= 0x7e || kc == 0x08 || (ck && kc == 0x68)){
 	else if(ck && kc == 0x68){
 	    edited = true;
 	}
@@ -517,9 +516,6 @@ function display(delay){
 			gistFrameDoc.open();
 			gistFrameDoc.writeln(gistFrameHTML);
 			gistFrameDoc.close(); 
-
-			//			t.css('display','block');
-			//			p.css('display','block');
 		    }
 		    //else if(m = data[i].match(/\[\[([EWNSZ0-9\.]*)\]\]/)){ // 地図
 		    // o = parseloc(m[1]);
