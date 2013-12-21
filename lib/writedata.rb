@@ -176,11 +176,11 @@ def __writedata(data,do_backup=true) # 無条件書き込み
     curdata = File.read(curfile)
   end                                 # curdata: Web上の最新データ
 
+  # バックアップディレクトリを作成
+  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
+  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
+
   if do_backup then
-    # バックアップディレクトリを作成
-    Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
-    Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
-    
     # 最新データをバックアップ
     if curdata != "" && curdata != newdata then
       File.open(newbackupfile(name,title),'w'){ |f|
