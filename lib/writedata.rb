@@ -5,6 +5,7 @@ require 'lib'
 require 'sdbm'
 require 'pair'
 require 'set'
+require 'keyword'
 
 def writable?(name,gyazoid)
   return true;
@@ -226,5 +227,5 @@ def __writedata(data) # 無条件書き込み
 
   # status # 'conflict' or 'noconflict'
 
-  redirect "/#{name}/#{title}"
+  "/#{name}/#{title}"
 end

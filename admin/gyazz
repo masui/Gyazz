@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+#
+# 管理コマンド
+#
+# % gyazz list masui
+#   masuiにページをリストする
+#
+
+$:.unshift File.expand_path '../lib'
+
+require 'uri'
+require 'lib'
+require 'pair'
+require 'readdata'
+require 'writedata'
+
+cmd = ARGV.shift
+if cmd.nil?
+  puts "% gyazz cmd {args}"
+  exit
+end
+
+if cmd == 'list' then
+  name = ARGV.shift
+  exit unless name
+
+  top = topdir(name)
+  pair = Pair.new("#{top}/pair")
+  titles = pair.keys
+  pair.close
+
+  puts titles
+elsif cmd == 'replace' then
+  name = ARGV.shift
+  from = ARGV.shift
+  to = ARGV.shift
+  exit if !name || !from || !to
+  puts from
+
+  top = topdir(name)
+  pair = Pair.new("#{top}/pair")
+  titles = pair.keys
+  pair.close
+
+  titles.each { |title| 
+    data = readdata(name,title)
+    newdata = []
+    newdata << name
+    newdata << title
+    data.gsub!(from,to)
+    newdata += data.split(/\n/)
+    
+    __writedata(newdata)
+    #puts "----- #{title} ------"
+    #puts newdata
+  }
+end
+

@@ -94,14 +94,14 @@ post '/__write__' do # 無条件書き込み
   postdata = params[:data].split(/\n/)
   name = postdata[0]
   check_auth(name)
-  __writedata(postdata)
+  redirect(__writedata(postdata))
 end
 
 get '/__write__' do # 無条件書き込み
   postdata = params[:data].split(/\n/)
   name = postdata[0]
   check_auth(name)
-  __writedata(postdata)
+  redirect(__writedata(postdata))
 end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|
