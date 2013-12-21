@@ -14,8 +14,6 @@
 #  答3
 #  答4
 #
-require 'lib'
-require 'readdata'
 
 ######################################
 #
@@ -29,12 +27,12 @@ require 'readdata'
   end
 
   def password_required?(name)
-    file = datafile(name,".passwd") || datafile(name,".password")
+    file = Gyazz.datafile(name,".passwd") || Gyazz.datafile(name,".password")
     File.exist?(file) ? file : nil
   end
   
   def password_authorized?(name)
-    # file = datafile(name,".passwd") || datafile(name,".password")
+    # file = Gyazz.datafile(name,".passwd") || Gyazz.datafile(name,".password")
     # return true unless File.exist?(file)
     file = password_required?(name)
     return true unless file
@@ -55,12 +53,12 @@ ALL_AUTH = '.完全認証'
 WRITE_AUTH = '.書込認証'
 
 def auth_page_exist?(name,title)
-  File.exist?(datafile(name,title)) && File.read(datafile(name,title)).gsub(/[\n\s]/,'') != ""
+  File.exist?(Gyazz.datafile(name,title)) && File.read(Gyazz.datafile(name,title)).gsub(/[\n\s]/,'') != ""
 end
 
 def auth_cookie(name,title)
   data = readdata(name,title)
-  md5(name + title + data)
+  Gyazz.md5(name + title + data)
 end
 
 def cookie_authorized?(name,title)

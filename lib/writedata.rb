@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 
-require 'config'
-require 'lib'
 require 'sdbm'
-require 'pair'
 require 'set'
-require 'keyword'
 
 def writable?(name,gyazoid)
   return true;
 
-  attr = SDBM.open("#{topdir(name)}/attr",0644);
+  attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
 
   gyazoids = Set.new
   imageid = SDBM.open("#{FILEROOT}/imageid",0644)
-  Dir.open(topdir(name)).each { |f|
+  Dir.open(Gyazz.topdir(name)).each { |f|
     if f =~ /^[0-9a-f]{32}$/ then
-      filename = "#{topdir(name)}/#{f}"
+      filename = "#{Gyazz.topdir(name)}/#{f}"
       if File.file?(filename) then
         File.open(filename){ |f|
           f.each { |line|
@@ -51,21 +47,21 @@ def writedata(data)
     return "protected"
   end
 
-  curfile = datafile(name,title,0)
+  curfile = Gyazz.datafile(name,title,0)
   server_md5 = ""
   curdata = ""
   if File.exist?(curfile) then
     curdata = File.read(curfile).sub(/\n+$/,'')+"\n"
-    server_md5 = md5(curdata)
+    server_md5 = Gyazz.md5(curdata)
   end                                 # curdata: Web上の最新データ
 
   # バックアップディレクトリを作成
-  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
-  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
+  Dir.mkdir(Gyazz.backupdir(name)) unless File.exist?(Gyazz.backupdir(name))
+  Dir.mkdir(Gyazz.backupdir(name,title)) unless File.exist?(Gyazz.backupdir(name,title))
 
   # 最新データをバックアップ
   if curdata != "" && curdata != newdata then
-    File.open(newbackupfile(name,title),'w'){ |f|
+    File.open(Gyazz.newbackupfile(name,title),'w'){ |f|
       f.print(curdata)
     }
   end
@@ -77,8 +73,8 @@ def writedata(data)
     status = 'noconflict'
   else
     # ブラウザが指定したMD5のファイルを捜す
-    oldfile = backupfiles(name,title).find { |f|
-      md5(File.read(f)) == browser_md5
+    oldfile = Gyazz.backupfiles(name,title).find { |f|
+      Gyazz.md5(File.read(f)) == browser_md5
     }
     if oldfile then
       newfile = "/tmp/newfile#{$$}"
@@ -101,7 +97,7 @@ def writedata(data)
 
   # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-  dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
+  dbm = SDBM.open("#{Gyazz.backupdir(name,title)}/timestamp",0644)
   data.each { |line|
     l = line.sub(/^\s*/,'')
     if !dbm[l] then
@@ -111,7 +107,7 @@ def writedata(data)
   dbm.close
 
   # リンク情報更新
-  pair = Pair.new("#{topdir(name)}/pair")
+  pair = Pair.new("#{Gyazz.topdir(name)}/pair")
   curdata.keywords.each { |keyword|
     pair.delete(title,keyword)
   }
@@ -142,7 +138,7 @@ def writedata(data)
   #  pair.close
 
   # 代表画像
-  repimage = SDBM.open("#{topdir(name)}/repimage")
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
   if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
     repimage[title] = $1
   elsif data[0] =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
@@ -165,39 +161,40 @@ def __writedata(data,do_backup=true) # 無条件書き込み
 
   puts "__writedata: #{name}/#{title}"
 
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
 
-  curfile = datafile(name,title,0)
+  curfile = Gyazz.datafile(name,title,0)
   curdata = ""
   if File.exist?(curfile) then
     curdata = File.read(curfile)
   end                                 # curdata: Web上の最新データ
 
   # バックアップディレクトリを作成
-  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
-  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
+  Dir.mkdir(Gyazz.backupdir(name)) unless File.exist?(Gyazz.backupdir(name))
+  Dir.mkdir(Gyazz.backupdir(name,title)) unless File.exist?(Gyazz.backupdir(name,title))
 
   if do_backup then
     # 最新データをバックアップ
     if curdata != "" && curdata != newdata then
-      File.open(newbackupfile(name,title),'w'){ |f|
+      File.open(Gyazz.newbackupfile(name,title),'w'){ |f|
         f.print(curdata)
       }
     end
   end
 
   # 書込み
-  curfile = datafile(name,title,0)
+  curfile = Gyazz.datafile(name,title,0)
+
   File.open(curfile,"w"){ |f|
     f.print(newdata)
   }
 
   # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-  dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
+  dbm = SDBM.open("#{Gyazz.backupdir(name,title)}/timestamp",0644)
   data.each { |line|
     l = line.sub(/^\s*/,'')
     if !dbm[l] then
@@ -207,7 +204,7 @@ def __writedata(data,do_backup=true) # 無条件書き込み
   dbm.close
 
   # リンク情報更新
-  pair = Pair.new("#{topdir(name)}/pair")
+  pair = Pair.new("#{Gyazz.topdir(name)}/pair")
   curdata.keywords.each { |keyword|
     pair.delete(title,keyword)
   }
@@ -217,7 +214,7 @@ def __writedata(data,do_backup=true) # 無条件書き込み
   pair.close
 
   # 代表画像
-  repimage = SDBM.open("#{topdir(name)}/repimage")
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
   if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
     repimage[title] = $1
   elsif data[0] =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i

@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-require 'config'
-require 'lib'
-require 'pair'
 require 'sdbm'
-require 'history'
 require 'asearch'
 
 def titles(name)
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
@@ -19,7 +15,7 @@ def titles(name)
 
   @id2title = {}
   titles.each { |title|
-    @id2title[md5(title)] = title
+    @id2title[Gyazz.md5(title)] = title
   }
 
   ids = Dir.open(top).find_all { |file|
@@ -39,7 +35,7 @@ def titles(name)
 end
 
 def search(name,query='',namesort=false)
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
@@ -50,7 +46,7 @@ def search(name,query='',namesort=false)
 
   @id2title = {}
   titles.each { |title|
-    @id2title[md5(title)] = title
+    @id2title[Gyazz.md5(title)] = title
   }
 
   ids = Dir.open(top).find_all { |file|
@@ -67,8 +63,8 @@ def search(name,query='',namesort=false)
   }
 
   @sortbydate = false
-  if File.exist?("#{topdir(name)}/attr.dir") then
-    attr = SDBM.open("#{topdir(name)}/attr",0644);
+  if File.exist?("#{Gyazz.topdir(name)}/attr.dir") then
+    attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
     @sortbydate = (attr['sortbydate'] == 'true' ? true : false)
     attr.close
   end
@@ -83,8 +79,8 @@ def search(name,query='',namesort=false)
       ids.each { |id|
         t = modtime[id].strftime('%Y%m%d%H%M%S')
         title = @id2title[id]
-        if File.exist?(backupdir(name,title)) then
-          Dir.open(backupdir(name,title)).each { |f|
+        if File.exist?(Gyazz.backupdir(name,title)) then
+          Dir.open(Gyazz.backupdir(name,title)).each { |f|
             t = f if f =~ /^[0-9a-fA-F]{14}$/ && f < t
           }
         end
@@ -110,12 +106,12 @@ def search(name,query='',namesort=false)
   if @q != '' then
     @matchids = hotids.find_all { |id|
       title = @id2title[id]
-      content = File.read("#{topdir(name)}/#{id}")
+      content = File.read("#{Gyazz.topdir(name)}/#{id}")
       title.match(/#{@q}/i) || content.match(/#{@q}/i)
     }
   end
 
-  repimage = SDBM.open("#{topdir(name)}/repimage",0644)
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   @matchimages = @matchids.collect { |id|
     title = @id2title[id]
     if repimage[title] then
@@ -141,7 +137,7 @@ def search(name,query='',namesort=false)
   @id2title.each { |id,title|
     @disptitle[id] = title
     if title =~ /^[0-9]{14}$/ then
-      file = "#{topdir(name)}/#{id}"
+      file = "#{Gyazz.topdir(name)}/#{id}"
       if File.exist?(file) then
         @disptitle[id] = title + " " + File.read(file).split(/\n/)[0]
       end
@@ -153,7 +149,7 @@ def search(name,query='',namesort=false)
 end
 
 def list(name)
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
@@ -164,7 +160,7 @@ def list(name)
 
   @id2title = {}
   titles.each { |title|
-    @id2title[md5(title)] = title
+    @id2title[Gyazz.md5(title)] = title
   }
 
   ids = Dir.open(top).find_all { |file|
@@ -180,7 +176,7 @@ def list(name)
     @modtime[b] <=> @modtime[a]
   }
   # アイコン
-  @repimages = SDBM.open("#{topdir(name)}/repimage",0644)
+  @repimages = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   # JSON作成
   $KCODE = "u"
   "[\n" +
@@ -204,7 +200,7 @@ end
 ## "macruby", "Mac Ruby", "mac ruby" -> MacRuby
 ## "IPWebcam", "ip webcam", "IP WebCam" -> IP Webcam
 def similar_page_titles(wiki_name, title)
-  top = topdir wiki_name
+  top = Gyazz.topdir wiki_name
   Dir.mkdir top unless File.exist? top
 
   pair = Pair.new "#{top}/pair"
@@ -213,7 +209,7 @@ def similar_page_titles(wiki_name, title)
 
   id2title = {}
   titles.each do |i|
-    id2title[md5(i)] = i
+    id2title[Gyazz.md5(i)] = i
   end
 
   ids = Dir.open(top).find_all { |file|
