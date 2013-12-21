@@ -39,7 +39,7 @@ elsif cmd == 'replace' then
   exit if !name || !from || !to
   puts from
 
-  top = topdir(name)
+  top = Gyazz.topdir(name)
   pair = Pair.new("#{top}/pair")
   titles = pair.keys
   pair.close
