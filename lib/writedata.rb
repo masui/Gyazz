@@ -155,7 +155,7 @@ def writedata(data)
   status # 'conflict' or 'noconflict'
 end
 
-def __writedata(data) # 無条件書き込み
+def __writedata(data,do_backup=true) # 無条件書き込み
   # Wiki名/タイトル/新規データが送られる
   # MD5は使わない
 
@@ -176,23 +176,19 @@ def __writedata(data) # 無条件書き込み
     curdata = File.read(curfile)
   end                                 # curdata: Web上の最新データ
 
-  # バックアップディレクトリを作成
-  Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
-  Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
-
-  # 最新データをバックアップ
-  if curdata != "" && curdata != newdata then
-    File.open(newbackupfile(name,title),'w'){ |f|
-      f.print(curdata)
-    }
+  if do_backup then
+    # バックアップディレクトリを作成
+    Dir.mkdir(backupdir(name)) unless File.exist?(backupdir(name))
+    Dir.mkdir(backupdir(name,title)) unless File.exist?(backupdir(name,title))
+    
+    # 最新データをバックアップ
+    if curdata != "" && curdata != newdata then
+      File.open(newbackupfile(name,title),'w'){ |f|
+        f.print(curdata)
+      }
+    end
   end
-
-  curfile = datafile(name,title,0)
-  File.open(curfile,"w"){ |f|
-    f.print(newdata)
-  }
-  status = 'noconflict'
-
+    
   # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
   dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)

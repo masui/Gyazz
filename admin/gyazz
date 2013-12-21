@@ -51,7 +51,7 @@ elsif cmd == 'replace' then
     data.gsub!(from,to)
     newdata += data.split(/\n/)
     
-    __writedata(newdata)
+    __writedata(newdata,false)
     #puts "----- #{title} ------"
     #puts newdata
   }
