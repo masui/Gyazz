@@ -188,7 +188,13 @@ def __writedata(data,do_backup=true) # 無条件書き込み
       }
     end
   end
-    
+
+  # 書込み
+  curfile = datafile(name,title,0)
+  File.open(curfile,"w"){ |f|
+    f.print(newdata)
+  }
+
   # 各行のタイムスタンプ保存
   timestamp = Time.now.strftime('%Y%m%d%H%M%S')
   dbm = SDBM.open("#{backupdir(name,title)}/timestamp",0644)
