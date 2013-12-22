@@ -54,6 +54,8 @@ end
 post '/__write' do
   postdata = []
   name = ""
+  title = ""
+  orig_md5 = ""
   if params.has_key? :name
     # パラメタ利用でのの書き込み by @keroxp 2013/12/10
     # @params name
@@ -63,29 +65,27 @@ post '/__write' do
     name = params[:name]
     title = params[:title]
     orig_md5 = params[:orig_md5]
-    data = params[:data]
-    postdata = [name,title,orig_md5,data]
+    postdata = params[:data]
+    #postdata = [name,title,orig_md5,data]
   else
     # 旧式の書き込み
-    postdata = params[:data].split(/\n/)
-    name = postdata[0]
+    data = params[:data].split(/\n/)
+    name = data.shift
+    title = data.shift
+    orig_md5 = data.shift
+    postdata = data.join("\n")
   end
   check_auth(name)
-  writedata(postdata)
+  writedata(name,title,postdata,orig_md5)
 end
 
-post '/__write__' do # 無条件書き込み
-  postdata = params[:data].split(/\n/)
-  name = postdata[0]
+get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
+  data = params[:data].split(/\n/)
+  name = data.shift
+  title = data.shift
   check_auth(name)
-  redirect(__writedata(postdata))
-end
-
-get '/__write__' do # 無条件書き込み
-  postdata = params[:data].split(/\n/)
-  name = postdata[0]
-  check_auth(name)
-  redirect(__writedata(postdata))
+  writedata(name,title,data)
+  redirect("/#{name}/#{title}")
 end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|

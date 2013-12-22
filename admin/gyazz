@@ -17,6 +17,7 @@ require 'config'
 require 'pair'
 require 'readdata'
 require 'writedata'
+require 'keyword'
 
 cmd = ARGV.shift
 if cmd.nil?
@@ -48,13 +49,7 @@ elsif cmd == 'replace' then
 
   titles.each { |title| 
     data = readdata(name,title)
-    newdata = []
-    newdata << name
-    newdata << title
     data.gsub!(from,to)
-    newdata += data.split(/\n/)
-    
-    __writedata(newdata,false)
+    writedata(name,title,data)
   }
 end
-
