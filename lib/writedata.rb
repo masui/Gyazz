@@ -114,6 +114,9 @@ def writedata(name,title,data,browser_md5 = nil)
   }
   pair.close
 
+  # 書込みのたびにリンク情報を完全に更新しようとしたコード。
+  # 遅いのでとりあえず消しておく
+  #
   #  # リンク情報更新
   #  pair = Pair.new("#{topdir(name)}/pair")
   #  links = pair.collect(title) # 定義されているリンク全部
