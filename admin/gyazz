@@ -3,8 +3,10 @@
 #
 # 管理コマンド
 #
-# % gyazz list masui
-#   masuiにページをリストする
+# % gyazz list wikiname
+#   wikinameのページをリストする
+# % gyazz replace wikiname fromstr tostr
+#   wikinamae内の全ページ内の文字列fromstrをtostrに置換する
 #
 
 $:.unshift File.expand_path '../lib', File.dirname(__FILE__)
@@ -53,8 +55,6 @@ elsif cmd == 'replace' then
     newdata += data.split(/\n/)
     
     __writedata(newdata,false)
-    #puts "----- #{title} ------"
-    #puts newdata
   }
 end
 
