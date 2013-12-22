@@ -23,8 +23,8 @@
 //  var name =  '<%= @name.split(/'/).join("\\'") %>';
 //  var title = '<%= @title.split(/'/).join("\\'") %>';
 //  var root =  '<%= @urlroot.split(/'/).join("\\'") %>';
-  var name =  '<%= escape_html @name %>';
-  var title = '<%= escape_html @title %>';
+  var name =  '<%= escape_jsvar @name %>';
+  var title = '<%= escape_jsvar @title %>';
   var root =  '<%= @urlroot %>';
   var version = 0;
 

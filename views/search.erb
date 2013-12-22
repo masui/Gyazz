@@ -39,7 +39,7 @@
         <% url = "#{@urltop}/#{title}" %>
         <div class="listedit0__xxx">
           <img id="<%= id %>" src="<%= @urlroot %>/<%= @name %>/<%= title %>/access.png" width=50 height=12>
-          <a href="<%= url %>" class='tag'><%= shorttitle %></a>
+          <a href="<%= url %>" class='tag'><%= escape_html shorttitle %></a>
         </div>
         <% interval = 0 %>
         <% interval = 1400 if v[5].to_i > 0 %>

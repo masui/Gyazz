@@ -1,7 +1,11 @@
 helpers do
 
-  def escape_html(str)
+  def escape_jsvar(str)
     str.gsub("'"){ "\\'" }
+  end
+
+  def escape_html(str)
+    Rack::Utils.escape_html str
   end
 
   def app_root()
