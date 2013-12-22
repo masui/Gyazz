@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'lib'
-
 # アクセス履歴をJSONで返す
 def access(name,title)
   accessfile = "#{Gyazz.backupdir(name,title)}/access"
