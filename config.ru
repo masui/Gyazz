@@ -26,6 +26,5 @@ require 'lib/contenttype'
 require 'helpers/helper'
 
 require 'controllers/gyazz'
-require 'controllers/tmpshare'
 
 run Sinatra::Application
