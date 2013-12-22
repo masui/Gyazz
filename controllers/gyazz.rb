@@ -4,8 +4,6 @@
 require 'json'
 require 'date'
 
-# require 'tmpshare'
-
 # Cookieを使う
 enable :sessions
 set :session_secret, SESSION_SECRET # 塩
