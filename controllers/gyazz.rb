@@ -29,7 +29,8 @@ end
 get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
-  history_json(name,title)
+  # history_json(name,title)
+  history(name,title).reverse.to_json
 end
 
 get '/:name/*/search' do          # /増井研/合宿/search
@@ -239,14 +240,15 @@ get '/:name/*/access.png' do
   history_png(name,title)
 end
 
-get '/:name/*/__access' do
+
+get '/:name/*/__access' do # アクセス履歴
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
   accesshistory(name,title).to_json
 end
 
-get '/:name/*/__modify' do
+get '/:name/*/__modify' do # 変更履歴
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)

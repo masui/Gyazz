@@ -29,6 +29,7 @@
       <% @matchids.each { |id| %>
         <% title = @id2title[id] %>
         <% v = history(@name,title) %>
+	<% p v %>
 	<% disptitle = @disptitle[id] %>
         <% shorttitle = disptitle.sub(/\[\[http\S*\s+(.*)\]\]/){ $1 } %>
 	<% if @sortbydate then %>

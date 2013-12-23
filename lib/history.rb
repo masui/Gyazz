@@ -3,6 +3,17 @@
 MAX = 25
 MAXH = 12
 
+# 変更履歴をJSONで返す
+def modify(name,title)
+  dir = Gyazz.backupdir(name,title)
+  return '' unless File.exist?(dir)
+  Dir.open(dir).find_all { |f|
+    f =~ /^\d{14}$/
+  }.sort { |a,b|
+    a <=> b
+  }.push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S')).to_json
+end
+
 def history(name,title)
   dir = Gyazz.backupdir(name,title)
   timestamps = Dir.open(dir).find_all { |file|
@@ -23,15 +34,15 @@ def history(name,title)
     ind = MAX-1 if ind >= MAX
     v[ind] = v[ind].to_i + 1
   }
-  v
+  (0..MAX).collect { |i| v[i].to_i }
 end
 
-def history_json(name,title)
-  v = history(name,title)
-  (0..MAX-1).collect { |i|
-    v[i].to_i
-  }.reverse.to_json
-end
+#def history_json(name,title)
+#  v = history(name,title)
+#  (0..MAX-1).collect { |i|
+#    v[i].to_i
+#  }.reverse.to_json
+#end
 
 def history_png(name,title)
   v = history(name,title)
