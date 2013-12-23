@@ -12,6 +12,10 @@ configure do
   set :protection, :except => :frame_options
 end
 
+before '/:name/*' do
+  puts "BEFORE #{params[:name]} #{params[:splat]}"
+end
+
 get '/' do
   redirect "#{app_root}#{DEFAULTPAGE}"
 end
@@ -26,7 +30,7 @@ get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
   history_json(name,title)
- end
+end
 
 get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
@@ -209,29 +213,6 @@ end
 # リスト表示
 #
 
-def check_auth(name)
-  authorized_by_cookie = false
-  if auth_page_exist?(name,ALL_AUTH) then
-    if cookie_authorized?(name,ALL_AUTH) then
-      authorized_by_cookie = true
-    end
-  end
-  # 前はこうなっていた。変だと思うが何故放置されてたのか...? (2013/03/16 11:40:44)
-  #authorized_by_cookie = true
-  #if auth_page_exist?(name,ALL_AUTH) then
-  #  if !cookie_authorized?(name,ALL_AUTH) then
-  #    authorized_by_cookie = false
-  #  end
-  #end
-
-  if !password_authorized?(name) then
-    if !authorized_by_cookie then
-      response['WWW-Authenticate'] = %(Basic realm="#{name}")
-      throw(:halt, [401, "Not authorized.\n"])
-    end
-  end
-end
-
 get "/:name" do |name|
   check_auth(name)
   search(name)
@@ -264,7 +245,7 @@ get '/:name/*/__access' do
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
-  access(name,title)
+  accesshistory(name,title).to_json
 end
 
 get '/:name/*/__modify' do
@@ -438,8 +419,13 @@ end
 #
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
-#  protected!(name)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+
+  # アクセスカウンタインクリメント
+  accesscount(name,title,accesscount(name,title)+1)
+
+  # アクセス履歴を保存
+  accesshistory(name,title,true)
 
   authorized_by_cookie = false
   write_authorized = true

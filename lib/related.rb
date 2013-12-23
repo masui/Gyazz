@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# require 'sdbm'
-# require 'db'
-
-def _weight(name,title)
+def page_weight(name,title)
   pair = Pair.new("#{Gyazz.topdir(name)}/pair")
 
   pagekeywords = []
@@ -58,53 +55,45 @@ def _weight(name,title)
 end
 
 def related(name,title)
-  h = _weight(name,title)
+  h = page_weight(name,title)
   h.keys.sort { |a,b|
     h[b] <=> h[a]
   }
 end
 
-def related_html(name,title)
+def related_pages(name,title)
   top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
-  # repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
-    # @target_url = "#{app_root}/#{name}/#{t}"
-    @target_url = "#{app_root}/#{name}/#{URI.encode(t)}"
+    target = {}
+    target['url'] = "#{app_root}/#{name}/#{URI.encode(t)}"
     if t =~ /^[0-9]{14}/ then
       file = "#{Gyazz.topdir(name)}/#{Gyazz.md5(t)}"
       t = File.read(file).split(/\n/)[0]
     end
-    @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
-    @target_title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
+    target['text'] = t
+    target['title'] = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
+    target['title'].sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
+    imgeurl = nil
     image = repimage(name,t)
     if image.to_s != ''
       if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
-        @imageurl = image
+        target['imageurl'] = image
       else
-        @imageurl = "http://gyazo.com/#{image}.png"
+        target['imageurl'] = "http://gyazo.com/#{image}.png"
       end
-      erb :icon
-    else
-      length = t.split(//).length
-      @fontsize = (length <= 2 ? 20 : length < 4 ? 14 : 10)
-      @fontsize = 9
-      targetid = Gyazz.md5(t)
-      @r = (targetid[0..1].hex.to_f * 0.5 + 16).to_i.to_s(16)
-      @g = (targetid[2..3].hex.to_f * 0.5 + 16).to_i.to_s(16)
-      @b = (targetid[4..5].hex.to_f * 0.5 + 16).to_i.to_s(16)
-      erb :texticon
     end
-  }.join(' ')
+    target
+  }
 end
 
 if $0 == __FILE__ then
 #  puts related_html("増井研","合宿")
   puts related_html("増井研","ブックマークレット")
 
-  _weight("増井研","合宿").collect { |title,val|
+  page_weight("増井研","合宿").collect { |title,val|
     puts "#{title}\t#{val}"
   }
 end

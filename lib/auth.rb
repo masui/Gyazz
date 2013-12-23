@@ -45,6 +45,31 @@
   end
 
 ######################################
+
+def check_auth(name)
+  authorized_by_cookie = false
+  if auth_page_exist?(name,ALL_AUTH) then
+    if cookie_authorized?(name,ALL_AUTH) then
+      authorized_by_cookie = true
+    end
+  end
+  # 前はこうなっていた。変だと思うが何故放置されてたのか...? (2013/03/16 11:40:44)
+  #authorized_by_cookie = true
+  #if auth_page_exist?(name,ALL_AUTH) then
+  #  if !cookie_authorized?(name,ALL_AUTH) then
+  #    authorized_by_cookie = false
+  #  end
+  #end
+
+  if !password_authorized?(name) then
+    if !authorized_by_cookie then
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
+      throw(:halt, [401, "Not authorized.\n"])
+    end
+  end
+end
+
+######################################
 #
 # なぞなぞ認証のためのもの
 #

@@ -16,4 +16,3 @@ def edit(name,title,version=0)
 
   erb :edit
 end
-

@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" href="<%= app_root %>/gyazz.png">
   <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
   <link rel="alternate" type="application/rss+xml" title="<%= @page['name'] %> RSS Feed" href="<%= app_root %>/<%= @page['name'] %>/rss.xml" />
-  <meta name="robots" content="<%= @robotspec %>">
+  <meta name="robots" content="<%= @page['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
 
   <script language="JavaScript" src='<%= app_root %>/javascripts/pbsearch.js'></script>
   <script language="JavaScript" src='<%= app_root %>/javascripts/pbdict.js'></script>
@@ -25,8 +25,8 @@
   var root =  '<%= app_root %>';
   var version = 0;
 
-  var do_auth = <%= @do_auth %>;
-  var write_authorized = <%= @write_authorized %>;
+  var do_auth = <%= @page['do_auth'] %>;
+  var write_authorized = <%= @page['write_authorized'] %>;
 
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();
@@ -40,7 +40,7 @@
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <% if @write_authorized then %>
+    <% if @page['write_authorized'] then %>
       <a href='<%= app_root %>/<%= @page['name'] %>/<%= @page['title'] %>/__edit/0' id='title'>
       <%= sanitize(@page['title']) %>
       </a>
@@ -58,7 +58,7 @@
 </div>
 
 <div id='rawdata'>
-<%= @rawdata.to_s.gsub(/</,'&lt;') %>
+<%= @page['rawdata'].to_s.gsub(/</,'&lt;') %>
 </div>
 
 <p>
@@ -71,7 +71,18 @@ Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
 <p>
 
 <div class="links">
-  <%= @page['related'] %>
+
+<% @page['related'].each { |entry| %>
+  <% if entry['imageurl'] then %>
+    <% @entry = entry %>
+    <%= erb :icon %>
+  <% else %>
+    <% @entry = entry %>
+    <%= erb :texticon %>
+  <% end %>
+<% } %>
+
+
   <p>
   <br clear='all'>
 </div>

@@ -1,12 +1,12 @@
-<a href='<%= @target_url %>' target='_blank'>
+<!--  画像アイコン  -->
+
+<a href='<%= @entry['url'] %>' target='_blank'>
   <div style="height:64;width:64;margin:2;float:left">
     <center>
-      <img src='<%= @imageurl %>'
-        title='<%= escape_html @target_title %>'
+      <img src='<%= @entry["imageurl"] %>'
+        title='<%= escape_html @entry["title"] %>'
         style='max-height:64;border:none;width:64;'
-      >
-      <!-- style='max-height:64;max-width:64;border:none;width:expression(document.body.clientWidth < 64? "64px" : document.body.clientWidth > 64? "64px" : "auto");' -->
+      />
     </center>
   </div>
 </a>
-

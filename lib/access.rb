@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 # アクセス履歴をJSONで返す
-def access(name,title)
-  accessfile = "#{Gyazz.backupdir(name,title)}/access"
-  (File.exist?(accessfile) ? File.open(accessfile).read.split : []).to_json
-end
+#def access(name,title)
+#  accessfile = "#{Gyazz.backupdir(name,title)}/access"
+#  (File.exist?(accessfile) ? File.open(accessfile).read.split : []).to_json
+#end
 
 # 変更履歴をJSONで返す
 def modify(name,title)
