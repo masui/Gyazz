@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-require 'sdbm'
+# require 'sdbm'
+# require 'db'
 
 def _weight(name,title)
   pair = Pair.new("#{Gyazz.topdir(name)}/pair")
@@ -68,7 +69,7 @@ def related_html(name,title)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
-  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
+  # repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   related(name,title).collect{ |t|
     # @target_url = "#{app_root}/#{name}/#{t}"
     @target_url = "#{app_root}/#{name}/#{URI.encode(t)}"
@@ -78,11 +79,12 @@ def related_html(name,title)
     end
     @target_title = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
     @target_title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
-    if repimage[t]
-      if repimage[t] =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
-        @imageurl = repimage[t]
+    image = repimage(name,t)
+    if image.to_s != ''
+      if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
+        @imageurl = image
       else
-        @imageurl = "http://gyazo.com/#{repimage[t]}.png"
+        @imageurl = "http://gyazo.com/#{image}.png"
       end
       erb :icon
     else

@@ -111,23 +111,6 @@ def search(name,query='',namesort=false)
     }
   end
 
-  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
-  @matchimages = @matchids.collect { |id|
-    title = @id2title[id]
-    if repimage[title] then
-      @target_url = "#{app_root}/#{name}/#{title}"
-      @target_title = title
-      if repimage[title] =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
-        @imageurl = repimage[title]
-      else
-        @imageurl = "http://gyazo.com/#{repimage[title]}.png"
-      end
-      erb :icon
-    else
-      ''
-    end
-  }.join('')
-
   @urltop = topurl(name)
   @name = name
   @urlroot = app_root
@@ -192,7 +175,7 @@ def list(name)
       icon_url = @repimages[title] ? @repimages[title] : ""
     end
     "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\", \"#{icon_url}\" ]"
- }.join(",\n") +
+  }.join(",\n") +
     "\n]\n"
 end
 

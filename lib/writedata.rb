@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-require 'sdbm'
-require 'set'
+# require 'sdbm'
+# require 'set'
+# require 'db'
 
 def writable?(name,gyazoid)
   return true;
@@ -139,16 +140,16 @@ def writedata(name,title,data,browser_md5 = nil)
   #  pair.close
 
   # 代表画像
-  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
+  # repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
   firstline = data.split(/\n/)[0]
   if firstline =~ /gyazo.com\/(\w{32})\.png/i then
-    repimage[title] = $1
+    repimage(name,title,$1)
   elsif firstline =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
-    repimage[title] = "#{$1}.#{$2}"
+    repimage(name,title,"#{$1}.#{$2}")
   else
-    repimage.delete(title)
+    repimage(name,title,'')
   end
-  repimage.close
+  # repimage.close
 
   status # 'conflict' or 'noconflict'
 end
