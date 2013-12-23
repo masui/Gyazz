@@ -7,6 +7,8 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
+    rack-test (0.6.2)
+      rack (>= 1.0)
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
       rack-protection (~> 1.4)
@@ -21,4 +23,5 @@ DEPENDENCIES
   backports
   json
   rack
+  rack-test
   sinatra
