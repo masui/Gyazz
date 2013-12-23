@@ -9,8 +9,8 @@ testrun:
 	bundle exec rackup config.ru -p 3000
 test:
 	ruby -Ilib lib/lib.rb
-#	ruby lib/contenttype.rb
-#	ruby lib/png.rb
-#	ruby lib/keyword.rb
-#	ruby lib/pair.rb
-#	ruby tests/run_suite.rb
+	ruby lib/contenttype.rb
+	ruby lib/png.rb
+	ruby lib/keyword.rb
+	ruby lib/pair.rb
+	ruby tests/run_suite.rb
