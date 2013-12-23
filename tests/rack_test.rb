@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
 require 'sinatra'
-require File.expand_path '../gyazz', File.dirname(__FILE__)
 require 'test/unit'
 require 'rack/test'
+
+$:.unshift File.expand_path '../', File.dirname(__FILE__)
+require 'lib/config'
+require 'controllers/gyazz'
 
 # ENV['RACK_ENV'] = 'test'
 
