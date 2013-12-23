@@ -30,7 +30,7 @@ get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
   history_json(name,title)
-end
+ end
 
 get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]

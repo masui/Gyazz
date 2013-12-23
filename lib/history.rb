@@ -13,34 +13,15 @@ def history(name,title)
   timestamps.each { |timestamp|
     timestamp =~ /^(....)(..)(..)(..)(..)(..)/
     t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
-    if true then # 羃的
-      d = (now - t).to_i / (60 * 60 * 24) # 時間
-      d = 1 if d == 0
-      ind = (Math.log(d) / Math.log(1.3)).floor
-      ind = MAX-1 if ind >= MAX
-      v[ind] = v[ind].to_i + 1
-    elsif true then # リニア
-      ind = (now - t).to_i / (60 * 60 * 24 * 30)
-      ind = MAX-1 if ind >= MAX
-      v[ind] = v[ind].to_i + 1
-    else # フィボナッチ
-      # 1, 2, 3, 5, 8, 13, ...
-      fib = []
-      fib[0] = 1
-      fib[1] = 2
-      (0..MAX).each { |i|
-        fib[i+2] = fib[i] + fib[i+1]
-      }
-      d = (now - t).to_i / (60 * 60 * 4)
-      ind = MAX-1
-      (0..MAX-1).each { |i|
-        if fib[i] >= d then
-          ind = i
-          break
-        end
-      }
-      v[ind] = v[ind].to_i + 1
-    end
+    #
+    # issue #59 を参照
+    # 羃的に計算する
+    #
+    d = (now - t).to_i / (60 * 60 * 24) # 時間
+    d = 1 if d == 0
+    ind = (Math.log(d) / Math.log(1.3)).floor
+    ind = MAX-1 if ind >= MAX
+    v[ind] = v[ind].to_i + 1
   }
   v
 end
