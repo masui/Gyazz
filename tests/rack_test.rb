@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
-require 'rubygems'
-require 'sinatra'
-require 'test/unit'
-require 'rack/test'
 
-$:.unshift File.expand_path '../', File.dirname(__FILE__)
-require 'lib/config'
-require 'controllers/gyazz'
+require File.expand_path 'test_helper', File.dirname(__FILE__)
 
 # ENV['RACK_ENV'] = 'test'
 
-class TestTest < Test::Unit::TestCase
+class TestTest < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   def app
