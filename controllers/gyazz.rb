@@ -333,14 +333,13 @@ end
 get '/:name/*/icon' do
   name = params[:name]
   title = params[:splat].join('/')
-  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
-  img = repimage[title]
-  halt 404, "image not found" if img.to_s.empty?
-  redirect case img
+  image = repimage(name,title)
+  halt 404, "image not found" if image.to_s.empty?
+  redirect case image
            when /^https?:\/\/.+\.(png|jpe?g|gif)$/i
-             img
+             image
            else
-             "http://gyazo.com/#{img}.png"
+             "http://gyazo.com/#{image}.png"
            end
 end
 
