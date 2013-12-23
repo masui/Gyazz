@@ -22,7 +22,6 @@ require 'lib/history'
 require 'lib/rss'
 require 'lib/access'
 require 'lib/auth'
-require 'lib/contenttype'
 
 require 'helpers/helper'
 

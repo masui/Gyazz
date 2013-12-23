@@ -195,9 +195,7 @@ post '/__upload' do
 end
 
 get "/upload/:filename" do |filename|
-  UPLOADDIR = "#{FILEROOT}/upload"
-  content_type contenttype(File.extname(filename))
-  File.read("#{UPLOADDIR}/#{filename}")
+  send_file "#{FILEROOT}/upload/#{filename}"
 end
 
 #
