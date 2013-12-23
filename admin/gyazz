@@ -52,4 +52,13 @@ elsif cmd == 'replace' then
     data.gsub!(from,to)
     writedata(name,title,data)
   }
+elsif cmd == 'image' then
+  name = ARGV.shift
+  title = ARGV.shift
+  exit unless name
+  exit unless title
+
+  repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
+  puts repimage[title]
+  repimage.close
 end

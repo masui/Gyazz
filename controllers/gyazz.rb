@@ -554,5 +554,7 @@ get '/:name/*' do
     end
   end
 
-  page(name,title,write_authorized)
+  @page = page(name,title,write_authorized)
+
+  erb :page
 end

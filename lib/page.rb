@@ -43,12 +43,14 @@ def page(name,title,write_authorized=false)
     }
   end
 
-  @name = name
-  @title = title
-  @urlroot = app_root
-  @related = related_html(@name,@title)
+  page = {}
+  page['name'] = name
+  page['title'] = title
+  page['related'] = related_html(name,title)
+
+  page
 
   # response["Access-Control-Allow-Origin"] = "*"
 
-  erb :page
+  # erb :page
 end

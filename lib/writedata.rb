@@ -140,9 +140,10 @@ def writedata(name,title,data,browser_md5 = nil)
 
   # 代表画像
   repimage = SDBM.open("#{Gyazz.topdir(name)}/repimage")
-  if data[0] =~ /gyazo.com\/(\w{32})\.png/i then
+  firstline = data.split(/\n/)[0]
+  if firstline =~ /gyazo.com\/(\w{32})\.png/i then
     repimage[title] = $1
-  elsif data[0] =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
+  elsif firstline =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
     repimage[title] = "#{$1}.#{$2}"
   else
     repimage.delete(title)
