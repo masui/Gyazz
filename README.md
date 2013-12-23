@@ -9,14 +9,14 @@
 
 * 必要なrubygemをインストール
 
-    % gem install bundler
-    % bundle install
+        % gem install bundler
+        % bundle install
 
 * データ格納ディレクトリをつくる
 * 環境にあわせて lib/config_template.rb から lib/config.rb をつくる
 
 ## 起動
 
-    % rackup config.ru -p 3000
+    % bundle exec rackup config.ru -p 3000
 
-=> http://localhost:3000
+=> <http://localhost:3000>
