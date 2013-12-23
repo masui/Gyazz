@@ -4,33 +4,6 @@
 # require 'set'
 # require 'db'
 
-def writable?(name,gyazoid)
-  return true;
-
-  attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
-
-  gyazoids = Set.new
-  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
-  Dir.open(Gyazz.topdir(name)).each { |f|
-    if f =~ /^[0-9a-f]{32}$/ then
-      filename = "#{Gyazz.topdir(name)}/#{f}"
-      if File.file?(filename) then
-        File.open(filename){ |f|
-          f.each { |line|
-            while line.sub!(/http:\/\/gyazo.com\/([0-9a-f]{32}).png/,'') do
-              iid = $1
-              if imageid[iid] then
-                gyazoids.add(imageid[iid])
-              end
-            end
-          }
-        }
-      end
-    end
-  }
-  gyazoids.member?(gyazoid)
-end
-
 def writedata(name,title,data,browser_md5 = nil)
   # ブラウザからの要求のときはbrowser_md5に値がセットされる
   # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
@@ -38,13 +11,6 @@ def writedata(name,title,data,browser_md5 = nil)
   newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
 
   puts "writedata: #{name}/#{title}"
-
-  if browser_md5 then
-    gyazoid = request.cookies["GyazoID"]
-    if !writable?(name, gyazoid) then
-      return "protected"
-    end
-  end
 
   curfile = Gyazz.datafile(name,title,0)
   server_md5 = ""
