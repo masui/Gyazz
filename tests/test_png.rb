@@ -1,3 +1,5 @@
+require File.expand_path 'test_helper', File.dirname(__FILE__)
+
 class PngTest < MiniTest::Unit::TestCase
   TMPFILE = "/tmp/pngtest#{$$}.png"
   
