@@ -16,10 +16,6 @@ get '/' do
   redirect "#{app_root}#{DEFAULTPAGE}"
 end
 
-# get '/programs/*' do
-#   ''
-# end
-
 #
 # API
 #
@@ -260,8 +256,7 @@ end
 get '/:name/*/access.png' do
   name = params[:name]
   title = params[:splat].join('/')
-  # history(name,title)
-  # send_file "#{Gyazz.backupdir(name,title)}/access.png"
+  content_type 'image/png'
   history_png(name,title)
 end
 
@@ -381,68 +376,6 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   data
 end
 
-#
-# GETでデータ書込みできるようにしてみる
-#
-#get '/:name/*/__write__/:data' do
-#  name = params[:name]
-##  protected!(name)
-#  title = params[:splat].join('/')
-#  data = params[:data]
-#  File.open("/tmp/log","w"){ |f|
-#    f.puts name
-#    f.puts title
-#    f.puts data
-#  }
-#end
-
-#get "/:name/__related" do |name|
-#  protected!(name)
-#
-#  top = Gyazz.topdir(name)
-#  unless File.exist?(top) then
-#    Dir.mkdir(top)
-#  end
-#
-#  pair = Pair.new("#{top}/pair")
-#  titles = pair.keys
-#  pair.close
-#
-#  @id2title = {}
-#  titles.each { |title|
-#    @id2title[Gyazz.md5(title)] = title
-#  }
-#
-#  ids = Dir.open(top).find_all { |file|
-#    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
-#  }
-#
-#  @modtime = {}
-#  ids.each { |id|
-#    @modtime[id] = File.mtime("#{top}/#{id}")
-#  }
-#
-#  ids.sort { |a,b|
-#    @modtime[b] <=> @modtime[a]
-#  }
-#
-#  @hotids = ids.sort { |a,b|
-#    @modtime[b] <=> @modtime[a]
-#  }
-#
-#  # JSON作成
-#  $KCODE = "u"
-#  "[\n" +
-#    @hotids.collect { |id|
-#    title = @id2title[id]
-#    "  [\"#{title.gsub(/"/,'\"')}\", 0],\n" +
-#    related(name,title).collect { |keyword|
-#      "  [\"#{keyword.gsub(/"/,'\"')}\", 1]"
-#    }.join(",\n")
-#  }.join(",\n") +
-#  "\n]\n"
-#end
-
 get '/:name/*/related' do
   name = params[:name]
   title = params[:splat].join('/')
@@ -504,7 +437,6 @@ end
 #
 # ページ表示
 #
-
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
 #  protected!(name)

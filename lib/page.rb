@@ -51,6 +51,4 @@ def page(name,title,write_authorized=false)
   page
 
   # response["Access-Control-Allow-Origin"] = "*"
-
-  # erb :page
 end
