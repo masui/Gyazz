@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class KeywordTest < MiniTest::Unit::TestCase
   def test_1
     s = "[[abc]] [[def]] などはキーワード"

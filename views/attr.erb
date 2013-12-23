@@ -2,8 +2,8 @@
 <head>
 <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
 <title><%= @name %></title>
-<link href='<%= @urlroot %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
-<script language="JavaScript" src='<%= @urlroot %>/javascripts/jquery.js'></script>
+<link href='<%= app_root %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
+<script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
 <script type="text/javascript">
 var name = "<%= @name %>";
 
@@ -26,7 +26,7 @@ $(document).ready(function(){
 <body>
 <div class='title'>
   <span class='wordtitle'><%= @name %> 設定</span>
-  <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+  <form action="<%= app_root %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
     <input height='20' name='q' type='text' value='<%= @q %>'>
     <input type='submit' value='検索'>
   </form>
