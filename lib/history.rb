@@ -28,9 +28,9 @@ end
 
 def history_json(name,title)
   v = history(name,title)
-  "[" + (0..MAX-1).collect { |i|
-    v[MAX-i-1].to_i.to_s
-  }.join(",") + "]"
+  (0..MAX-1).collect { |i|
+    v[i].to_i
+  }.reverse.to_json
 end
 
 def history_png(name,title)
