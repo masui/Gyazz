@@ -26,22 +26,28 @@ end
 # 外に見せないサービスは /__xxx という名前にする
 #
 
-get '/:name/*/search' do          # /増井研/合宿/search
-  name = params[:name]
-  q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
-  check_auth(name)
-  search(name,q)
-  erb :search
-end
+#get '/:name/*/search' do          # /増井研/合宿/search
+#  name = params[:name]
+#  q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
+#  check_auth(name)
+#  search(name,q)
+#  erb :search
+#end
 
+# 検索
 get "/__search/:name" do |name|
   q = params[:q]
   check_auth(name)
-  redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
+  # redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
+  if q == '' then
+    redirect "#{app_root}/#{name}/"
+  else
+    search(name,q)
+    erb :search
+  end
 end
 
 # データ書込み
-
 post '/__write' do
   postdata = []
   name = ""
@@ -171,7 +177,6 @@ end
 #
 get "/:name/.settings" do |name|
   check_auth(name)
-
   @sortbydate = (attr(name,'sortbydate') == 'true')
   @searchable = (attr(name,'searchable') == 'true')
   @name = name
@@ -181,14 +186,7 @@ end
 #
 # リスト表示
 #
-
 get "/:name" do |name|
-  check_auth(name)
-  search(name)
-  erb :search
-end
-
-get "/:name/" do |name|
   check_auth(name)
   search(name)
   erb :search
@@ -352,13 +350,7 @@ get '/:name/*/related' do
   }
   pair.close
 
-  # JSON作成
-  $KCODE = "u"
-  "[\n" +
-    relatedkeywords.keys.collect { |keyword|
-    "  \"#{keyword.gsub(/\"/,'\"')}\""
-  }.join(",\n") +
-    "\n]\n"
+  relatedkeywords.keys.to_json
 end
 
 #
