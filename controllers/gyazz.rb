@@ -147,6 +147,7 @@ post '/__tellauth' do
   end
 end
 
+# ファイルをアップロード
 post '/__upload' do
   param = params[:uploadfile]
   if param
@@ -168,13 +169,12 @@ post '/__upload' do
   end
 end
 
+# アップロードされたファイルにアクセス
 get "/upload/:filename" do |filename|
   send_file "#{FILEROOT}/upload/#{filename}"
 end
 
-#
-# 設定
-#
+# サイト設定
 get "/:name/.settings" do |name|
   check_auth(name)
   @sortbydate = (attr(name,'sortbydate') == 'true')
@@ -183,9 +183,7 @@ get "/:name/.settings" do |name|
   erb :settings
 end
 
-#
 # リスト表示
-#
 get "/:name" do |name|
   check_auth(name)
   search(name)
@@ -226,6 +224,7 @@ get '/:name/*/__modify' do # 変更履歴
   modify_history(name,title).to_json
 end
 
+# ランダムにページを表示
 get "/:name/__random" do |name|
   check_auth(name)
   t = titles(name)
@@ -241,9 +240,7 @@ get "/:name/rss.xml" do |name|
   rss(name)
 end
 
-#
-# JSON
-#
+# ページをJSONデータとして取得
 get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
@@ -252,9 +249,7 @@ get '/:name/*/json' do
   data.split(/\n/).to_json
 end
 
-#
-# データテキスト取得
-#
+# ページをテキストデータとして取得
 get '/:name/*/text' do
   name = params[:name]
 #  protected!(name)
@@ -280,7 +275,6 @@ get '/:name/*/text' do
   data
 end
 
-
 ## ページの代表画像があればリダイレクトする
 get '/:name/*/icon' do
   name = params[:name]
@@ -294,7 +288,6 @@ get '/:name/*/icon' do
              "http://gyazo.com/#{image}.png"
            end
 end
-
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
