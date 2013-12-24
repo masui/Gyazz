@@ -382,6 +382,7 @@ get '/:name/*/__edit' do
   title = params[:splat].join('/')
   check_auth(name)
   edit(name,title)
+  erb :edit
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
@@ -390,6 +391,7 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   title = params[:splat].join('/')
   version = params[:version].to_i
   edit(name,title,version)
+  erb :edit
 end
 
 #

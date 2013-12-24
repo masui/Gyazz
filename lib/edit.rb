@@ -13,6 +13,4 @@ def edit(name,title,version=0)
   @write_authorized = true if password_authorized?(name)
   @write_authorized = true if cookie_authorized?(name,ALL_AUTH)
   @write_authorized = true if cookie_authorized?(name,WRITE_AUTH)
-
-  erb :edit
 end
