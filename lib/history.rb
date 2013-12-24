@@ -3,17 +3,6 @@
 MAX = 25
 MAXH = 12
 
-# 変更履歴タイムスタンプ
-def modify_history(name,title)
-  dir = Gyazz.backupdir(name,title)
-  return '' unless File.exist?(dir)
-  Dir.open(dir).find_all { |f|
-    f =~ /^\d{14}$/
-  }.sort { |a,b|
-    a <=> b
-  }.push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
-end
-
 #
 # アクセス履歴タイムスタンプ
 #
@@ -30,11 +19,26 @@ def access_history(name,title,append=nil)
   end
 end
 
+def old_modify_history(name,title)
+  dir = Gyazz.backupdir(name,title)
+  return '' unless File.exist?(dir)
+  Dir.open(dir).find_all { |f|
+    f =~ /^\d{14}$/
+  }.sort { |a,b|
+    a <=> b
+  }
+end
+
+# 変更履歴タイムスタンプ
+def modify_history(name,title)
+  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
+end
+
 # 古い変更/新しい変更を考慮して履歴を視覚化する
 def modify_log(name,title)
   now = Time.now
   v = []
-  modify_history(name,title).each { |timestamp|
+  old_modify_history(name,title).each { |timestamp|
     timestamp =~ /^(....)(..)(..)(..)(..)(..)/
     t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
     #
