@@ -199,6 +199,12 @@ get "/:name" do |name|
   erb :search
 end
 
+get "/:name/" do |name|
+  check_auth(name)
+  search(name)
+  erb :search
+end
+
 # 名前でソートされたページリスト表示
 get "/:name/__sort" do |name|
   check_auth(name)
