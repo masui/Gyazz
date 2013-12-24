@@ -126,9 +126,6 @@ def search(name,query='',namesort=false)
       end
     end
   }
-
-  erb :search
-
 end
 
 def list(name)

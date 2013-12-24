@@ -37,6 +37,7 @@ get '/:name/*/search' do          # /増井研/合宿/search
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
   check_auth(name)
   search(name,q)
+  erb :search
 end
 
 get "/__search/:name" do |name|
@@ -193,16 +194,19 @@ end
 get "/:name" do |name|
   check_auth(name)
   search(name)
+  erb :search
 end
 
 get "/:name/" do |name|
   check_auth(name)
   search(name)
+  erb :search
 end
 
 get "/:name/__sort" do |name|
   check_auth(name)
   search(name,'',true)
+  erb :search
 end
 
 get "/:name/__list" do |name|
