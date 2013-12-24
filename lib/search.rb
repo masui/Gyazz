@@ -3,6 +3,7 @@
 require 'sdbm'
 require 'asearch'
 
+# nameという名前のGyazzサイトのページのIDのリスト取得
 def ids(name)
   top = Gyazz.topdir(name)
 
@@ -14,11 +15,13 @@ def ids(name)
   titles.each { |title|
     @id2title[Gyazz.md5(title)] = title
   }
-  
+
+  # ファイルの存在を確認
   @ids = Dir.open(top).find_all { |file|
     file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
   }
   
+  # 参照時間/更新時間を計算
   @modtime = {}
   @atime = {}
   @ids.each { |id|
@@ -29,12 +32,14 @@ def ids(name)
   @ids
 end
 
+# nameという名前のGyazzサイトのページのIDのリストを新しい順に
 def hotids(name)
   ids(name).sort { |a,b|
     @modtime[b] <=> @modtime[a]
   }
 end
   
+# nameという名前のGyazzサイトのページのタイトルのリストを新しい順に
 def hottitles(name)
   hotids(name).collect { |id|
     @id2title[id]
@@ -103,6 +108,7 @@ def search(name,query='',namesort=false)
   }
 end
 
+# gyazz-ruby で使うためのもの
 def list(name)
   @hotids = hotids(name)
   # アイコン

@@ -8,21 +8,16 @@ def readdata(name,title,version=nil)
   data = File.exist?(file) ? File.read(file)  : ''
 
   if version && version > 0 then
-    dbm = SDBM.open("#{Gyazz.backupdir(name,title)}/timestamp",0644)
-    a = ''
+    a = []
     data.each_line { |line|
-      l = line.chomp
-      ll = l.sub(/^\s*/,'')
-      dbm[ll] =~ /(....)(..)(..)(..)(..)(..)/
+      line = line.chomp.sub(/^\s*/,'')
+      line_timestamp(name,title,line) =~ /(....)(..)(..)(..)(..)(..)/
       t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
       td = (Time.now - t).to_i
-      a += "#{l} #{td}\n"
+      a << "#{line} #{td}"
     }
-    dbm.close
-    data = a
+    data = a.join("\n")
   end
-
-  s = data.gsub(/[\s\r\n]/,'')
 
   version ? datestr + "\n" + data : data
 end

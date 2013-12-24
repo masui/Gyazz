@@ -10,8 +10,6 @@ def writedata(name,title,data,browser_md5 = nil)
   
   newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
 
-  puts "writedata: #{name}/#{title}"
-
   curfile = Gyazz.datafile(name,title,0)
   server_md5 = ""
   curdata = ""
@@ -61,15 +59,13 @@ def writedata(name,title,data,browser_md5 = nil)
   end
 
   # 各行のタイムスタンプ保存
-  timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-  dbm = SDBM.open("#{Gyazz.backupdir(name,title)}/timestamp",0644)
+  timestr = Time.now.strftime('%Y%m%d%H%M%S')
   data.split(/\n/).each { |line|
     l = line.sub(/^\s*/,'')
-    if !dbm[l] then
-      dbm[l] = timestamp
+    if !line_timestamp(name,title,l) then
+      line_timestamp(name,title,l,timestr)
     end
   }
-  dbm.close
 
   # リンク情報更新
   pair = Pair.new("#{Gyazz.topdir(name)}/pair")

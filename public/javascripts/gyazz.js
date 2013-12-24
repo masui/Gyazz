@@ -918,7 +918,7 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
 	    data = [];
 	    dt = [];
 	    for(var i=0;i<d.length;i++){
-		s = d[i]
+		s = d[i];
 		if(s != ''){
 		    t = 0;
 		    if(version > 0){

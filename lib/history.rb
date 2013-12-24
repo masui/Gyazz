@@ -19,6 +19,13 @@ def access_history(name,title,append=nil)
   end
 end
 
+#
+# 変更履歴タイムスタンプ
+#
+def modify_history(name,title)
+  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
+end
+
 def old_modify_history(name,title)
   dir = Gyazz.backupdir(name,title)
   return '' unless File.exist?(dir)
@@ -27,11 +34,6 @@ def old_modify_history(name,title)
   }.sort { |a,b|
     a <=> b
   }
-end
-
-# 変更履歴タイムスタンプ
-def modify_history(name,title)
-  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
 end
 
 # 古い変更/新しい変更を考慮して履歴を視覚化する
