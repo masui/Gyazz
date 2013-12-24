@@ -26,12 +26,6 @@ end
 # 外に見せないサービスは /__xxx という名前にする
 #
 
-get '/:name/*/history' do
-  name = params[:name]
-  title = params[:splat].join('/')
-  modify_log(name,title).reverse.to_json
-end
-
 get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
@@ -86,9 +80,7 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
 end
 
 get '/__setattr/:name/:key/:val' do |name,key,val|
-  attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
-  attr[key] = val
-  attr.close
+  attr(name,key,val)
 end
 
 #
@@ -177,14 +169,13 @@ end
 #
 # 設定
 #
-
 get "/:name/.settings" do |name|
   check_auth(name)
 
   @sortbydate = (attr(name,'sortbydate') == 'true')
   @searchable = (attr(name,'searchable') == 'true')
   @name = name
-  erb :attr
+  erb :settings
 end
 
 #
