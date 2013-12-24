@@ -868,17 +868,20 @@ function tag(s,line){
 	elements[i] = "<span id='e"+line+'_'+i+"'>" + elements[i] + "</span>"; // 各要素にidをつける jQuery風にすべき***
     }
     return elements.join(' ');
-}
+};
 
 function writedata(){
     if(!write_authorized) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr);
-    
+    postdata = "data=" + encodeURIComponent(datastr);
+
     $.ajax({
 	type: "POST",
 	async: true,
-	url: root + "/__write",
+	url: root + "/__write" + 
+	    "?name=" + encodeURIComponent(name) +
+	    "&title=" + encodeURIComponent(title) +
+	    "&orig_md5=" + encodeURIComponent(orig_md5),
 	data: postdata,
 	
 	beforeSend: function(xhr,settings){

@@ -49,8 +49,9 @@ post '/__write' do
   name = ""
   title = ""
   orig_md5 = ""
-  if params.has_key? :name
-    # パラメタ利用でのの書き込み by @keroxp 2013/12/10
+  if params[:name] then
+    # パラメタ利用での書き込み by @keroxp 2013/12/10
+    # こちらを正式にしたい @masui 2013/12/24 20:33:20
     # @params name
     # @params title
     # @params orig_md5
@@ -59,7 +60,6 @@ post '/__write' do
     title = params[:title]
     orig_md5 = params[:orig_md5]
     postdata = params[:data]
-    #postdata = [name,title,orig_md5,data]
   else
     # 旧式の書き込み
     data = params[:data].split(/\n/)
@@ -74,9 +74,14 @@ end
 
 get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   data = params[:data].split(/\n/)
-  name = data.shift
-  title = data.shift
-  check_auth(name)
+  if params[:name] then
+    name = params[:name]
+    title = params[:title]
+  else
+    name = data.shift
+    title = data.shift
+  end
+  # check_auth(name)
   writedata(name,title,data)
   redirect("/#{name}/#{title}")
 end
