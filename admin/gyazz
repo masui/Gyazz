@@ -18,6 +18,7 @@ require 'pair'
 require 'readdata'
 require 'writedata'
 require 'keyword'
+require 'search'
 
 cmd = ARGV.shift
 if cmd.nil?
@@ -28,26 +29,14 @@ end
 if cmd == 'list' then
   name = ARGV.shift
   exit unless name
-
-  top = Gyazz.topdir(name)
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  puts titles
+  puts hottitles(name)
 elsif cmd == 'replace' then
   name = ARGV.shift
   from = ARGV.shift
   to = ARGV.shift
   exit if !name || !from || !to
-  puts from
 
-  top = Gyazz.topdir(name)
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  titles.each { |title| 
+  hottitles(name).each { |title| 
     data = readdata(name,title)
     data.gsub!(from,to)
     writedata(name,title,data)

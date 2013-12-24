@@ -1,32 +1,7 @@
 require 'rss/maker'
 
 def rss(name)
-  top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
-
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  @id2title = {}
-  titles.each { |title|
-    @id2title[Gyazz.md5(title)] = title
-  }
-
-  ids = Dir.open(top).find_all { |file|
-    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
-  }
-
-  @modtime = {}
-  ids.each { |id|
-    @modtime[id] = File.mtime("#{top}/#{id}")
-  }
-
-  @hotids = ids.sort { |a,b|
-    @modtime[b] <=> @modtime[a]
-  }
+  hotids = hotidlist(name)
 
   rss = RSS::Maker.make("2.0") do |rss|
     rss.channel.about = "http://Gyazz.com/#{name}/rss.xml"
@@ -38,7 +13,7 @@ def rss(name)
     rss.items.do_sort = true
     rss.items.max_size = 15
 
-    @hotids[0...15].each { |id|
+    hotids[0...15].each { |id|
       i= rss.items.new_item
       title = @id2title[id]
       i.title = title

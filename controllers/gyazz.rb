@@ -384,7 +384,7 @@ end
 # ランダムにページを表示
 get "/:name/__random" do |name|
   check_auth(name)
-  t = titles(name)
+  t = hottitles(name)
   len = t.length
   ignore = len / 2 # 新しい方からignore個は選ばない
   ignore = 0

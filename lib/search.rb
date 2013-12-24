@@ -3,7 +3,7 @@
 require 'sdbm'
 require 'asearch'
 
-def titles(name)
+def ids(name)
   top = Gyazz.topdir(name)
 
   pair = Pair.new("#{top}/pair")
@@ -14,58 +14,46 @@ def titles(name)
   titles.each { |title|
     @id2title[Gyazz.md5(title)] = title
   }
-
-  ids = Dir.open(top).find_all { |file|
+  
+  @ids = Dir.open(top).find_all { |file|
     file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
   }
-
-  modtime = {}
-  ids.each { |id|
-    modtime[id] = File.mtime("#{top}/#{id}")
+  
+  @modtime = {}
+  @atime = {}
+  @ids.each { |id|
+    @modtime[id] = File.mtime("#{top}/#{id}")
+    @atime[id] = File.atime("#{top}/#{id}")
   }
+  
+  @ids
+end
 
-  hottitles = ids.sort { |a,b|
-    modtime[b] <=> modtime[a]
-  }.collect { |id|
+def hotids(name)
+  ids(name).sort { |a,b|
+    @modtime[b] <=> @modtime[a]
+  }
+end
+  
+def hottitles(name)
+  hotids(name).collect { |id|
     @id2title[id]
   }
 end
 
 def search(name,query='',namesort=false)
-  top = Gyazz.topdir(name)
-
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  @id2title = {}
-  titles.each { |title|
-    @id2title[Gyazz.md5(title)] = title
-  }
-
-  ids = Dir.open(top).find_all { |file|
-    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
-  }
-
-  modtime = {}
-  ids.each { |id|
-    modtime[id] = File.mtime("#{top}/#{id}")
-  }
-  atime = {}
-  ids.each { |id|
-    atime[id] = File.atime("#{top}/#{id}")
-  }
+  @ids = ids(name)
 
   @sortbydate = attr(name,'sortbydate')
 
-  hotids =
+  @hotids =
     if namesort then
-      ids.sort { |a,b|
+      @ids.sort { |a,b|
         @id2title[b] <=> @id2title[a]
       }
     elsif @sortbydate then
       @createtime = {}
-      ids.each { |id|
+      @ids.each { |id|
         t = modtime[id].strftime('%Y%m%d%H%M%S')
         title = @id2title[id]
         if File.exist?(Gyazz.backupdir(name,title)) then
@@ -75,25 +63,24 @@ def search(name,query='',namesort=false)
         end
         @createtime[id] = t
       }
-      ids.sort { |a,b|
+      @ids.sort { |a,b|
         @createtime[b] <=> @createtime[a]
       }
     else
-      ids.sort { |a,b|
-      #modtime[b] <=> modtime[a]
-      atime[b] <=> atime[a]
-    }
+      @ids.sort { |a,b|
+        @atime[b] <=> @atime[a]
+      }
     end
 
   # 先頭が"."のものはリストしない
-  hotids = hotids.find_all { |id|
+  @hotids = @hotids.find_all { |id|
     @id2title[id] !~ /^\./
   }
 
   @q = query
-  @matchids = hotids
+  @matchids = @hotids
   if @q != '' then
-    @matchids = hotids.find_all { |id|
+    @matchids = @hotids.find_all { |id|
       title = @id2title[id]
       content = File.read("#{Gyazz.topdir(name)}/#{id}")
       title.match(/#{@q}/i) || content.match(/#{@q}/i)
@@ -117,32 +104,7 @@ def search(name,query='',namesort=false)
 end
 
 def list(name)
-  top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
-
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  @id2title = {}
-  titles.each { |title|
-    @id2title[Gyazz.md5(title)] = title
-  }
-
-  ids = Dir.open(top).find_all { |file|
-    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
-  }
-
-  @modtime = {}
-  ids.each { |id|
-    @modtime[id] = File.mtime("#{top}/#{id}")
-  }
-
-  @hotids = ids.sort { |a,b|
-    @modtime[b] <=> @modtime[a]
-  }
+  @hotids = hotids(name)
   # アイコン
   @repimages = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
   # JSON作成
@@ -167,25 +129,11 @@ end
 ## 似たページ名を探す
 ## "macruby", "Mac Ruby", "mac ruby" -> MacRuby
 ## "IPWebcam", "ip webcam", "IP WebCam" -> IP Webcam
-def similar_page_titles(wiki_name, title)
-  top = Gyazz.topdir wiki_name
-  Dir.mkdir top unless File.exist? top
+def similar_page_titles(name, title)
+  @ids = ids(name)
 
-  pair = Pair.new "#{top}/pair"
-  titles = pair.keys
-  pair.close
-
-  id2title = {}
-  titles.each do |i|
-    id2title[Gyazz.md5(i)] = i
-  end
-
-  ids = Dir.open(top).find_all { |file|
-    file =~ /^[\da-f]{32}$/ && id2title[file].to_s != ''
-  }
-
-  titles = ids.map do |id|
-    s = id2title[id].dup
+  titles = @ids.map do |id|
+    s = @id2title[id].dup
     ss = s.dup
     title_ = ""
     while s.sub!(/^(.)/,'') do
