@@ -153,9 +153,6 @@ post '/__upload' do
     file_ext = File.extname(param[:filename]).to_s
     tempfile.close # 消してしまう
 
-    #UPLOADDIR = "#{FILEROOT}/upload"
-    #Dir.mkdir(UPLOADDIR) unless File.exist?(UPLOADDIR)
-
     hash = Gyazz.md5(file_contents)
     savefile = "#{hash}#{file_ext}"
     savepath = "#{Gyazz.uploaddir}/#{savefile}"
@@ -214,7 +211,6 @@ end
 
 # gyazz-ruby gem のためのもの
 get "/:name/__list" do |name|
-  # protected!(name)
   check_auth(name)
   list(name)
 end
@@ -283,14 +279,13 @@ get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
   data = readdata(name,title)
-  response["Access-Control-Allow-Origin"] = "*"
+  response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
   data.split(/\n/).to_json
 end
 
 # ページをテキストデータとして取得
 get '/:name/*/text' do
   name = params[:name]
-#  protected!(name)
   title = params[:splat].join('/')
   data = readdata(name,title)
 
@@ -309,13 +304,12 @@ get '/:name/*/text' do
   else
     check_auth(name)
   end
-  # response["Access-Control-Allow-Origin"] = "*"
+  # response["Access-Control-Allow-Origin"] = "*" Ajaxを許可するオマジナイ... 要るのか?
   data
 end
 
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
-#  protected!(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
   data = readdata(name,title,version)

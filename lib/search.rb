@@ -5,9 +5,6 @@ require 'asearch'
 
 def titles(name)
   top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
 
   pair = Pair.new("#{top}/pair")
   titles = pair.keys
@@ -36,9 +33,6 @@ end
 
 def search(name,query='',namesort=false)
   top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
 
   pair = Pair.new("#{top}/pair")
   titles = pair.keys
