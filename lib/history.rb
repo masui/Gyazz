@@ -38,7 +38,7 @@ end
 def modify_log(name,title)
   now = Time.now
   v = []
-  old_modify_history(name,title).each { |timestamp|
+  modify_history(name,title).each { |timestamp|
     timestamp =~ /^(....)(..)(..)(..)(..)(..)/
     t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
     #
