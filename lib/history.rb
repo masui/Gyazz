@@ -3,25 +3,38 @@
 MAX = 25
 MAXH = 12
 
-# 変更履歴をJSONで返す
-def modify(name,title)
+# 変更履歴タイムスタンプ
+def modify_history(name,title)
   dir = Gyazz.backupdir(name,title)
   return '' unless File.exist?(dir)
   Dir.open(dir).find_all { |f|
     f =~ /^\d{14}$/
   }.sort { |a,b|
     a <=> b
-  }.push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S')).to_json
+  }.push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
 end
 
-def history(name,title)
-  dir = Gyazz.backupdir(name,title)
-  timestamps = Dir.open(dir).find_all { |file|
-    file =~ /^\d{14}$/
-  }
+#
+# アクセス履歴タイムスタンプ
+#
+def access_history(name,title,append=nil)
+  if append then # 追記
+    if File.exists?("#{Gyazz.backupdir(name,title)}") then
+      File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
+        f.puts Time.now.strftime('%Y%m%d%H%M%S')
+      }
+    end
+  else
+    accessfile = "#{Gyazz.backupdir(name,title)}/access"
+    (File.exist?(accessfile) ? File.open(accessfile).read.split : [])
+  end
+end
+
+# 古い変更/新しい変更を考慮して履歴を視覚化する
+def modify_log(name,title)
   now = Time.now
   v = []
-  timestamps.each { |timestamp|
+  modify_history(name,title).each { |timestamp|
     timestamp =~ /^(....)(..)(..)(..)(..)(..)/
     t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
     #
@@ -37,18 +50,9 @@ def history(name,title)
   (0..MAX).collect { |i| v[i].to_i }
 end
 
-#def history_json(name,title)
-#  v = history(name,title)
-#  (0..MAX-1).collect { |i|
-#    v[i].to_i
-#  }.reverse.to_json
-#end
-
-def history_png(name,title)
-  v = history(name,title)
-  #
-  # PNG視覚化
-  #
+# PNG視覚化
+def modify_png(name,title)
+  v = modify_log(name,title)
   data = []
   hotcolors = [[255,255,0],[255,255,40],[255,255,80],[255,255,120],[255,255,160],[255,255,200]]
   bgcolor = [255,255,255]

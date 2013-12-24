@@ -18,9 +18,9 @@ def repimage(name,title,image=nil)
 end
 
 #
-# ページのアクセス数をトップディレクトリに書く
+# 全ページのアクセス数
 #
-def accesscount(name,title,value=nil)
+def access_count(name,title,value=nil)
   access = SDBM.open("#{FILEROOT}/access",0644);
   key = "#{name}(#{Gyazz.md5(name)})/#{title}(#{Gyazz.md5(title)})"
   if value then
@@ -31,22 +31,6 @@ def accesscount(name,title,value=nil)
   value = access[key]
   access.close
   value.to_i
-end
-
-#
-# ページのアクセス履歴
-#
-def accesshistory(name,title,append=nil)
-  if append then # 追記
-    if File.exists?("#{Gyazz.backupdir(name,title)}") then
-      File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
-        f.puts Time.now.strftime('%Y%m%d%H%M%S')
-      }
-    end
-  else
-    accessfile = "#{Gyazz.backupdir(name,title)}/access"
-    (File.exist?(accessfile) ? File.open(accessfile).read.split : [])
-  end
 end
 
 def searchable(name)

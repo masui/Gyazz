@@ -30,7 +30,7 @@ get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
   # history_json(name,title)
-  history(name,title).reverse.to_json
+  modify_log(name,title).reverse.to_json
 end
 
 get '/:name/*/search' do          # /増井研/合宿/search
@@ -233,11 +233,11 @@ get "/:name/__list" do |name|
   list(name)
 end
 
-get '/:name/*/access.png' do
+get '/:name/*/modify.png' do
   name = params[:name]
   title = params[:splat].join('/')
   content_type 'image/png'
-  history_png(name,title)
+  modify_png(name,title)
 end
 
 
@@ -245,14 +245,14 @@ get '/:name/*/__access' do # アクセス履歴
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
-  accesshistory(name,title).to_json
+  access_history(name,title).to_json
 end
 
 get '/:name/*/__modify' do # 変更履歴
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
-  modify(name,title)
+  modify_history(name,title).to_json
 end
 
 get "/:name/__random" do |name|
@@ -422,10 +422,10 @@ get '/:name/*' do
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
   # アクセスカウンタインクリメント
-  accesscount(name,title,accesscount(name,title)+1)
+  access_count(name,title,access_count(name,title)+1)
 
   # アクセス履歴を保存
-  accesshistory(name,title,true)
+  access_history(name,title,true)
 
   authorized_by_cookie = false
   write_authorized = true
