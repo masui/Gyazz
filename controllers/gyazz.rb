@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # -*- ruby -*-
+#
+# 外に見せないサービスは /__xxx という名前にする
+#
 
 require 'json'
 require 'date'
@@ -13,6 +16,7 @@ configure do
 end
 
 before '/:name/*' do
+  # 認証に使う予定
   puts "BEFORE #{params[:name]} #{params[:splat]}"
 end
 
@@ -20,25 +24,13 @@ get '/' do
   redirect "#{app_root}#{DEFAULTPAGE}"
 end
 
-#
-# API
-#
-# 外に見せないサービスは /__xxx という名前にする
-#
+#-----------------------------------------------------
+# リスト表示 / 検索
+#-----------------------------------------------------
 
-#get '/:name/*/search' do          # /増井研/合宿/search
-#  name = params[:name]
-#  q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
-#  check_auth(name)
-#  search(name,q)
-#  erb :search
-#end
-
-# 検索
 get "/__search/:name" do |name|
   q = params[:q]
   check_auth(name)
-  # redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
   if q == '' then
     redirect "#{app_root}/#{name}/"
   else
@@ -46,6 +38,10 @@ get "/__search/:name" do |name|
     erb :search
   end
 end
+
+#-----------------------------------------------------
+# データ書込み
+#-----------------------------------------------------
 
 # データ書込み
 post '/__write' do
@@ -83,10 +79,6 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   check_auth(name)
   writedata(name,title,data)
   redirect("/#{name}/#{title}")
-end
-
-get '/__setattr/:name/:key/:val' do |name,key,val|
-  attr(name,key,val)
 end
 
 #
@@ -147,6 +139,10 @@ post '/__tellauth' do
   end
 end
 
+#-----------------------------------------------------
+# ファイルアップロード関連
+#-----------------------------------------------------
+
 # ファイルをアップロード
 post '/__upload' do
   param = params[:uploadfile]
@@ -157,12 +153,12 @@ post '/__upload' do
     file_ext = File.extname(param[:filename]).to_s
     tempfile.close # 消してしまう
 
-    UPLOADDIR = "#{FILEROOT}/upload"
-    Dir.mkdir(UPLOADDIR) unless File.exist?(UPLOADDIR)
+    #UPLOADDIR = "#{FILEROOT}/upload"
+    #Dir.mkdir(UPLOADDIR) unless File.exist?(UPLOADDIR)
 
     hash = Gyazz.md5(file_contents)
     savefile = "#{hash}#{file_ext}"
-    savepath = "#{UPLOADDIR}/#{savefile}"
+    savepath = "#{Gyazz.uploaddir}/#{savefile}"
     File.open(savepath, 'wb'){ |f| f.write(file_contents) }
 
     savefile
@@ -174,7 +170,11 @@ get "/upload/:filename" do |filename|
   send_file "#{FILEROOT}/upload/#{filename}"
 end
 
-# サイト設定
+#-----------------------------------------------------
+# サイト属性関連
+#-----------------------------------------------------
+
+# サイト属性設定ページ
 get "/:name/.settings" do |name|
   check_auth(name)
   @sortbydate = (attr(name,'sortbydate') == 'true')
@@ -183,25 +183,41 @@ get "/:name/.settings" do |name|
   erb :settings
 end
 
-# リスト表示
+# サイト属性設定API (settings.erbから呼ばれる)
+get '/__setattr/:name/:key/:val' do |name,key,val|
+  attr(name,key,val)
+end
+
+#-----------------------------------------------------
+# ページリスト関連
+#-----------------------------------------------------
+
+# ページリスト表示
 get "/:name" do |name|
   check_auth(name)
   search(name)
   erb :search
 end
 
+# 名前でソートされたページリスト表示
 get "/:name/__sort" do |name|
   check_auth(name)
   search(name,'',true)
   erb :search
 end
 
+# gyazz-ruby gem のためのもの
 get "/:name/__list" do |name|
   # protected!(name)
   check_auth(name)
   list(name)
 end
 
+#-----------------------------------------------------
+# ページアクセス履歴/変更履歴関連
+#-----------------------------------------------------
+
+# ページ変更視覚化
 get '/:name/*/modify.png' do
   name = params[:name]
   title = params[:splat].join('/')
@@ -209,36 +225,52 @@ get '/:name/*/modify.png' do
   modify_png(name,title)
 end
 
-
-get '/:name/*/__access' do # アクセス履歴
+# アクセス履歴
+get '/:name/*/__access' do
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
   access_history(name,title).to_json
 end
 
-get '/:name/*/__modify' do # 変更履歴
+# 変更履歴
+get '/:name/*/__modify' do
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
   modify_history(name,title).to_json
 end
 
-# ランダムにページを表示
-get "/:name/__random" do |name|
-  check_auth(name)
-  t = titles(name)
-  len = t.length
-  ignore = len / 2 # 新しい方からignore個は選ばない
-  ignore = 0
-  title = t[ignore + rand(len-ignore)]
-  page(name,title)
-end
+#-----------------------------------------------------
+# RSS
+#-----------------------------------------------------
 
 get "/:name/rss.xml" do |name|
   # check_auth(name)
   rss(name)
 end
+
+#-----------------------------------------------------
+# アイコンデータ
+#-----------------------------------------------------
+
+## ページの代表画像があればリダイレクトする
+get '/:name/*/icon' do
+  name = params[:name]
+  title = params[:splat].join('/')
+  image = repimage(name,title)
+  halt 404, "image not found" if image.to_s.empty?
+  redirect case image
+           when /^https?:\/\/.+\.(png|jpe?g|gif)$/i
+             image
+           else
+             "http://gyazo.com/#{image}.png"
+           end
+end
+
+#-----------------------------------------------------
+# ページデータ取得
+#-----------------------------------------------------
 
 # ページをJSONデータとして取得
 get '/:name/*/json' do
@@ -275,20 +307,6 @@ get '/:name/*/text' do
   data
 end
 
-## ページの代表画像があればリダイレクトする
-get '/:name/*/icon' do
-  name = params[:name]
-  title = params[:splat].join('/')
-  image = repimage(name,title)
-  halt 404, "image not found" if image.to_s.empty?
-  redirect case image
-           when /^https?:\/\/.+\.(png|jpe?g|gif)$/i
-             image
-           else
-             "http://gyazo.com/#{image}.png"
-           end
-end
-
 get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
 #  protected!(name)
@@ -320,24 +338,28 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   data
 end
 
+#-----------------------------------------------------
+# 関連ページ名取得
+#-----------------------------------------------------
+
 get '/:name/*/related' do
   name = params[:name]
   title = params[:splat].join('/')
   check_auth(name)
 
   top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
 
   pair = Pair.new("#{top}/pair")
-  relatedkeywords = pair.keys
+  relatedkeywords = pair.collect(title)
   pair.close
 
   relatedkeywords.to_json
 end
 
+#-----------------------------------------------------
 # 編集モード
+#-----------------------------------------------------
+
 get '/:name/*/__edit' do
   name = params[:name]
   title = params[:splat].join('/')
@@ -355,9 +377,24 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   erb :edit
 end
 
-#
+#-----------------------------------------------------
+# ページ表示関連
+#-----------------------------------------------------
+
+# ランダムにページを表示
+get "/:name/__random" do |name|
+  check_auth(name)
+  t = titles(name)
+  len = t.length
+  ignore = len / 2 # 新しい方からignore個は選ばない
+  ignore = 0
+  title = t[ignore + rand(len-ignore)]
+
+  @page = page(name,title)
+  erb :page
+end
+
 # ページ表示
-#
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
@@ -413,6 +450,5 @@ get '/:name/*' do
   end
 
   @page = page(name,title,write_authorized)
-
   erb :page
 end

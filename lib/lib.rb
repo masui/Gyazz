@@ -4,7 +4,15 @@ require 'digest/md5'
 module Gyazz
 
   def self.topdir(name)
-    "#{FILEROOT}/#{md5(name)}"
+    dir = "#{FILEROOT}/#{md5(name)}"
+    Dir.mkdir(dir) unless File.exist?(dir)
+    dir
+  end
+
+  def self.uploaddir
+    dir = "#{FILEROOT}/upload"
+    Dir.mkdir(dir) unless File.exist?(dir)
+    dir
   end
 
   def self.md5(s)

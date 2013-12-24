@@ -62,12 +62,7 @@ def search(name,query='',namesort=false)
     atime[id] = File.atime("#{top}/#{id}")
   }
 
-  @sortbydate = false
-  if File.exist?("#{Gyazz.topdir(name)}/attr.dir") then
-    attr = SDBM.open("#{Gyazz.topdir(name)}/attr",0644);
-    @sortbydate = (attr['sortbydate'] == 'true' ? true : false)
-    attr.close
-  end
+  @sortbydate = attr(name,'sortbydate')
 
   hotids =
     if namesort then
