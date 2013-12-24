@@ -2,10 +2,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><%= @name %> <%= @pagetitle %></title>
-  <link rel="stylesheet" href="<%= @urlroot %>/stylesheets/gyazz.css" type="text/css">
-  <link rel="alternate" href="<%= @urlroot %>/<%= @name %>/rss.xml" title="<%= @name %> RSS" type="application/rss+xml" />
-  <link rel="shortcut icon" href="<%= @urlroot %>/favicon.ico">
-  <script language="JavaScript" src='<%= @urlroot %>/javascripts/jquery.js'></script>
+  <link rel="stylesheet" href="<%= app_root %>/stylesheets/gyazz.css" type="text/css">
+  <link rel="alternate" href="<%= app_root %>/<%= @name %>/rss.xml" title="<%= @name %> RSS" type="application/rss+xml" />
+  <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
+  <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
   <script>
     function fout(id,interval){
       return function(){ $("#"+id).fadeOut(interval) };
@@ -18,7 +18,7 @@
 <body>
   <div class="title">
     <span class='wordtitle'><%= @name %> <%= @pagetitle %> (<%= @matchids.length %>)</span>
-    <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+    <form action="<%= app_root %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
       <input height='20' name='q' type='text' value='<%= @q %>'>
       <input type='submit' value='検索'>
     </form>
@@ -38,7 +38,7 @@
 	<% end %>
         <% url = "#{@urltop}/#{title}" %>
         <div class="listedit0__xxx">
-          <img id="<%= id %>" src="<%= @urlroot %>/<%= @name %>/<%= title %>/modify.png" width=50 height=12>
+          <img id="<%= id %>" src="<%= app_root %>/<%= @name %>/<%= title %>/modify.png" width=50 height=12>
           <a href="<%= url %>" class='tag'><%= escape_html shorttitle %></a>
         </div>
         <% interval = 0 %>

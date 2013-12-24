@@ -2,7 +2,6 @@ def edit(name,title,version=0)
   @name = name
   @title = title
   @urltop = topurl(name)
-  @urlroot = app_root
   file = Gyazz.datafile(name,title,version)
   @text = File.exist?(file) ? File.read(file)  : ''
   # @text =~ /^\s*$/ ? "(empty)" : @text

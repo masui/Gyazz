@@ -113,7 +113,6 @@ def search(name,query='',namesort=false)
 
   @urltop = topurl(name)
   @name = name
-  @urlroot = app_root
   @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
   @disptitle = {}

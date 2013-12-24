@@ -4,16 +4,16 @@
     <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
     <meta name='robots' content='noindex,nofollow'>
     <title><%= @name %> / <%= @title %></title>
-    <link href='<%= @urlroot %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
-    <link rel="shortcut icon" href="<%= @urlroot %>/favicon.ico">
-    <script language="JavaScript" src='<%= @urlroot %>/javascripts/jquery.js'></script>
-    <script language="JavaScript" src='<%= @urlroot %>/javascripts/utf.js'></script>
-    <script language="JavaScript" src='<%= @urlroot %>/javascripts/md5.js'></script>
-    <script language="JavaScript" src='<%= @urlroot %>/javascripts/edit.js'></script>
+    <link href='<%= app_root %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
+    <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
+    <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
+    <script language="JavaScript" src='<%= app_root %>/javascripts/utf.js'></script>
+    <script language="JavaScript" src='<%= app_root %>/javascripts/md5.js'></script>
+    <script language="JavaScript" src='<%= app_root %>/javascripts/edit.js'></script>
     <script type='text/javascript'>
     var name = '<%= escape_jsvar @name %>';
     var title = '<%= escape_jsvar @title %>';
-    var root =  '<%= @urlroot %>';
+    var root =  '<%= app_root %>';
     var orig_md5 = '<%= @orig_md5 %>';
     var write_authorized = <%= @write_authorized %>;
     </script>
@@ -21,11 +21,11 @@
   <body>
     <div class='title'>
       <span class='wordtitle'>
-        <a href="<%= @urlroot %>/<%= @name %>/<%= @title %>">
+        <a href="<%= app_root %>/<%= @name %>/<%= @title %>">
           <%= sanitize(@title) %>
         </a>
       </span>
-      <form action="<%= @urlroot %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+      <form action="<%= app_root %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
         <input height='20' name='q' type='text' value='<%= @q %>'>
         <input type='submit' value='検索'>
       </form>
