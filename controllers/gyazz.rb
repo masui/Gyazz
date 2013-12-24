@@ -29,20 +29,17 @@ end
 get '/:name/*/history' do
   name = params[:name]
   title = params[:splat].join('/')
-  # history_json(name,title)
   modify_log(name,title).reverse.to_json
 end
 
 get '/:name/*/search' do          # /増井研/合宿/search
   name = params[:name]
-  #protected!(name)
   q = params[:splat].join('/')    # /a/b/c/search の q を"b/c"にする
   check_auth(name)
   search(name,q)
 end
 
 get "/__search/:name" do |name|
-  # protected!(name)
   q = params[:q]
   check_auth(name)
   redirect q == '' ? "#{app_root}/#{name}/" : "#{app_root}/#{name}/#{q}/search"
@@ -150,29 +147,6 @@ post '/__tellauth' do
     end
   end
 end
-
-# Gyazoへの転送!
-#
-#  /__gyazoupload/(Gyazo ID)/(Gyazo URL) というリクエストが来る
-#  Gyazo IDは各GyazoアプリのユニークID
-#
-#get %r{/__gyazoupload/([0-9a-f]+)/(.*)} do |gyazoid,url|
-#  # GyazoID(アプリのID)とurlの対応関係を保存しておく
-#  url =~ /([\da-f]{32})/
-#  id = $1
-#  idimage = SDBM.open("#{FILEROOT}/idimage",0644)
-#  idimage[gyazoid] = idimage[gyazoid].to_s.split(/,/).unshift(id)[0,5].join(',')
-#
-#  # 画像URLとGyazoIDの対応も保存する
-#  imageid = SDBM.open("#{FILEROOT}/imageid",0644)
-#  imageid[id] = gyazoid
-#
-#  # CookieをセットしてGyazo.comに飛ぶ
-#  # response.set_cookie("GyazoID", gyazoid)
-#  response.set_cookie('GyazoID', {:value => gyazoid, :path => '/' })
-#
-#  redirect url
-#end
 
 post '/__upload' do
   param = params[:uploadfile]
