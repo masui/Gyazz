@@ -63,9 +63,6 @@ end
 
 def related_pages(name,title)
   top = Gyazz.topdir(name)
-  unless File.exist?(top) then
-    Dir.mkdir(top)
-  end
   related(name,title).collect{ |t|
     target = {}
     target['url'] = "#{app_root}/#{name}/#{URI.encode(t)}"

@@ -390,6 +390,9 @@ get "/:name/__random" do |name|
   ignore = 0
   title = t[ignore + rand(len-ignore)]
 
+  # @page = Page.new(name,title)
+  # erb :pagenew
+
   @page = page(name,title)
   erb :page
 end
@@ -451,4 +454,9 @@ get '/:name/*' do
 
   @page = page(name,title,write_authorized)
   erb :page
+
+  #puts "Gyazz.rb: name=#{name}"
+  #@page = Page.new(name,title)
+  #erb :page
+
 end

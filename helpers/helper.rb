@@ -20,5 +20,4 @@ helpers do
     s.gsub(/&/,'&amp;').gsub(/</,'&lt;')
   end
 
-
 end
