@@ -33,8 +33,8 @@ $(document).ready(function(){
 </div>
 
 <p>
-<input <%= @searchable %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
-<input <%= @sortbydate %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
+<input <%= @searchable ? 'checked' : '' %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
+<input <%= @sortbydate ? 'checked' : '' %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
 
 </body>
 </html>

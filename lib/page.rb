@@ -4,7 +4,7 @@ def page(name,title,write_authorized=false)
   page = {}
 
   # ロボット検索可能かどうか
-  page['searchable'] = searchable(name)
+  page['searchable'] = attr(name,'searchable')
 
   page['do_auth'] = false
   page['rawdata'] = ''

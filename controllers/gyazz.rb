@@ -179,7 +179,11 @@ end
 
 get "/:name/.settings" do |name|
   check_auth(name)
-  attr(name)
+
+  @sortbydate = (attr(name,'sortbydate') == 'true')
+  @searchable = (attr(name,'searchable') == 'true')
+  @name = name
+  erb :attr
 end
 
 #

@@ -33,13 +33,22 @@ def access_count(name,title,value=nil)
   value.to_i
 end
 
-def searchable(name)
-  db = "#{Gyazz.topdir(name)}/attr.dir"
-  ret = false
-  if File.exist?(db) then
-    attr = SDBM.open(db,0644);
-    ret = (attr['searchable'] == 'true' ? true : false)
-    attr.close
+#
+# 設定属性
+#
+def attr(name,key,value=nil)
+  ret = nil
+  attrdbfile = "#{Gyazz.topdir(name)}/attr.dir"
+  if value then # 書込み
+    attrdb = SDBM.open(attrdbfile,0644);
+    attrdb[key] = value
+    attrdb.close
+  else
+    if File.exist?(attrdbfile) then
+      attrdb = SDBM.open(attrdbfile,0644);
+      ret = attrdb[key]
+      attrdb.close
+    end
   end
   ret
 end
