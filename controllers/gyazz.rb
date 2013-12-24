@@ -332,38 +332,19 @@ get '/:name/*/related' do
   title = params[:splat].join('/')
   check_auth(name)
 
-#  pagekeywords = []
-#  filename = Gyazz.datafile(name,title,0)
-#  if File.exist?(filename) then
-#    pagekeywords = File.read(filename).keywords
-#  end
-
   top = Gyazz.topdir(name)
   unless File.exist?(top) then
     Dir.mkdir(top)
   end
 
   pair = Pair.new("#{top}/pair")
-  relatedkeywords = {}
-  pair.each(title){ |keyword|
-    relatedkeywords[keyword] = true
-  }
+  relatedkeywords = pair.keys
   pair.close
 
-  relatedkeywords.keys.to_json
+  relatedkeywords.to_json
 end
 
-#
 # 編集モード
-#
-
-get '/:name/*/edit' do
-  name = params[:name]
-  title = params[:splat].join('/')
-  check_auth(name)
-  redirect "/#{name}/#{title}"
-end
-
 get '/:name/*/__edit' do
   name = params[:name]
   title = params[:splat].join('/')
