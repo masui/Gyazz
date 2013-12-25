@@ -22,6 +22,9 @@ require 'lib/rss'
 require 'lib/auth'
 require 'lib/time'
 
+require 'lib/wiki'
+require 'lib/md5'
+
 require 'helpers/helper'
 
 require 'controllers/gyazz'

@@ -1,10 +1,10 @@
 <!--  画像アイコン  -->
 
-<a href='<%= @entry['url'] %>' target='_blank'>
+<a href='<%= @url %>' target='_blank'>
   <div style="height:64;width:64;margin:2;float:left">
     <center>
-      <img src='<%= @entry["imageurl"] %>'
-        title='<%= escape_html @entry["title"] %>'
+      <img src='<%= @imageurl %>'
+        title='<%= escape_html @title %>'
         style='max-height:64;border:none;width:64;'
       />
     </center>

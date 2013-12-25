@@ -26,6 +26,7 @@ module Gyazz
       Dir.mkdir(dir) unless File.exist?(dir)
       dir = "#{topdir(name)}/backups/#{md5(title)}"
       Dir.mkdir(dir) unless File.exist?(dir)
+      puts "DIR = #{dir}"
     else
       dir = "#{topdir(name)}/backups"
       Dir.mkdir(dir) unless File.exist?(dir)

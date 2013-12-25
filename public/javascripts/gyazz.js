@@ -141,7 +141,7 @@ $(document).mousedown(function(event){
 	return true;
     }
     searchmode = false;
-    
+
     if(eline == -1){
 	editline = eline;
 	calcdoi();

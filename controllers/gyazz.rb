@@ -112,7 +112,7 @@ post '/__tellauth' do
   name = postdata[0]
   title = postdata[1]
   useranswer = postdata[2]
-  correctanswer = ansstring(readdata(name,title))['data'].join("\n")
+  correctanswer = ansstring(Gyazz::Page.new(name.title).text)
   if useranswer == correctanswer then # 認証成功!
     # Cookie設定
     if title == ALL_AUTH then
@@ -263,7 +263,7 @@ get '/:name/*/json/:version' do
   title = params[:splat].join('/')
   version = params[:version].to_i
   response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
-  data = readdata(name,title,version)
+  data = Gyazz::Page.new(name,title).data(version)
   #
   # 認証ページのときは順番を入れ換える操作必要
 
@@ -289,7 +289,7 @@ end
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')
-  data = readdata(name,title)['data'].join("\n")
+  data = Gyazz::Page.new(name,title).text
 
   #
   # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
@@ -317,13 +317,18 @@ get '/:name/*/related' do
   name = params[:name]
   title = params[:splat].join('/')
 
-  top = Gyazz.topdir(name)
+  # 2ホップ先まで取得してしまうのだが
+  Gyazz::Page.new(name,title).related_pages.collect { |page|
+    page.title
+  }.to_json
 
-  pair = Pair.new("#{top}/pair")
-  related = pair.collect(title)
-  pair.close
-
-  related.to_json
+#  top = Gyazz.topdir(name)
+#
+#  pair = Pair.new("#{top}/pair")
+#  related = pair.collect(title)
+#  pair.close
+#
+#  related.to_json
 end
 
 #-----------------------------------------------------
@@ -358,17 +363,33 @@ get "/:name/__random" do |name|
 
   # ここも認証とかランダム化とか必要
 
-  # @page = Page.new(name,title)
-  # erb :pagenew
+  wiki = Gyazz::Wiki.new(name)
+  page = Gyazz::Page.new(wiki,title)
 
-  @page = page(name,title)
-  erb :page
+  @page = page
+  erb :page2
 end
 
 # ページ表示
 get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+
+  wiki = Gyazz::Wiki.new(name)
+  page = Gyazz::Page.new(wiki,title)
+  page.access_count = page.access_count+1
+  page.log_access_history
+
+  @page = page
+  erb :page2
+end
+
+
+# ページ表示
+get '/xxxxxx/:name/*' do
+  name = params[:name]               # Wikiの名前   (e.g. masui)
+  title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+
 
   # アクセスカウンタインクリメント
   access_count(name,title,access_count(name,title)+1)

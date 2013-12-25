@@ -1,19 +1,19 @@
 <!--  テキストアイコン  -->
 <%
-  length = @entry['text'].split(//).length
+  length = @text.split(//).length
   fontsize = (length <= 2 ? 20 : length < 4 ? 14 : 10)
   fontsize = 9
-  targetid = Gyazz.md5(@entry['text'])
+  targetid = Gyazz.md5(@text)
   r = (targetid[0..1].hex.to_f * 0.5 + 16).to_i.to_s(16)
   g = (targetid[2..3].hex.to_f * 0.5 + 16).to_i.to_s(16)
   b = (targetid[4..5].hex.to_f * 0.5 + 16).to_i.to_s(16)
 %>
 
-<a href="<%= @entry['url'] %>" class="links" target="_blank">
+<a href="<%= @url %>" class="links" target="_blank">
   <div style="height:64;width:64;margin:2;float:left;
     background-color:#<%= r %><%= g %><%= b %>;overflow:hidden;word-wrap:break-word;">
     <div style="font-size:<%= fontsize %>pt;margin:3;color:white;overflow:hidden;word-wrap:break-word;">
-      <%= escape_html @entry['title'] %>
+      <%= escape_html @title %>
     </div>
   </div>
 </a>
