@@ -106,28 +106,12 @@ def search(name,query='',namesort=false)
   }
 end
 
-# gyazz-ruby で使うためのもの
+# gyazz-ruby で使うためのもの? 意味がよくわからない
 def list(name)
-  @hotids = hotids(name)
-  # アイコン
-  @repimages = SDBM.open("#{Gyazz.topdir(name)}/repimage",0644)
-  # JSON作成
-  $KCODE = "u"
-  "[\n" +
-    @hotids.collect { |id|
-    s = @id2title[id].dup
-    ss = s.dup
-    title = ""
-    icon_url = ""
-    while s.sub!(/^(.)/,'') do
-      c = $1
-      u = c.unpack("U")[0]
-      title += (u < 0x80 && c != '"' ? c : sprintf("\\u%04x",u))
-      icon_url = @repimages[title] ? @repimages[title] : ""
-    end
-    "  [\"#{ss.gsub(/"/,'\"')}\", #{@modtime[id].to_i}, \"#{name}/#{ss.gsub(/"/,'\"')}\", \"#{icon_url}\" ]"
-  }.join(",\n") +
-    "\n]\n"
+  hotids(name).collect { |id|
+    title = @id2title[id]
+    [title, @modtime[id].to_i, "#{name}/#{title}", repimage(name,title)]
+  }.to_json
 end
 
 ## 似たページ名を探す

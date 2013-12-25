@@ -10,7 +10,7 @@ def readdata(name,title,version=nil)
   data = data.sub(/\n+$/,'').split(/\n/)
   ret['data'] = data
   if version && version > 0 then
-    ret['timestamp'] = data.collect { |line|
+    ret['age'] = data.collect { |line|
       line = line.chomp.sub(/^\s*/,'')
       t = line_timestamp(name,title,line).to_time
       (Time.now - t).to_i

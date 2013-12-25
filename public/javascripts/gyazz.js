@@ -915,7 +915,7 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
 	success: function(msg){
 	    d = JSON.parse(msg);
 	    datestr = d['date'];
-	    dt = d['timestamp'];
+	    dt = d['age'];
 	    data = d['data'];
 	    orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
 	    search();
