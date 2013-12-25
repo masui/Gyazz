@@ -441,7 +441,7 @@ function display(delay){
 	    zoomlevel == -1 ? '#e0e0c0' :
 	    zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
     $("body").css('background-color',bgcolor);
-    $('#datestr').text(datestr);
+    $('#datestr').text(version > 0 ? datestr : '');
     $('#title').attr('href',root + "/" + name + "/" + title + "/" + "__edit" + "/" + version);
     
     var i;
@@ -911,25 +911,12 @@ function writedata(){
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({
 	async: false,
-	url: root + "/" + name + "/" + title + "/text/" + version,
+	url: root + "/" + name + "/" + title + "/json/" + version,
 	success: function(msg){
-	    d = msg.split(/\n/);
-	    datestr = d.shift();
-	    data = [];
-	    dt = [];
-	    for(var i=0;i<d.length;i++){
-		s = d[i];
-		if(s != ''){
-		    t = 0;
-		    if(version > 0){
-			s.match(/^(.*) ([0-9]*)$/);
-			s = RegExp.$1;
-			t = RegExp.$2;
-		    }
-		    dt.push(Number(t));
-		    data.push(s);
-		}
-	    }
+	    d = JSON.parse(msg);
+	    datestr = d['date'];
+	    dt = d['timestamp'];
+	    data = d['data'];
 	    orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
 	    search();
 	}

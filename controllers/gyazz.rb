@@ -133,7 +133,7 @@ post '/__tellauth' do
   name = postdata[0]
   title = postdata[1]
   useranswer = postdata[2]
-  correctanswer = ansstring(readdata(name,title))
+  correctanswer = ansstring(readdata(name,title))['data'].join("\n")
   if useranswer == correctanswer then # 認証成功!
     # Cookie設定
     if title == ALL_AUTH then
@@ -283,16 +283,23 @@ end
 get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
-  data = readdata(name,title)
   response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
-  data.split(/\n/).to_json
+  readdata(name,title).to_json
+end
+
+get '/:name/*/json/:version' do      # 古いバージョンを取得
+  name = params[:name]
+  title = params[:splat].join('/')
+  version = params[:version].to_i
+  response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
+  readdata(name,title,version).to_json
 end
 
 # ページをテキストデータとして取得
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')
-  data = readdata(name,title)
+  data = readdata(name,title)['data'].join("\n")
 
   #
   # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
@@ -317,7 +324,7 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
-  data = readdata(name,title,version)
+  data = readdata(name,title,version)['data'].join("\n")
   #
   # 「認証」のときはデータを並びかえる
   #
@@ -335,7 +342,7 @@ get '/:name/*/text/:version' do      # 古いバージョンを取得
     similar_titles = similar_page_titles(name, title)
     unless similar_titles.empty?
       suggest_title = similar_titles.sort{|a,b|
-        readdata(name, b).size <=> readdata(name, a).size  # 一番大きいページをサジェスト
+        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
       }.first
       data = "\n-> [[#{suggest_title}]]" if suggest_title
     end
