@@ -45,29 +45,10 @@ end
 
 # データ書込み
 post '/__write' do
-  postdata = []
-  name = ""
-  title = ""
-  orig_md5 = ""
-  if params[:name] then
-    # パラメタ利用での書き込み by @keroxp 2013/12/10
-    # こちらを正式にしたい @masui 2013/12/24 20:33:20
-    # @params name
-    # @params title
-    # @params orig_md5
-    # @params data
-    name = params[:name]
-    title = params[:title]
-    orig_md5 = params[:orig_md5]
-    postdata = params[:data]
-  else
-    # 旧式の書き込み
-    data = params[:data].split(/\n/)
-    name = data.shift
-    title = data.shift
-    orig_md5 = data.shift
-    postdata = data.join("\n")
-  end
+  name = params[:name]
+  title = params[:title]
+  orig_md5 = params[:orig_md5]
+  postdata = params[:data]
   writedata(name,title,postdata,orig_md5)
 end
 
