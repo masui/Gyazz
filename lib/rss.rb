@@ -1,7 +1,7 @@
 require 'rss/maker'
 
 def rss(name)
-  hotids = hotidlist(name)
+  hotids = hotids(name)
 
   rss = RSS::Maker.make("2.0") do |rss|
     rss.channel.about = "http://Gyazz.com/#{name}/rss.xml"
@@ -27,6 +27,3 @@ def rss(name)
   rss.to_s
 end
 
-if $0 == __FILE__ then
-  puts rss('masui')
-end

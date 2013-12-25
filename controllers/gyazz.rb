@@ -2,6 +2,7 @@
 # -*- ruby -*-
 #
 # 外に見せないサービスは /__xxx という名前にする
+# APIを綺麗にする #66
 #
 
 require 'json'
@@ -373,6 +374,8 @@ get "/:name/__random" do |name|
   ignore = len / 2 # 新しい方からignore個は選ばない
   ignore = 0
   title = t[ignore + rand(len-ignore)]
+
+  # ここも認証とかランダム化とか必要
 
   # @page = Page.new(name,title)
   # erb :pagenew
