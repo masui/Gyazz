@@ -30,7 +30,6 @@ end
 
 get "/__search/:name" do |name|
   q = params[:q]
-  check_auth(name)
   if q == '' then
     redirect "#{app_root}/#{name}/"
   else
@@ -68,7 +67,6 @@ post '/__write' do
     orig_md5 = data.shift
     postdata = data.join("\n")
   end
-  check_auth(name)
   writedata(name,title,postdata,orig_md5)
 end
 
@@ -81,7 +79,6 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
     name = data.shift
     title = data.shift
   end
-  # check_auth(name)
   writedata(name,title,data)
   redirect("/#{name}/#{title}")
 end
@@ -178,7 +175,6 @@ end
 
 # サイト属性設定ページ
 get "/:name/.settings" do |name|
-  check_auth(name)
   @sortbydate = (attr(name,'sortbydate') == 'true')
   @searchable = (attr(name,'searchable') == 'true')
   @name = name
@@ -196,27 +192,23 @@ end
 
 # ページリスト表示
 get "/:name" do |name|
-  check_auth(name)
   search(name)
   erb :search
 end
 
 get "/:name/" do |name|
-  check_auth(name)
   search(name)
   erb :search
 end
 
 # 名前でソートされたページリスト表示
 get "/:name/__sort" do |name|
-  check_auth(name)
   search(name,'',true)
   erb :search
 end
 
 # gyazz-ruby gem のためのもの
 get "/:name/__list" do |name|
-  check_auth(name)
   list(name)
 end
 
@@ -236,7 +228,6 @@ end
 get '/:name/*/__access' do
   name = params[:name]
   title = params[:splat].join('/')
-  check_auth(name)
   access_history(name,title).to_json
 end
 
@@ -244,7 +235,6 @@ end
 get '/:name/*/__modify' do
   name = params[:name]
   title = params[:splat].join('/')
-  check_auth(name)
   modify_history(name,title).to_json
 end
 
@@ -253,7 +243,6 @@ end
 #-----------------------------------------------------
 
 get "/:name/rss.xml" do |name|
-  # check_auth(name)
   rss(name)
 end
 
@@ -286,17 +275,32 @@ get '/:name/*/json' do
   redirect "/#{name}/#{title}/json/0"
 end
 
-get '/:name/*/json/:version' do      # 古いバージョンを取得
+# 古いバージョンのJSONを取得
+get '/:name/*/json/:version' do
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
   response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
-  readdata(name,title,version).to_json
+  data = readdata(name,title,version)
   #
   # 認証ページのときは順番を入れ換える操作必要
+
   #
-  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
+  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
+  # 候補ページを追加してJSONで返すといいのかも?
   #
+  # こんな感じのコードを入れる
+  #  if !data or data.strip.empty? or data.strip == "(empty)"
+  #    similar_titles = similar_page_titles(name, title)
+  #    unless similar_titles.empty?
+  #      suggest_title = similar_titles.sort{|a,b|
+  #        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
+  #      }.first
+  #      data = "\n-> [[#{suggest_title}]]" if suggest_title
+  #    end
+  #  end
+
+  data.to_json
 end
 
 # ページをテキストデータとして取得
@@ -318,42 +322,10 @@ get '/:name/*/text' do
       data = randomize(data)
     end
   else
-    check_auth(name)
   end
   # response["Access-Control-Allow-Origin"] = "*" Ajaxを許可するオマジナイ... 要るのか?
   data
 end
-
-# 不要になったと思う...
-#get '/:name/*/text/:version' do      # 古いバージョンを取得
-#  name = params[:name]
-#  title = params[:splat].join('/')
-#  version = params[:version].to_i
-#  data = readdata(name,title,version)['data'].join("\n")
-#  #
-#  # 「認証」のときはデータを並びかえる
-#  #
-#  if auth_page_exist?(name,ALL_AUTH) then
-#    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
-#      data = randomize(data)
-#    end
-#  elsif auth_page_exist?(name,WRITE_AUTH) then
-#    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
-#      data = randomize(data)
-#    end
-#  end
-#  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
-#  if !data or data.strip.empty? or data.strip == "(empty)"
-#    similar_titles = similar_page_titles(name, title)
-#    unless similar_titles.empty?
-#      suggest_title = similar_titles.sort{|a,b|
-#        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
-#      }.first
-#      data = "\n-> [[#{suggest_title}]]" if suggest_title
-#    end
-#  end
-#  data
-#end
 
 #-----------------------------------------------------
 # 関連ページ名取得
@@ -362,15 +334,14 @@ end
 get '/:name/*/related' do
   name = params[:name]
   title = params[:splat].join('/')
-  check_auth(name)
 
   top = Gyazz.topdir(name)
 
   pair = Pair.new("#{top}/pair")
-  relatedkeywords = pair.collect(title)
+  related = pair.collect(title)
   pair.close
 
-  relatedkeywords.to_json
+  related.to_json
 end
 
 #-----------------------------------------------------
@@ -380,14 +351,11 @@ end
 get '/:name/*/__edit' do
   name = params[:name]
   title = params[:splat].join('/')
-  check_auth(name)
-  edit(name,title)
-  erb :edit
+  redirect "#{name}/#{title}/__edit/0"
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   name = params[:name]
-  check_auth(name)
   title = params[:splat].join('/')
   version = params[:version].to_i
   edit(name,title,version)
@@ -400,7 +368,6 @@ end
 
 # ランダムにページを表示
 get "/:name/__random" do |name|
-  check_auth(name)
   t = hottitles(name)
   len = t.length
   ignore = len / 2 # 新しい方からignore個は選ばない
