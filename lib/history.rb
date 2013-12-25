@@ -41,8 +41,7 @@ def modify_log(name,title)
   now = Time.now
   v = []
   modify_history(name,title).each { |timestamp|
-    timestamp =~ /^(....)(..)(..)(..)(..)(..)/
-    t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
+    t = timestamp.to_time
     #
     # issue #59 を参照
     # 羃的に計算する

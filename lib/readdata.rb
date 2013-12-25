@@ -12,8 +12,7 @@ def readdata(name,title,version=nil)
   if version && version > 0 then
     ret['timestamp'] = data.collect { |line|
       line = line.chomp.sub(/^\s*/,'')
-      line_timestamp(name,title,line) =~ /(....)(..)(..)(..)(..)(..)/
-      t = Time.local($1.to_i,$2.to_i,$3.to_i,$4.to_i,$5.to_i,$6.to_i)
+      t = line_timestamp(name,title,line).to_time
       (Time.now - t).to_i
     }
   end
