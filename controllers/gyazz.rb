@@ -283,8 +283,7 @@ end
 get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
-  response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
-  readdata(name,title).to_json
+  redirect "/#{name}/#{title}/json/0"
 end
 
 get '/:name/*/json/:version' do      # 古いバージョンを取得
@@ -293,6 +292,11 @@ get '/:name/*/json/:version' do      # 古いバージョンを取得
   version = params[:version].to_i
   response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
   readdata(name,title,version).to_json
+  #
+  # 認証ページのときは順番を入れ換える操作必要
+  #
+  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
+  #
 end
 
 # ページをテキストデータとして取得
@@ -320,35 +324,36 @@ get '/:name/*/text' do
   data
 end
 
-get '/:name/*/text/:version' do      # 古いバージョンを取得
-  name = params[:name]
-  title = params[:splat].join('/')
-  version = params[:version].to_i
-  data = readdata(name,title,version)['data'].join("\n")
-  #
-  # 「認証」のときはデータを並びかえる
-  #
-  if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
-      data = randomize(data)
-    end
-  elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
-      data = randomize(data)
-    end
-  end
-  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
-  if !data or data.strip.empty? or data.strip == "(empty)"
-    similar_titles = similar_page_titles(name, title)
-    unless similar_titles.empty?
-      suggest_title = similar_titles.sort{|a,b|
-        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
-      }.first
-      data = "\n-> [[#{suggest_title}]]" if suggest_title
-    end
-  end
-  data
-end
+# 不要になったと思う...
+#get '/:name/*/text/:version' do      # 古いバージョンを取得
+#  name = params[:name]
+#  title = params[:splat].join('/')
+#  version = params[:version].to_i
+#  data = readdata(name,title,version)['data'].join("\n")
+#  #
+#  # 「認証」のときはデータを並びかえる
+#  #
+#  if auth_page_exist?(name,ALL_AUTH) then
+#    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
+#      data = randomize(data)
+#    end
+#  elsif auth_page_exist?(name,WRITE_AUTH) then
+#    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
+#      data = randomize(data)
+#    end
+#  end
+#  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック
+#  if !data or data.strip.empty? or data.strip == "(empty)"
+#    similar_titles = similar_page_titles(name, title)
+#    unless similar_titles.empty?
+#      suggest_title = similar_titles.sort{|a,b|
+#        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
+#      }.first
+#      data = "\n-> [[#{suggest_title}]]" if suggest_title
+#    end
+#  end
+#  data
+#end
 
 #-----------------------------------------------------
 # 関連ページ名取得
