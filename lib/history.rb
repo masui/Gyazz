@@ -10,7 +10,7 @@ def access_history(name,title,append=nil)
   if append then # 現在時刻を追記
     File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
       f.puts Time.now.stamp
-    end
+    }
   else
     accessfile = "#{Gyazz.backupdir(name,title)}/access"
     (File.exist?(accessfile) ? File.open(accessfile).read.split : [])
