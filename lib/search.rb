@@ -61,11 +61,9 @@ def search(name,query='',namesort=false)
       @ids.each { |id|
         t = modtime[id].stamp
         title = @id2title[id]
-        if File.exist?(Gyazz.backupdir(name,title)) then
-          Dir.open(Gyazz.backupdir(name,title)).each { |f|
-            t = f if f =~ /^[0-9a-fA-F]{14}$/ && f < t
-          }
-        end
+        Dir.open(Gyazz.backupdir(name,title)).each { |f|
+          t = f if f =~ /^[0-9a-fA-F]{14}$/ && f < t
+        }
         @createtime[id] = t
       }
       @ids.sort { |a,b|

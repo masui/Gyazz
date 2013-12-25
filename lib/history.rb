@@ -7,11 +7,9 @@ MAXH = 12
 # アクセス履歴タイムスタンプ
 #
 def access_history(name,title,append=nil)
-  if append then # 追記
-    if File.exists?("#{Gyazz.backupdir(name,title)}") then
-      File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
-        f.puts Time.now.stamp
-      }
+  if append then # 現在時刻を追記
+    File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
+      f.puts Time.now.stamp
     end
   else
     accessfile = "#{Gyazz.backupdir(name,title)}/access"

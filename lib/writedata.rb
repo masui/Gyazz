@@ -19,8 +19,8 @@ def writedata(name,title,data,browser_md5 = nil)
   end                                 # curdata: Web上の最新データ
 
   # バックアップディレクトリを作成
-  Dir.mkdir(Gyazz.backupdir(name)) unless File.exist?(Gyazz.backupdir(name))
-  Dir.mkdir(Gyazz.backupdir(name,title)) unless File.exist?(Gyazz.backupdir(name,title))
+  #Dir.mkdir(Gyazz.backupdir(name)) unless File.exist?(Gyazz.backupdir(name))
+  #Dir.mkdir(Gyazz.backupdir(name,title)) unless File.exist?(Gyazz.backupdir(name,title))
 
   # 最新データをバックアップ
   if curdata != "" && curdata != newdata then

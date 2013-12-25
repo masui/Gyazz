@@ -21,8 +21,16 @@ module Gyazz
 
 
   def self.backupdir(name,title=nil)
-    return "#{topdir(name)}/backups" unless title
-    return "#{topdir(name)}/backups/#{md5(title)}"
+    if title then
+      dir = "#{topdir(name)}/backups"
+      Dir.mkdir(dir) unless File.exist?(dir)
+      dir = "#{topdir(name)}/backups/#{md5(title)}"
+      Dir.mkdir(dir) unless File.exist?(dir)
+    else
+      dir = "#{topdir(name)}/backups"
+      Dir.mkdir(dir) unless File.exist?(dir)
+    end
+    dir
   end
 
   def self.newbackupfile(name,title)
