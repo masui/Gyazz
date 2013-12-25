@@ -22,13 +22,10 @@ class KeywordTest < MiniTest::Unit::TestCase
     assert_equal keywords.length, 0
   end
 
-  #def test_4
-  #  s = "[[abc.iconx4]] [[def.icon*4]] [[増井.icon×3]] などはキーワード?"
-  #  keywords = s.keywords
-  #  assert_equal keywords.length, 3
-  #  assert keywords.member?('abc')
-  #  assert keywords.member?('def')
-  #  assert keywords.member?('増井')
-  #end
+  def test_4
+    s = "[[abc.iconx4]] [[def.icon*4]] [[増井.icon×3]] などはキーワード?"
+    keywords = s.keywords
+    assert_equal keywords.length, 0
+  end
 
 end

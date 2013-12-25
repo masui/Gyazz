@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# require 'sdbm'
-# require 'set'
-# require 'db'
-
 def writedata(name,title,data,browser_md5 = nil)
   # ブラウザからの要求のときはbrowser_md5に値がセットされる
   # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
