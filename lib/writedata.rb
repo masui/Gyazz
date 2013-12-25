@@ -59,11 +59,10 @@ def writedata(name,title,data,browser_md5 = nil)
   end
 
   # 各行のタイムスタンプ保存
-  timestr = Time.now.strftime('%Y%m%d%H%M%S')
   data.split(/\n/).each { |line|
     l = line.sub(/^\s*/,'')
     if !line_timestamp(name,title,l) then
-      line_timestamp(name,title,l,timestr)
+      line_timestamp(name,title,l,Time.now.stamp)
     end
   }
 

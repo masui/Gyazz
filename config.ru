@@ -20,6 +20,7 @@ require 'lib/png'
 require 'lib/history'
 require 'lib/rss'
 require 'lib/auth'
+require 'lib/time'
 
 require 'helpers/helper'
 

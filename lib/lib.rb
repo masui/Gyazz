@@ -26,7 +26,7 @@ module Gyazz
   end
 
   def self.newbackupfile(name,title)
-    "#{backupdir(name,title)}/#{Time.now.strftime('%Y%m%d%H%M%S')}"
+    "#{backupdir(name,title)}/#{Time.now.stamp}"
   end
 
   def self.backupfiles(name,title)

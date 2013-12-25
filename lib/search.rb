@@ -59,7 +59,7 @@ def search(name,query='',namesort=false)
     elsif @sortbydate then
       @createtime = {}
       @ids.each { |id|
-        t = modtime[id].strftime('%Y%m%d%H%M%S')
+        t = modtime[id].stamp
         title = @id2title[id]
         if File.exist?(Gyazz.backupdir(name,title)) then
           Dir.open(Gyazz.backupdir(name,title)).each { |f|

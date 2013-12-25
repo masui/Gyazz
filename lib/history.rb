@@ -10,7 +10,7 @@ def access_history(name,title,append=nil)
   if append then # 追記
     if File.exists?("#{Gyazz.backupdir(name,title)}") then
       File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
-        f.puts Time.now.strftime('%Y%m%d%H%M%S')
+        f.puts Time.now.stamp
       }
     end
   else
@@ -23,7 +23,7 @@ end
 # 変更履歴タイムスタンプ
 #
 def modify_history(name,title)
-  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).strftime('%Y%m%d%H%M%S'))
+  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).stamp)
 end
 
 def old_modify_history(name,title)
