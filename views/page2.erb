@@ -1,0 +1,111 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title><%= @page.wiki.name %> / <%= @page.title %></title>
+  <link rel="stylesheet" href="<%= app_root %>/stylesheets/gyazz.css" type="text/css">
+  <link rel="apple-touch-icon" href="<%= app_root %>/gyazz.png">
+  <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
+  <link rel="alternate" type="application/rss+xml" title="<%= @page.wiki.name %> RSS Feed" href="<%= app_root %>/<%= @page.wiki.name %>/rss.xml" />
+  <meta name="robots" content="<%= @page.attr['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
+
+  <script language="JavaScript" src='<%= app_root %>/javascripts/pbsearch.js'></script>
+  <script language="JavaScript" src='<%= app_root %>/javascripts/pbdict.js'></script>
+  <script language="JavaScript" src='<%= app_root %>/javascripts/utf.js'></script>
+  <script language="JavaScript" src='<%= app_root %>/javascripts/md5.js'></script>
+  <script language="JavaScript" src='<%= app_root %>/javascripts/location.js'></script>
+
+  <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
+  <!-- <script language="JavaScript" src='<%= app_root %>/javascripts/jQuery.kill_referrer.js'></script> -->
+
+  <script language="JavaScript" src='<%= app_root %>/javascripts/gyazz.js'></script>
+
+  <script type="text/javascript">
+  var name =  '<%= escape_jsvar @page.wiki.name %>';
+  var title = '<%= escape_jsvar @page.title %>';
+  var root =  '<%= app_root %>';
+  var version = 0;
+
+  var do_auth = <%= @page.attr['do_auth'] %>;
+  var write_authorized = <%= @page.attr['write_authorized'] %>;
+
+  $(document).ready(function(){ // この場所にないと駄目?
+    $('#rawdata').hide();
+    setup();
+    getdata();
+  })
+
+  </script>
+</head>
+
+<body>
+<div class='title'>
+  <span class='wordtitle'>
+    <% if @page.attr['write_authorized'] then %>
+      <a href='<%= app_root %>/<%= @page.wiki.name %>/<%= @page.title %>/__edit/0' id='title'>
+      <%= sanitize(@page.title) %>
+      </a>
+    <% else %>
+      <%= sanitize(@page.title) %>
+    <% end %>
+  </span>
+
+  <form action="<%= app_root %>/__search/<%= @page.wiki.name %>" method="get" style="float:right;font-size:12pt;">
+    <input height='20' name='q' type='text' value='<%= @q %>'>
+    <input type='submit' value='リスト/検索'>
+  </form>
+
+  <span class='language' id='datestr'></span>
+</div>
+
+<div id='rawdata'>
+<%= @page.text.gsub(/</,'&lt;') %>
+</div>
+
+<p>
+<div id='querydiv'>
+Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
+        style="font-size:10pt;border:none;padding:1px;margin:0;background-color:#f0f0ff;">
+</div>
+<div id='contents'></div>
+<input autocomplete='off' type='text' id='newtext' style='visibility:hidden;'>
+<p>
+
+<div class="links">
+
+<% @page.related_pages.each { |page| %>
+  <%
+    image = page.repimage
+    @url = "#{app_root}/#{page.wiki.name}/#{URI.encode(page.title)}"
+    @t = page.title
+    if @t =~ /^[0-9]{14}/ then
+      file = "#{wiki.topdir}/#{@t.md5}"
+      @t = File.read(file).split(/\n/)[0]
+    end
+    @text = @t
+    @title = @t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
+    @title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
+  %>
+  <% if image.to_s != '' then %>
+    <% if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i %>
+      <% @imageurl = image %>
+    <% else %>
+      <% @imageurl = "http://gyazo.com/#{image}.png" %>
+    <% end %>
+    <%= erb :icon %>
+  <% else %>
+    <%= erb :texticon %>
+  <% end %>
+<% } %>
+
+  <p>
+  <br clear='all'>
+</div>
+<p>
+
+  <!-- src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-97Tqd24a0eosRi_oY4GC4RtFrf4ldqo&sensor=false"> -->
+  <script type="text/javascript"
+    src="http://maps.googleapis.com/maps/api/js?sensor=false">
+  </script>
+
+</body>
+</html>

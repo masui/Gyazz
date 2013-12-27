@@ -57,56 +57,6 @@ def related_titles(name,title)
   }
 end
 
-#def related_pages(name,title)
-#  top = Gyazz.topdir(name)
-#  related_titles(name,title).collect{ |t|
-#    target = {}
-#    target['url'] = "#{app_root}/#{name}/#{URI.encode(t)}"
-#    if t =~ /^[0-9]{14}/ then
-#      file = "#{Gyazz.topdir(name)}/#{Gyazz.md5(t)}"
-#      t = File.read(file).split(/\n/)[0]
-#    end
-#    target['text'] = t
-#    target['title'] = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
-#    target['title'].sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
-#    imgeurl = nil
-#    image = repimage(name,t)
-#    if image.to_s != ''
-#      if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
-#        target['imageurl'] = image
-#      else
-#        target['imageurl'] = "http://gyazo.com/#{image}.png"
-#      end
-#    end
-#    target
-#  }
-#end
-#
-#def related_pages_________(name,title)
-#  top = Gyazz.topdir(name)
-#  related(name,title).collect{ |t|
-#    target = {}
-#    target['url'] = "#{app_root}/#{name}/#{URI.encode(t)}"
-#    if t =~ /^[0-9]{14}/ then
-#      file = "#{Gyazz.topdir(name)}/#{Gyazz.md5(t)}"
-#      t = File.read(file).split(/\n/)[0]
-#    end
-#    target['text'] = t
-#    target['title'] = t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
-#    target['title'].sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
-#    imgeurl = nil
-#    image = repimage(name,t)
-#    if image.to_s != ''
-#      if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i
-#        target['imageurl'] = image
-#      else
-#        target['imageurl'] = "http://gyazo.com/#{image}.png"
-#      end
-#    end
-#    target
-#  }
-#end
-
 if $0 == __FILE__ then
 #  puts related_html("増井研","合宿")
   puts related_html("増井研","ブックマークレット")
