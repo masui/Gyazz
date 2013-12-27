@@ -3,8 +3,10 @@ require 'digest/md5'
 
 module Gyazz
 
+  @@id2title = nil
+
   def self.topdir(name)
-    dir = "#{FILEROOT}/#{md5(name)}"
+    dir = "#{FILEROOT}/#{name.md5}"
     Dir.mkdir(dir) unless File.exist?(dir)
     dir
   end
@@ -26,7 +28,6 @@ module Gyazz
       Dir.mkdir(dir) unless File.exist?(dir)
       dir = "#{topdir(name)}/backups/#{md5(title)}"
       Dir.mkdir(dir) unless File.exist?(dir)
-      puts "DIR = #{dir}"
     else
       dir = "#{topdir(name)}/backups"
       Dir.mkdir(dir) unless File.exist?(dir)
@@ -67,4 +68,13 @@ module Gyazz
     end
   end
 
+  def self.id2title(id,title=nil)
+    @@id2title = SDBM.open("#{FILEROOT}/id2title",0644) unless @@id2title
+    if title then
+      @@id2title[id] = title
+    else
+      title = @@id2title[id]
+    end
+    title.to_s
+  end
 end

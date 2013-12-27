@@ -49,7 +49,9 @@ post '/__write' do
   title = params[:title]
   orig_md5 = params[:orig_md5]
   postdata = params[:data]
-  writedata(name,title,postdata,orig_md5)
+
+  page = Gyazz::Page.new(name,title)
+  page.write(postdata,orig_md5)
 end
 
 get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
@@ -61,7 +63,9 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
     name = data.shift
     title = data.shift
   end
-  writedata(name,title,data)
+  page = Gyazz::Page.new(name,title)
+  page.write(data)
+  #writedata(name,title,data)
   redirect("/#{name}/#{title}")
 end
 
@@ -112,7 +116,7 @@ post '/__tellauth' do
   name = postdata[0]
   title = postdata[1]
   useranswer = postdata[2]
-  correctanswer = ansstring(Gyazz::Page.new(name.title).text)
+  correctanswer = ansstring(Gyazz::Page.new(name,title).text)
   if useranswer == correctanswer then # 認証成功!
     # Cookie設定
     if title == ALL_AUTH then
@@ -157,15 +161,23 @@ end
 
 # サイト属性設定ページ
 get "/:name/.settings" do |name|
-  @sortbydate = (attr(name,'sortbydate') == 'true')
-  @searchable = (attr(name,'searchable') == 'true')
-  @name = name
+  @wiki = Gyazz::Wiki.new(name)
+  #@sortbydate = (wiki.attr['sortbydate'] == 'true')
+  #@searchable = (wiki.attr['searchable'] == 'true')
+  #@name = name
   erb :settings
+
+  #@sortbydate = (attr(name,'sortbydate') == 'true')
+  #@searchable = (attr(name,'searchable') == 'true')
+  #@name = name
+  #erb :settings
 end
 
 # サイト属性設定API (settings.erbから呼ばれる)
 get '/__setattr/:name/:key/:val' do |name,key,val|
-  attr(name,key,val)
+  wiki = Gyazz::Wiki.new(name)
+  wiki.attr[key] = val
+  # attr(name,key,val)
 end
 
 #-----------------------------------------------------
@@ -184,6 +196,8 @@ get "/:name/" do |name|
 end
 
 # 名前でソートされたページリスト表示
+# どこで使ってるのか??
+# 日付ソートする場合もあるのに仕様がヘンでは?
 get "/:name/__sort" do |name|
   search(name,'',true)
   erb :search
@@ -210,14 +224,14 @@ end
 get '/:name/*/__access' do
   name = params[:name]
   title = params[:splat].join('/')
-  access_history(name,title).to_json
+  Gyazz::Page.new(name,title).access_history.to_json
 end
 
 # 変更履歴
 get '/:name/*/__modify' do
   name = params[:name]
   title = params[:splat].join('/')
-  modify_history(name,title).to_json
+  Gyazz::Page.new(name,title).modify_history.to_json
 end
 
 #-----------------------------------------------------
@@ -289,7 +303,7 @@ end
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')
-  data = Gyazz::Page.new(name,title).text
+  text = Gyazz::Page.new(name,title).text
 
   #
   # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
@@ -306,7 +320,7 @@ get '/:name/*/text' do
   else
   end
   # response["Access-Control-Allow-Origin"] = "*" Ajaxを許可するオマジナイ... 要るのか?
-  data
+  text
 end
 
 #-----------------------------------------------------
@@ -363,8 +377,7 @@ get "/:name/__random" do |name|
 
   # ここも認証とかランダム化とか必要
 
-  wiki = Gyazz::Wiki.new(name)
-  page = Gyazz::Page.new(wiki,title)
+  page = Gyazz::Page.new(name,title)
 
   @page = page
   erb :page2
@@ -375,10 +388,9 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
-  wiki = Gyazz::Wiki.new(name)
-  page = Gyazz::Page.new(wiki,title)
-  page.access_count = page.access_count+1
-  page.log_access_history
+  page = Gyazz::Page.new(name,title)
+  # page.access_count = page.access_count+1
+  page.access
 
   @page = page
   erb :page2
@@ -386,66 +398,66 @@ end
 
 
 # ページ表示
-get '/xxxxxx/:name/*' do
-  name = params[:name]               # Wikiの名前   (e.g. masui)
-  title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-
-
-  # アクセスカウンタインクリメント
-  access_count(name,title,access_count(name,title)+1)
-
-  # アクセス履歴を保存
-  access_history(name,title,true)
-
-  authorized_by_cookie = false
-  write_authorized = true
-  if auth_page_exist?(name,ALL_AUTH) then
-    if title != ALL_AUTH then
-      if !cookie_authorized?(name,ALL_AUTH) then
-        # redirect "/401.html"
-      else
-        authorized_by_cookie = true
-      end
-    else
-      if !cookie_authorized?(name,ALL_AUTH) then
-        write_authorized = false
-      end
-    end
-  else
-    if title == ALL_AUTH then
-      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
-    end
-
-    if auth_page_exist?(name,WRITE_AUTH) then
-      rawdata = File.read(Gyazz.datafile(name,WRITE_AUTH))
-      #if title != WRITE_AUTH then
-        if !cookie_authorized?(name,WRITE_AUTH) then
-          write_authorized = false
-        end
-      #end
-    else
-      if title == WRITE_AUTH then
-        response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
-      end
-    end
-  end
-
-  if !password_authorized?(name) then
-    if title != ALL_AUTH then
-      if !authorized_by_cookie then
-        response['WWW-Authenticate'] = %(Basic realm="#{name}")
-        throw(:halt, [401, "Not authorized.\n"])
-      end
-    else
-      # write_authorized = false
-    end
-  end
-
-  @page = page(name,title,write_authorized)
-  erb :page
-
-  #puts "Gyazz.rb: name=#{name}"
-  #@page = Page.new(name,title)
-  #erb :page
-
-end
+#get '/xxxxxx/:name/*' do
+#  name = params[:name]               # Wikiの名前   (e.g. masui)
+#  title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
+#
+#
+#  # アクセスカウンタインクリメント
+#  access_count(name,title,access_count(name,title)+1)
+#
+#  # アクセス履歴を保存
+#  access_history(name,title,true)
+#
+#  authorized_by_cookie = false
+#  write_authorized = true
+#  if auth_page_exist?(name,ALL_AUTH) then
+#    if title != ALL_AUTH then
+#      if !cookie_authorized?(name,ALL_AUTH) then
+#        # redirect "/401.html"
+#      else
+#        authorized_by_cookie = true
+#      end
+#    else
+#      if !cookie_authorized?(name,ALL_AUTH) then
+#        write_authorized = false
+#      end
+#    end
+#  else
+#    if title == ALL_AUTH then
+#      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
+#    end
+#
+#    if auth_page_exist?(name,WRITE_AUTH) then
+#      rawdata = File.read(Gyazz.datafile(name,WRITE_AUTH))
+#      #if title != WRITE_AUTH then
+#        if !cookie_authorized?(name,WRITE_AUTH) then
+#          write_authorized = false
+#        end
+#      #end
+#    else
+#      if title == WRITE_AUTH then
+#        response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
+#      end
+#    end
+#  end
+#
+#  if !password_authorized?(name) then
+#    if title != ALL_AUTH then
+#      if !authorized_by_cookie then
+#        response['WWW-Authenticate'] = %(Basic realm="#{name}")
+#        throw(:halt, [401, "Not authorized.\n"])
+#      end
+#    else
+#      # write_authorized = false
+#    end
+#  end
+#
+#  @page = page(name,title,write_authorized)
+#  erb :page
+#
+#  #puts "Gyazz.rb: name=#{name}"
+#  #@page = Page.new(name,title)
+#  #erb :page
+#
+#end

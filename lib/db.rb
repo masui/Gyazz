@@ -38,7 +38,7 @@ end
 #
 def attr(name,key,value=nil)
   ret = nil
-  attrdbfile = "#{Gyazz.topdir(name)}/attr.dir"
+  attrdbfile = "#{Gyazz.topdir(name)}/attr"
   if value then # 書込み
     attrdb = SDBM.open(attrdbfile,0644);
     attrdb[key] = value

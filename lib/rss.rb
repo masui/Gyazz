@@ -1,7 +1,7 @@
 require 'rss/maker'
 
 def rss(name)
-  hotids = hotids(name)
+  hotids = Gyazz::Wiki.new(name).hotids
 
   rss = RSS::Maker.make("2.0") do |rss|
     rss.channel.about = "http://Gyazz.com/#{name}/rss.xml"
@@ -15,7 +15,7 @@ def rss(name)
 
     hotids[0...15].each { |id|
       i= rss.items.new_item
-      title = @id2title[id]
+      title = Gyazz.id2title(id)
       i.title = title
       i.link = "http://Gyazz.com/#{name}/#{title}"
       i.date = @modtime[id]

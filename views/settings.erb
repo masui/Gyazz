@@ -1,17 +1,18 @@
 <html>
 <head>
 <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
-<title><%= @name %></title>
+<title><%= @wiki.name %></title>
 <link href='<%= app_root %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
 <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
 <script type="text/javascript">
-var name = "<%= @name %>";
+var name = "<%= @wiki.name %>";
 
 function setchange(id){
   $('#'+id).change(function(){
+    //alert(id);
     $.ajax({
       async: true,
-      url: "/__setattr/" + name + "/" + id + "/" + $('#'+id).attr('checked')
+      url: "/__setattr/" + name + "/" + id + "/" + $('#'+id).prop('checked') // attr() じゃなくてprop()
     });
   })
 }
@@ -25,16 +26,16 @@ $(document).ready(function(){
 
 <body>
 <div class='title'>
-  <span class='wordtitle'><%= @name %> 設定</span>
-  <form action="<%= app_root %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+  <span class='wordtitle'><%= @wiki.name %> 設定</span>
+  <form action="<%= app_root %>/__search/<%= @wiki.name %>" method="get" style="float:right;font-size:12pt;">
     <input height='20' name='q' type='text' value='<%= @q %>'>
     <input type='submit' value='検索'>
   </form>
 </div>
 
 <p>
-<input <%= @searchable ? 'checked' : '' %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
-<input <%= @sortbydate ? 'checked' : '' %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
+<input <%= @wiki.attr['searchable'] == 'true' ? 'checked' : '' %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
+<input <%= @wiki.attr['sortbydate'] == 'true' ? 'checked' : '' %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
 
 </body>
 </html>

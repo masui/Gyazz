@@ -4,98 +4,94 @@ require 'sdbm'
 require 'asearch'
 
 # nameという名前のGyazzサイトのページのIDのリスト取得
-def ids(name)
-  top = Gyazz.topdir(name)
-
-  pair = Pair.new("#{top}/pair")
-  titles = pair.keys
-  pair.close
-
-  @id2title = {}
-  titles.each { |title|
-    @id2title[Gyazz.md5(title)] = title
-  }
-
-  # ファイルの存在を確認
-  @ids = Dir.open(top).find_all { |file|
-    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
-  }
-  
-  # 参照時間/更新時間を計算
-  @modtime = {}
-  @atime = {}
-  @ids.each { |id|
-    @modtime[id] = File.mtime("#{top}/#{id}")
-    @atime[id] = File.atime("#{top}/#{id}")
-  }
-  
-  @ids
-end
-
-# nameという名前のGyazzサイトのページのIDのリストを新しい順に
-def hotids(name)
-  ids(name).sort { |a,b|
-    @modtime[b] <=> @modtime[a]
-  }
-end
-  
-# nameという名前のGyazzサイトのページのタイトルのリストを新しい順に
-def hottitles(name)
-  hotids(name).collect { |id|
-    @id2title[id]
-  }
-end
+#def ids(name)
+#  top = Gyazz.topdir(name)
+#
+#  pair = Pair.new("#{top}/pair")
+#  titles = pair.keys
+#  pair.close
+#
+#  @id2title = {}
+#  titles.each { |title|
+#    @id2title[Gyazz.md5(title)] = title
+#  }
+#
+#  # ファイルの存在を確認
+#  @ids = Dir.open(top).find_all { |file|
+#    file =~ /^[\da-f]{32}$/ && @id2title[file].to_s != ''
+#  }
+#  
+#  # 参照時間/更新時間を計算
+#  @modtime = {}
+#  @atime = {}
+#  @ids.each { |id|
+#    @modtime[id] = File.mtime("#{top}/#{id}")
+#    @atime[id] = File.atime("#{top}/#{id}")
+#  }
+#  
+#  @ids
+#end
+#
+## nameという名前のGyazzサイトのページのIDのリストを新しい順に
+#def hotids(name)
+#  ids(name).sort { |a,b|
+#    @modtime[b] <=> @modtime[a]
+#  }
+#end
+#  
+## nameという名前のGyazzサイトのページのタイトルのリストを新しい順に
+#def hottitles(name)
+#  hotids(name).collect { |id|
+#    @id2title[id]
+#  }
+#end
 
 def search(name,query='',namesort=false)
-  @ids = ids(name)
+  @wiki = Gyazz::Wiki.new(name)
 
-  @sortbydate = attr(name,'sortbydate')
+  @ids = @wiki.pageids
 
   @hotids =
     if namesort then
       @ids.sort { |a,b|
-        @id2title[b] <=> @id2title[a]
+        Gyazz.id2title(b) <=> Gyazz.id2title(a)
       }
-    elsif @sortbydate then
-      @createtime = {}
-      @ids.each { |id|
-        t = modtime[id].stamp
-        title = @id2title[id]
-        Dir.open(Gyazz.backupdir(name,title)).each { |f|
-          t = f if f =~ /^[0-9a-fA-F]{14}$/ && f < t
-        }
-        @createtime[id] = t
-      }
-      @ids.sort { |a,b|
-        @createtime[b] <=> @createtime[a]
+    elsif @wiki.attr['sortbydate'] then
+      @wiki.pages.sort { |pagea,pageb|
+        pageb.createtime <=> pagea.createtime
+      }.collect { |page|
+        page.id
       }
     else
-      @ids.sort { |a,b|
-        @atime[b] <=> @atime[a]
+      puts @wiki.pages
+      @wiki.pages.sort { |pagea,pageb|
+        pageb.accesstime <=> pagea.accesstime
+      }.collect { |page|
+        page.id
       }
     end
 
-  # 先頭が"."のものはリストしない
+  # タイトル先頭が"."のものはリストしない
   @hotids = @hotids.find_all { |id|
-    @id2title[id] !~ /^\./
+    Gyazz.id2title(id) !~ /^\./
   }
 
   @q = query
   @matchids = @hotids
   if @q != '' then
     @matchids = @hotids.find_all { |id|
-      title = @id2title[id]
-      content = File.read("#{Gyazz.topdir(name)}/#{id}")
+      title = Gyazz.id2title(id)
+      content = Gyazz::Page.new(name,title).text
       title.match(/#{@q}/i) || content.match(/#{@q}/i)
     }
   end
 
-  @urltop = topurl(name)
-  @name = name
   @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
+  # ページタイトルが日付だけだったりするページの場合は1行目を表示タイトルにする
   @disptitle = {}
-  @id2title.each { |id,title|
+  @hotids.each { |id|
+    title = Gyazz.id2title(id)
     @disptitle[id] = title
     if title =~ /^[0-9]{14}$/ then
       file = "#{Gyazz.topdir(name)}/#{id}"
@@ -109,7 +105,7 @@ end
 # gyazz-ruby で使うためのもの? 意味がよくわからない
 def list(name)
   hotids(name).collect { |id|
-    title = @id2title[id]
+    title = Gyazz.id2title(id)
     [title, @modtime[id].to_i, "#{name}/#{title}", repimage(name,title)]
   }.to_json
 end
@@ -121,7 +117,7 @@ def similar_page_titles(name, title)
   @ids = ids(name)
 
   titles = @ids.map do |id|
-    s = @id2title[id].dup
+    s = Gyazz.id2title(id).dup
     ss = s.dup
     title_ = ""
     while s.sub!(/^(.)/,'') do
