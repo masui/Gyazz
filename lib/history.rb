@@ -3,37 +3,6 @@
 MAX = 25
 MAXH = 12
 
-#
-# アクセス履歴タイムスタンプ
-#
-def access_history(name,title,append=nil)
-  if append then # 現在時刻を追記
-    File.open("#{Gyazz.backupdir(name,title)}/access","a"){ |f|
-      f.puts Time.now.stamp
-    }
-  else
-    accessfile = "#{Gyazz.backupdir(name,title)}/access"
-    (File.exist?(accessfile) ? File.open(accessfile).read.split : [])
-  end
-end
-
-#
-# 変更履歴タイムスタンプ
-#
-def modify_history(name,title)
-  old_modify_history(name,title).push(File.mtime(Gyazz.datafile(name,title)).stamp)
-end
-
-def old_modify_history(name,title)
-  dir = Gyazz.backupdir(name,title)
-  return '' unless File.exist?(dir)
-  Dir.open(dir).find_all { |f|
-    f =~ /^\d{14}$/
-  }.sort { |a,b|
-    a <=> b
-  }
-end
-
 # 古い変更/新しい変更を考慮して履歴を視覚化する
 def modify_log(name,title)
   now = Time.now
