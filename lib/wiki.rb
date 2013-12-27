@@ -4,6 +4,7 @@
 module Gyazz
   @@id2title = nil
 
+  # ここにあるのは変だろうか
   def self.id2title(id,title=nil)
     @@id2title = SDBM.open("#{FILEROOT}/id2title",0644) unless @@id2title
     if title then
@@ -38,16 +39,17 @@ module Gyazz
       
       # ファイルの存在を確認
       ids = Dir.open(dir).find_all { |file|
-        file =~ /^[\da-f]{32}$/ && Gyazz.id2title(file) != ''
+        title = Gyazz.id2title(file)
+        file =~ /^[\da-f]{32}$/ && 
+        title != '' &&
+        Page.new(self,title).curdata != ''
       }
       
-      # 参照時間/更新時間を計算
-      @modtime = {}
-      @atime = {}
-      ids.each { |id|
-        @modtime[id] = File.mtime("#{dir}/#{id}")
-        @atime[id] = File.atime("#{dir}/#{id}")
-      }
+      #      # 参照時間/更新時間を計算
+      #      @modtime = {}
+      #      ids.each { |id|
+      #        @modtime[id] = File.mtime("#{dir}/#{id}")
+      #      }
       
       ids
     end
@@ -61,7 +63,10 @@ module Gyazz
     # ページのIDのリストを新しい順に
     def hotids
       pageids.sort { |a,b|
-        @modtime[b] <=> @modtime[a]
+        pagea = Gyazz::Page.new(self,Gyazz.id2title(a))
+        pageb = Gyazz::Page.new(self,Gyazz.id2title(b))
+        pageb.modtime <=> pagea.modtime
+        # @modtime[b] <=> @modtime[a]
       }
     end
     
