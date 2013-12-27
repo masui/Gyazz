@@ -14,7 +14,7 @@ module Gyazz
       @id = title.md5
       Gyazz.id2title(@id,title) # titleとIDとの対応セット
 
-      @@timestamp = SDBM.open("#{dir}/timestamp",0644) unless @@timestamp
+      @@timestamp = SDBM.open("#{@wiki.dir}/timestamp",0644) unless @@timestamp
       @attr = {}
       @attr['do_auth'] = 'false'
       @attr['write_authorized'] = 'true'
@@ -143,7 +143,8 @@ module Gyazz
       if version && version > 0 then
         ret['age'] = d.collect { |line|
           line = line.chomp.sub(/^\s*/,'')
-          t = @@timestamp[@title+line].to_time
+          ts = @@timestamp[@title+line]
+          t = (ts ? ts.to_time : Time.now)
           (Time.now - t).to_i
         }
       end
@@ -159,7 +160,7 @@ module Gyazz
     end
 
     def backupfiles
-      backupids.collect { |backkupid|
+      backupids.collect { |backupid|
         "#{dir}/#{backupid}"
       }
     end

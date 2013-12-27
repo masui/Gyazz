@@ -2,27 +2,27 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><%= @page['name'] %> / <%= @page['title'] %></title>
-  <link rel="stylesheet" href="<%= app_root %>/stylesheets/gyazz.css" type="text/css">
-  <link rel="apple-touch-icon" href="<%= app_root %>/gyazz.png">
-  <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
-  <link rel="alternate" type="application/rss+xml" title="<%= @page['name'] %> RSS Feed" href="<%= app_root %>/<%= @page['name'] %>/rss.xml" />
+  <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
+  <link rel="apple-touch-icon" href="/gyazz.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="alternate" type="application/rss+xml" title="<%= @page['name'] %> RSS Feed" href="/<%= @page['name'] %>/rss.xml" />
   <meta name="robots" content="<%= @page['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
 
-  <script language="JavaScript" src='<%= app_root %>/javascripts/pbsearch.js'></script>
-  <script language="JavaScript" src='<%= app_root %>/javascripts/pbdict.js'></script>
-  <script language="JavaScript" src='<%= app_root %>/javascripts/utf.js'></script>
-  <script language="JavaScript" src='<%= app_root %>/javascripts/md5.js'></script>
-  <script language="JavaScript" src='<%= app_root %>/javascripts/location.js'></script>
+  <script language="JavaScript" src='/javascripts/pbsearch.js'></script>
+  <script language="JavaScript" src='/javascripts/pbdict.js'></script>
+  <script language="JavaScript" src='/javascripts/utf.js'></script>
+  <script language="JavaScript" src='/javascripts/md5.js'></script>
+  <script language="JavaScript" src='/javascripts/location.js'></script>
 
-  <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
+  <script language="JavaScript" src='/javascripts/jquery.js'></script>
   <!-- <script language="JavaScript" src='<%= app_root %>/javascripts/jQuery.kill_referrer.js'></script> -->
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
-  <script language="JavaScript" src='<%= app_root %>/javascripts/gyazz.js'></script>
+  <script language="JavaScript" src='/javascripts/gyazz.js'></script>
 
   <script type="text/javascript">
   var name =  '<%= escape_jsvar @page['name'] %>';
   var title = '<%= escape_jsvar @page['title'] %>';
-  var root =  '<%= app_root %>';
   var version = 0;
 
   var do_auth = <%= @page['do_auth'] %>;
@@ -41,7 +41,7 @@
 <div class='title'>
   <span class='wordtitle'>
     <% if @page['write_authorized'] then %>
-      <a href='<%= app_root %>/<%= @page['name'] %>/<%= @page['title'] %>/__edit/0' id='title'>
+      <a href='/<%= @page['name'] %>/<%= @page['title'] %>/__edit/0' id='title'>
       <%= sanitize(@page['title']) %>
       </a>
     <% else %>
@@ -89,9 +89,6 @@ Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
 <p>
 
   <!-- src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-97Tqd24a0eosRi_oY4GC4RtFrf4ldqo&sensor=false"> -->
-  <script type="text/javascript"
-    src="http://maps.googleapis.com/maps/api/js?sensor=false">
-  </script>
 
 </body>
 </html>
