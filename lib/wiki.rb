@@ -10,6 +10,7 @@ module Gyazz
     end
     attr :name
     attr :attr
+    attr :id
 
     def dir
       dir = "#{FILEROOT}/#{@id}"
@@ -18,17 +19,13 @@ module Gyazz
     end
     
     def pageids
-      titles = Pair.new("#{dir}/pair").keys
+      # titles = Pair.new("#{dir}/pair").keys
       
       # ファイルの存在を確認
-      ids = Dir.open(dir).find_all { |file|
+      Dir.open(dir).find_all { |file|
         title = Gyazz.id2title(file)
-        file =~ /^[\da-f]{32}$/ && 
-        title != '' &&
-        Page.new(self,title).curdata != ''
+        file =~ /^[\da-f]{32}$/ && title != '' && Page.new(self,title).curdata != ''
       }
-
-      ids
     end
 
     def titles

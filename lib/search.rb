@@ -19,7 +19,6 @@ def search(name,query='',namesort=false)
         page.id
       }
     else
-      puts @wiki.pages
       @wiki.pages.sort { |pagea,pageb|
         pageb.accesstime <=> pagea.accesstime
       }.collect { |page|

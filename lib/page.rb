@@ -5,7 +5,6 @@ module Gyazz
     @@timestamp = nil
 
     def initialize(wiki,title)
-      puts "Page: wiki=#{wiki}, title=#{title}"
       @wiki = wiki
       if wiki.class == String
         @wiki = Wiki.new(wiki)
