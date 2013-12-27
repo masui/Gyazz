@@ -2,19 +2,6 @@
 # -*- coding: utf-8 -*-
 
 module Gyazz
-  @@id2title = nil
-
-  # ここにあるのは変だろうか
-  def self.id2title(id,title=nil)
-    @@id2title = SDBM.open("#{FILEROOT}/id2title",0644) unless @@id2title
-    if title then
-      @@id2title[id] = title
-    else
-      title = @@id2title[id]
-    end
-    title.to_s
-  end
-
   class Wiki
     def initialize(name)
       @name = name
@@ -57,8 +44,8 @@ module Gyazz
     # ページのIDのリストを新しい順に
     def hotids
       pageids.sort { |a,b|
-        pagea = Gyazz::Page.new(self,Gyazz.id2title(a))
-        pageb = Gyazz::Page.new(self,Gyazz.id2title(b))
+        pagea = Page.new(self,Gyazz.id2title(a))
+        pageb = Page.new(self,Gyazz.id2title(b))
         pageb.modtime <=> pagea.modtime
         # @modtime[b] <=> @modtime[a]
       }

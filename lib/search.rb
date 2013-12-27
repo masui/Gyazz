@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'sdbm'
 require 'asearch'
 
 def search(name,query='',namesort=false)
