@@ -2,6 +2,8 @@
 
 module Gyazz
   class Page
+    @@timestamp = nil
+
     def initialize(wiki,title)
       puts "Page: wiki=#{wiki}, title=#{title}"
       @wiki = wiki
@@ -13,7 +15,7 @@ module Gyazz
       @id = title.md5
       Gyazz.id2title(@id,title) # titleとIDとの対応セット
 
-      @timestamp = SDBM.open("#{dir}/timestamp",0644) # 行のタイムスタンプ
+      @@timestamp = SDBM.open("#{dir}/timestamp",0644) unless @@timestamp
       @attr = {}
       @attr['do_auth'] = 'false'
       @attr['write_authorized'] = 'true'
@@ -21,7 +23,6 @@ module Gyazz
     attr :wiki
     attr :title
     attr :attr
-    attr :timestamp
     attr :id
 
     def dir
@@ -102,8 +103,8 @@ module Gyazz
       # 各行のタイムスタンプ保存
       data.split(/\n/).each { |line|
         l = line.sub(/^\s*/,'')
-        if !timestamp[l] then
-          timestamp[l] = Time.now.stamp
+        if !@@timestamp[@title+l] then
+          @@timestamp[@title+l] = Time.now.stamp
         end
       }
 
@@ -143,7 +144,7 @@ module Gyazz
       if version && version > 0 then
         ret['age'] = d.collect { |line|
           line = line.chomp.sub(/^\s*/,'')
-          t = timestamp[line].to_time
+          t = @@timestamp[@title+line].to_time
           (Time.now - t).to_i
         }
       end

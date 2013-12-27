@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 
 module Gyazz
   class Wiki
     def initialize(name)
       @name = name
-      puts name
       @id = name.md5
-      Gyazz.id2title(@id,@name) # nameとIDとの対応セット
-      @attr = SDBM.open("#{dir}/attr",0644) # 以前backupdirだった
+      Gyazz.id2title(@id,@name) # nameとIDとの対応を登録
+      @attr = SDBM.open("#{dir}/attr",0644) unless @attr
     end
     attr :name
-    attr :attr, true
+    attr :attr
 
     def dir
       dir = "#{FILEROOT}/#{@id}"
@@ -20,9 +18,7 @@ module Gyazz
     end
     
     def pageids
-      pair = Pair.new("#{dir}/pair")
-      titles = pair.keys
-      pair.close
+      titles = Pair.new("#{dir}/pair").keys
       
       # ファイルの存在を確認
       ids = Dir.open(dir).find_all { |file|

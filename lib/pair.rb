@@ -4,7 +4,7 @@ class Pair
 
   def initialize(dbmfile)
     @dbmfile = dbmfile
-    @pairs = SDBM.open(dbmfile,0666)
+    @pairs = SDBM.open(dbmfile,0666) unless @pairs
   end
 
   def clear
