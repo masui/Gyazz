@@ -3,16 +3,7 @@
 def page_weight(name,title)
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
-  # pair = Pair.new("#{Gyazz.topdir(name)}/pair")
   pair = Pair.new("#{wiki.dir}/pair")
-
-  #pagekeywords = []
-  #  filename = Gyazz.datafile(name,title,0)
-  #  if File.exist?(filename) then
-  #    pagekeywords = File.read(filename).keywords
-  #    # File.utime(Time.now,Time.now,filename) # 何故こうしてたのか?
-  #  end
-
   pagekeywords = page.text.keywords
 
   #
