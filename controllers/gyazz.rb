@@ -217,7 +217,8 @@ get '/:name/*/modify.png' do
   name = params[:name]
   title = params[:splat].join('/')
   content_type 'image/png'
-  modify_png(name,title)
+  page = Gyazz::Page.new(name,title)
+  page.modify_png
 end
 
 # アクセス履歴
