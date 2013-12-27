@@ -2,6 +2,18 @@
 # -*- coding: utf-8 -*-
 
 module Gyazz
+  @@id2title = nil
+
+  def self.id2title(id,title=nil)
+    @@id2title = SDBM.open("#{FILEROOT}/id2title",0644) unless @@id2title
+    if title then
+      @@id2title[id] = title
+    else
+      title = @@id2title[id]
+    end
+    title.to_s
+  end
+
   class Wiki
     def initialize(name)
       @name = name

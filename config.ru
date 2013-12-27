@@ -6,7 +6,6 @@ require 'backports'
 $:.unshift File.dirname(__FILE__)
 
 require 'lib/db'
-require 'lib/lib'
 require 'lib/config'
 require 'lib/search'
 require 'lib/edit'
