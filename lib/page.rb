@@ -191,9 +191,13 @@ module Gyazz
       }
       image
     end
+
+    def modtime
+      File.mtime(curfile)
+    end
     
     def modify_history
-      backupids.push(File.mtime(curfile).stamp)
+      backupids.push(modtime.stamp)
     end
 
     def createtime
@@ -206,7 +210,6 @@ module Gyazz
 
     def accesstime
       access_history.last.to_s
-      # File.atime(curfile)
     end
 
     def related_pages

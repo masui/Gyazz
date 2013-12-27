@@ -19,6 +19,18 @@
 #
 # パスワード認証
 #
+module Gyazz
+  class Wiki
+    def password_required?
+      Gyazz::Page.new(self,".passwd").curdata != '' || 
+        Gyazz::Page.new(self,".password").curdata != ''
+    end
+    #      file = Gyazz.datafile(name,".passwd") || Gyazz.datafile(name,".password")
+    #    File.exist?(file) ? file : nil
+  end
+end
+
+
   def protected!(name)
     unless password_authorized?(name)
       response['WWW-Authenticate'] = %(Basic realm="#{name}")

@@ -1,26 +1,28 @@
 require 'rss/maker'
 
-def rss(name)
-  hotids = Gyazz::Wiki.new(name).hotids
+def rss(name,root='http://Gyazz.com/')
+  wiki = Gyazz::Wiki.new(name)
+  hotids = wiki.hotids
 
   rss = RSS::Maker.make("2.0") do |rss|
-    rss.channel.about = "http://Gyazz.com/#{name}/rss.xml"
+    rss.channel.about = "#{root}/#{name}/rss.xml"
     rss.channel.title = "Gyazz - #{name}"
     rss.channel.description = "Gyazz - #{name}"
-    rss.channel.link = "http://Gyazz.com/#{name}"
+    rss.channel.link = "#{root}/#{name}"
     rss.channel.language = "ja"
   
     rss.items.do_sort = true
     rss.items.max_size = 15
 
     hotids[0...15].each { |id|
-      i= rss.items.new_item
       title = Gyazz.id2title(id)
+      next if title =~ /^\./
+      i= rss.items.new_item
       i.title = title
-      i.link = "http://Gyazz.com/#{name}/#{title}"
-      i.date = @modtime[id]
-      i.description = (password_required?(name) ? i.date.to_s : readdata(name,title,0))
-      # i.description = readdata(name,title,0)
+      i.link = "#{root}/#{name}/#{title}"
+      page = Gyazz::Page.new(wiki,title)
+      i.date = page.modtime
+      i.description = (wiki.password_required? ? i.date.to_s : page.text)
     }
   end
 
