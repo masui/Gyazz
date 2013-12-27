@@ -44,13 +44,7 @@ module Gyazz
         title != '' &&
         Page.new(self,title).curdata != ''
       }
-      
-      #      # 参照時間/更新時間を計算
-      #      @modtime = {}
-      #      ids.each { |id|
-      #        @modtime[id] = File.mtime("#{dir}/#{id}")
-      #      }
-      
+
       ids
     end
 
