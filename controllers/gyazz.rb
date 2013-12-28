@@ -22,7 +22,7 @@ before '/:name/*' do
 end
 
 get '/' do
-  redirect "#{app_root}#{DEFAULTPAGE}"
+  redirect "#{DEFAULTPAGE}"
 end
 
 #-----------------------------------------------------
@@ -32,7 +32,7 @@ end
 get "/__search/:name" do |name|
   q = params[:q]
   if q == '' then
-    redirect "#{app_root}/#{name}/"
+    redirect "/#{name}/"
   else
     search(name,q)
     erb :search
@@ -162,22 +162,13 @@ end
 # サイト属性設定ページ
 get "/:name/.settings" do |name|
   @wiki = Gyazz::Wiki.new(name)
-  #@sortbydate = (wiki.attr['sortbydate'] == 'true')
-  #@searchable = (wiki.attr['searchable'] == 'true')
-  #@name = name
   erb :settings
-
-  #@sortbydate = (attr(name,'sortbydate') == 'true')
-  #@searchable = (attr(name,'searchable') == 'true')
-  #@name = name
-  #erb :settings
 end
 
 # サイト属性設定API (settings.erbから呼ばれる)
 get '/__setattr/:name/:key/:val' do |name,key,val|
   wiki = Gyazz::Wiki.new(name)
   wiki.attr[key] = val
-  # attr(name,key,val)
 end
 
 #-----------------------------------------------------
@@ -217,8 +208,7 @@ get '/:name/*/modify.png' do
   name = params[:name]
   title = params[:splat].join('/')
   content_type 'image/png'
-  page = Gyazz::Page.new(name,title)
-  page.modify_png
+  Gyazz::Page.new(name,title).modify_png
 end
 
 # アクセス履歴
@@ -336,14 +326,6 @@ get '/:name/*/related' do
   Gyazz::Page.new(name,title).related_pages.collect { |page|
     page.title
   }.to_json
-
-#  top = Gyazz.topdir(name)
-#
-#  pair = Pair.new("#{top}/pair")
-#  related = pair.collect(title)
-#  pair.close
-#
-#  related.to_json
 end
 
 #-----------------------------------------------------
@@ -400,17 +382,6 @@ end
 
 
 # ページ表示
-#get '/xxxxxx/:name/*' do
-#  name = params[:name]               # Wikiの名前   (e.g. masui)
-#  title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
-#
-#
-#  # アクセスカウンタインクリメント
-#  access_count(name,title,access_count(name,title)+1)
-#
-#  # アクセス履歴を保存
-#  access_history(name,title,true)
-#
 #  authorized_by_cookie = false
 #  write_authorized = true
 #  if auth_page_exist?(name,ALL_AUTH) then
