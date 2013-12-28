@@ -26,11 +26,6 @@ def search(name,query='',namesort=false)
       }
     end
 
-  # タイトル先頭が"."のものはリストしない
-  @hotids = @hotids.find_all { |id|
-    Gyazz.id2title(id) !~ /^\./
-  }
-
   @q = query
   @matchids = @hotids
   if @q != '' then

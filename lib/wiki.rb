@@ -19,12 +19,10 @@ module Gyazz
     end
     
     def pageids
-      # titles = Pair.new("#{dir}/pair").keys
-      
-      # ファイルの存在を確認
       Dir.open(dir).find_all { |file|
         title = Gyazz.id2title(file)
-        file =~ /^[\da-f]{32}$/ && title != '' && Page.new(self,title).curdata != ''
+        # タイトル先頭が「.」のものはリストしない
+        file =~ /^[\da-f]{32}$/ && title != '' && title !~ /^\./ && Page.new(self,title).curdata != ''
       }
     end
 

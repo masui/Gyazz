@@ -355,17 +355,17 @@ end
 
 # ランダムにページを表示
 get "/:name/__random" do |name|
-  t = hottitles(name)
-  len = t.length
+  wiki = Gyazz::Wiki.new(name)
+  titles = wiki.hottitles
+  len = titles.length
   ignore = len / 2 # 新しい方からignore個は選ばない
   ignore = 0
-  title = t[ignore + rand(len-ignore)]
+  title = titles[ignore + rand(len-ignore)]
 
   # ここも認証とかランダム化とか必要
+  # ランダム化が必要なものは表示すべきでない
+  @page = Gyazz::Page.new(name,title)
 
-  page = Gyazz::Page.new(name,title)
-
-  @page = page
   erb :page
 end
 
@@ -377,7 +377,7 @@ get '/:name/*' do
   @page = Gyazz::Page.new(name,title)
   @page.access
 
-  erb :page2
+  erb :page
 end
 
 
