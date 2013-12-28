@@ -357,13 +357,12 @@ get '/:name/*/__edit' do
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
-
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
   @page = Gyazz::Page.new(name,title)
   @version = version
-  @write_authorized = true
+  @write_authorized = true # ここはちゃんとやる
 
   erb :edit
 end

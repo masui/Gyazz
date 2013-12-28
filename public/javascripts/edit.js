@@ -17,30 +17,33 @@ function keyup(event){
 function writedata(){
     if(!write_authorized) return;
     datastr = $('#contents').val().replace(/\n+$/,'')+"\n";
-    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + orig_md5 + "\n" + datastr)
-	$.ajax({
-		type: "POST",
-		sync: true,
-		url: root + "/__write",
-		data: postdata,
-		success: function(msg){
-		    $("#contents").css('background-color','#ffffff');
-		    if(msg.match(/^conflict/)){
-			//alert('conflict!! reload');
-			// 再読み込み
-			getdata(); // ここで強制書き換えしてしまうのがマズい (2011/6/17)
-		    }
-		    else if(msg == 'protected'){
-			// 再読み込み
-			alert("このページは編集できません");
-			getdata();
-		    }
-		    else {
-			orig_md5 = MD5_hexhash(utf16to8(datastr));
-		    }
-		}
-	    })
+    postdata = "data=" + encodeURIComponent(datastr);
+    $.ajax({
+	type: "POST",
+	sync: true,
+	url: root + "/__write" + 
+	    "?name=" + encodeURIComponent(name) +
+	    "&title=" + encodeURIComponent(title) +
+	    "&orig_md5=" + encodeURIComponent(orig_md5),
+	data: postdata,
+	success: function(msg){
+	    $("#contents").css('background-color','#ffffff');
+	    if(msg.match(/^conflict/)){
+		//alert('conflict!! reload');
+		// 再読み込み
+		getdata(); // ここで強制書き換えしてしまうのがマズい (2011/6/17)
+	    }
+	    else if(msg == 'protected'){
+		// 再読み込み
+		alert("このページは編集できません");
+		getdata();
+	    }
+	    else {
+		orig_md5 = MD5_hexhash(utf16to8(datastr));
+	    }
 	}
+    });
+}
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     var version = 0;
