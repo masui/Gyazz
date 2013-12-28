@@ -49,10 +49,7 @@ def search(name,query='',namesort=false)
     title = Gyazz.id2title(id)
     @disptitle[id] = title
     if title =~ /^[0-9]{14}$/ then
-      file = "#{Gyazz.topdir(name)}/#{id}"
-      if File.exist?(file) then
-        @disptitle[id] = title + " " + File.read(file).split(/\n/)[0]
-      end
+      @disptitle[id] = title + " " + Gyazz::Page.new(name,title).text.split(/\n/)[0]
     end
   }
 end

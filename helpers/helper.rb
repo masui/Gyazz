@@ -12,10 +12,6 @@ helpers do
     "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}#{env['SCRIPT_NAME']}"
   end
 
-  def topurl(name)
-    "#{app_root}/#{name}"
-  end
-
   def sanitize(s)
     s.gsub(/&/,'&amp;').gsub(/</,'&lt;')
   end

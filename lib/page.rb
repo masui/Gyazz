@@ -39,17 +39,8 @@ module Gyazz
     end
 
     def datafile(version=0)
-      version = version.to_i
-      if version == 0 then
-        curfile
-      else
-        files = [curfile]
-        files += backupfiles
-        if version >= files.length then
-          version = files.length-1
-        end
-        files[version]
-      end
+      files = [curfile] + backupfiles
+      files[version.to_i] || files.last
     end
 
     def text(version=0)
@@ -131,18 +122,14 @@ module Gyazz
     end
 
     def data(version=nil) # erbに渡すための情報を付加
-      file = datafile(version)
       ret = {}
-      datestr = ""
-      if version && version > 0 then
-        file =~ /\/(\d{14})$/
+      ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
+      if version.to_i > 0 then
+        datafile(version) =~ /\/(\d{14})$/
         ret['date'] = $1
-      end
-      d = text(version).sub(/\n+$/,'').split(/\n/)
-      ret['data'] = d
-      if version && version > 0 then
-        ret['age'] = d.collect { |line|
-          line = line.chomp.sub(/^\s*/,'')
+        ret['age'] = ret['data'].collect { |line|
+          line.sub!(/^\s*/,'')
+          line.sub!(/\s*$/,'')
           ts = @@timestamp[@title+line]
           t = (ts ? ts.to_time : Time.now)
           (Time.now - t).to_i
@@ -165,32 +152,32 @@ module Gyazz
       }
     end
 
+    def accessfile
+      "#{dir}/access"
+    end
+
     def access # ページへのアクセス時刻を記録
-      File.open("#{dir}/access","a"){ |f|
+      File.open(accessfile,"a"){ |f|
         f.puts Time.now.stamp
       }
     end
 
     def access_history
-      accessfile = "#{dir}/access"
-      (File.exist?(accessfile) ? File.read(accessfile).split : [])
+      File.exist?(accessfile) ? File.read(accessfile).split : []
+    end
+
+    def repimagefile
+      "#{dir}/repimage"
     end
 
     def repimage
-      repimagefile = "#{dir}/repimage"
-      image = nil
-      if File.exist?(repimagefile) then
-        image = File.read(repimagefile).chomp
-      end
-      image
+      File.exist?(repimagefile) ? File.read(repimagefile).chomp : nil
     end
     
     def repimage=(image)
-      repimagefile = "#{dir}/repimage"
       File.open(repimagefile,"w"){ |f|
         f.puts image
       }
-      image
     end
 
     def modtime
@@ -198,15 +185,12 @@ module Gyazz
     end
     
     def modify_history
-      backupids.push(modtime.stamp)
+      backupids.reverse.push(modtime.stamp)
     end
 
     def createtime
-      if backupids[0] then
-        backupids[0].to_time 
-      else
-        File.mtime(curfile)
-      end
+      modify_history[0].to_time
+      # backupids[0] ? backupids[0].to_time : File.mtime(curfile)
     end
 
     def accesstime
@@ -214,8 +198,8 @@ module Gyazz
     end
 
     def related_pages
-      related_titles(@wiki.name,@title).collect { |title|
-        Gyazz::Page.new(@wiki,title)
+      related_titles(self).collect { |title|
+        Page.new(@wiki,title)
       }
     end
   end

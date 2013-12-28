@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-def page_weight(name,title)
-  wiki = Gyazz::Wiki.new(name)
-  page = Gyazz::Page.new(wiki,title)
-  pair = Pair.new("#{wiki.dir}/pair")
+def page_weight(page)
+  pair = Pair.new("#{page.wiki.dir}/pair")
   pagekeywords = page.text.keywords
 
   #
@@ -50,8 +48,8 @@ def page_weight(name,title)
   weight
 end
 
-def related_titles(name,title)
-  h = page_weight(name,title)
+def related_titles(page)
+  h = page_weight(page)
   h.keys.sort { |a,b|
     h[b] <=> h[a]
   }
