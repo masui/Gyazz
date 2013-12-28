@@ -357,10 +357,14 @@ get '/:name/*/__edit' do
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
+
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
-  edit(name,title,version)
+  @page = Gyazz::Page.new(name,title)
+  @version = version
+  @write_authorized = true
+
   erb :edit
 end
 
@@ -389,11 +393,9 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
-  page = Gyazz::Page.new(name,title)
-  # page.access_count = page.access_count+1
-  page.access
+  @page = Gyazz::Page.new(name,title)
+  @page.access
 
-  @page = page
   erb :page2
 end
 

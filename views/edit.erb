@@ -3,35 +3,35 @@
   <head>
     <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
     <meta name='robots' content='noindex,nofollow'>
-    <title><%= @name %> / <%= @title %></title>
-    <link href='<%= app_root %>/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
+    <title><%= @page.wiki.name %> / <%= @page.title %></title>
+    <link href='/stylesheets/gyazz.css' rel='stylesheet' type='text/css; charset=utf-8'>
     <link rel="shortcut icon" href="<%= app_root %>/favicon.ico">
     <script language="JavaScript" src='<%= app_root %>/javascripts/jquery.js'></script>
     <script language="JavaScript" src='<%= app_root %>/javascripts/utf.js'></script>
     <script language="JavaScript" src='<%= app_root %>/javascripts/md5.js'></script>
     <script language="JavaScript" src='<%= app_root %>/javascripts/edit.js'></script>
     <script type='text/javascript'>
-    var name = '<%= escape_jsvar @name %>';
-    var title = '<%= escape_jsvar @title %>';
+    var name = '<%= escape_jsvar @page.wiki.name %>';
+    var title = '<%= escape_jsvar @page.title %>';
     var root =  '<%= app_root %>';
-    var orig_md5 = '<%= @orig_md5 %>';
+    var orig_md5 = '<%= @page.text.md5 %>';
     var write_authorized = <%= @write_authorized %>;
     </script>
   </head>
   <body>
     <div class='title'>
       <span class='wordtitle'>
-        <a href="<%= app_root %>/<%= @name %>/<%= @title %>">
-          <%= sanitize(@title) %>
+        <a href="/<%= @page.wiki.name %>/<%= @page.title %>">
+          <%= sanitize(@page.title) %>
         </a>
       </span>
-      <form action="<%= app_root %>/__search/<%= @name %>" method="get" style="float:right;font-size:12pt;">
+      <form action="/__search/<%= @page.wiki.name %>" method="get" style="float:right;font-size:12pt;">
         <input height='20' name='q' type='text' value='<%= @q %>'>
         <input type='submit' value='検索'>
       </form>
     </div>
     <p>
-    <textarea id='contents' rows='40' cols='100'><%= sanitize(@text) %></textarea>
+    <textarea id='contents' rows='40' cols='100'><%= sanitize(@page.text) %></textarea>
     <script type='text/javascript'>
     var textarea = document.getElementById('contents');
     data = textarea.value;
