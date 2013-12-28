@@ -51,9 +51,9 @@ end
 
 # gyazz-ruby で使うためのもの? 意味がよくわからない
 def list(name)
-  hotids(name).collect { |id|
-    title = Gyazz.id2title(id)
-    [title, @modtime[id].to_i, "#{name}/#{title}", repimage(name,title)]
+  Gyazz::Wiki.new(name).hottitles.collect { |title|
+    page = Gyazz::Page.new(name,title)
+    [title, page.modtime.to_i, "#{name}/#{title}", page.repimage]
   }.to_json
 end
 

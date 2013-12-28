@@ -4,20 +4,21 @@ module Gyazz
   class Wiki
     def initialize(name)
       @name = name
-      @id = name.md5
-      Gyazz.id2title(@id,@name) # nameとIDとの対応を登録
+      Gyazz.id2title(id,@name) # nameとIDとの対応を登録
       @attr = SDBM.open("#{dir}/attr",0644) unless @attr
     end
-    attr :name
-    attr :attr
-    attr :id
+    attr_reader :name, :attr
 
     def dir
-      dir = "#{FILEROOT}/#{@id}"
+      dir = "#{FILEROOT}/#{id}"
       Dir.mkdir(dir) unless File.exist?(dir)
       dir
     end
     
+    def id
+      @name.md5
+    end
+
     def pageids
       Dir.open(dir).find_all { |file|
         title = Gyazz.id2title(file)
@@ -38,7 +39,6 @@ module Gyazz
         pagea = Page.new(self,Gyazz.id2title(a))
         pageb = Page.new(self,Gyazz.id2title(b))
         pageb.modtime <=> pagea.modtime
-        # @modtime[b] <=> @modtime[a]
       }
     end
     

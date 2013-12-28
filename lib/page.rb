@@ -11,23 +11,23 @@ module Gyazz
       end
 
       @title = title
-      @id = title.md5
-      Gyazz.id2title(@id,title) # titleとIDとの対応セット
+      Gyazz.id2title(id,title) # titleとIDとの対応セット
 
       @@timestamp = SDBM.open("#{@wiki.dir}/timestamp",0644) unless @@timestamp
       @attr = {}
       @attr['do_auth'] = 'false'
       @attr['write_authorized'] = 'true'
     end
-    attr :wiki
-    attr :title
-    attr :attr
-    attr :id
+    attr_reader :wiki, :title, :attr
 
     def dir
-      dir = "#{@wiki.dir}/#{@id}"
+      dir = "#{@wiki.dir}/#{id}"
       Dir.mkdir(dir) unless File.exist?(dir)
       dir
+    end
+
+    def id
+      @title.md5
     end
     
     def curfile # 現在編集中のファイル
