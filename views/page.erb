@@ -1,12 +1,12 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title><%= @page['name'] %> / <%= @page['title'] %></title>
+  <title><%= @page.wiki.name %> / <%= @page.title %></title>
   <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
   <link rel="apple-touch-icon" href="/gyazz.png">
   <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="alternate" type="application/rss+xml" title="<%= @page['name'] %> RSS Feed" href="/<%= @page['name'] %>/rss.xml" />
-  <meta name="robots" content="<%= @page['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
+  <link rel="alternate" type="application/rss+xml" title="<%= @page.wiki.name %> RSS Feed" href="/<%= @page.wiki.name %>/rss.xml" />
+  <meta name="robots" content="<%= @page.attr['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
 
   <script language="JavaScript" src='/javascripts/pbsearch.js'></script>
   <script language="JavaScript" src='/javascripts/pbdict.js'></script>
@@ -14,19 +14,20 @@
   <script language="JavaScript" src='/javascripts/md5.js'></script>
   <script language="JavaScript" src='/javascripts/location.js'></script>
 
-  <script language="JavaScript" src='/javascripts/jquery.js'></script>
-  <!-- <script language="JavaScript" src='<%= app_root %>/javascripts/jQuery.kill_referrer.js'></script> -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  <!-- <script language="JavaScript" src='/javascripts/jQuery.kill_referrer.js'></script> -->
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
   <script language="JavaScript" src='/javascripts/gyazz.js'></script>
 
   <script type="text/javascript">
-  var name =  '<%= escape_jsvar @page['name'] %>';
-  var title = '<%= escape_jsvar @page['title'] %>';
+  var name =  '<%= escape_jsvar @page.wiki.name %>';
+  var title = '<%= escape_jsvar @page.title %>';
+  var root =  '';
   var version = 0;
 
-  var do_auth = <%= @page['do_auth'] %>;
-  var write_authorized = <%= @page['write_authorized'] %>;
+  var do_auth = <%= @page.attr['do_auth'] %>;
+  var write_authorized = <%= @page.attr['write_authorized'] %>;
 
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();
@@ -40,16 +41,16 @@
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <% if @page['write_authorized'] then %>
-      <a href='/<%= @page['name'] %>/<%= @page['title'] %>/__edit/0' id='title'>
-      <%= sanitize(@page['title']) %>
+    <% if @page.attr['write_authorized'] then %>
+      <a href='/<%= @page.wiki.name %>/<%= @page.title %>/__edit/0' id='title'>
+      <%= sanitize(@page.title) %>
       </a>
     <% else %>
-      <%= sanitize(@page['title']) %>
+      <%= sanitize(@page.title) %>
     <% end %>
   </span>
 
-  <form action="<%= app_root %>/__search/<%= @page['name'] %>" method="get" style="float:right;font-size:12pt;">
+  <form action="/__search/<%= @page.wiki.name %>" method="get" style="float:right;font-size:12pt;">
     <input height='20' name='q' type='text' value='<%= @q %>'>
     <input type='submit' value='リスト/検索'>
   </form>
@@ -58,7 +59,7 @@
 </div>
 
 <div id='rawdata'>
-<%= @page['rawdata'].to_s.gsub(/</,'&lt;') %>
+<%= @page.text.gsub(/</,'&lt;') %>
 </div>
 
 <p>
@@ -72,23 +73,35 @@ Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
 
 <div class="links">
 
-<% @page['related'].each { |entry| %>
-  <% if entry['imageurl'] then %>
-    <% @entry = entry %>
+<% @page.related_pages.each { |page| %>
+  <%
+    image = page.repimage
+    @url = "/#{page.wiki.name}/#{URI.encode(page.title)}"
+    @t = page.title
+    if @t =~ /^[0-9]{14}/ then
+      file = "#{wiki.topdir}/#{@t.md5}"
+      @t = File.read(file).split(/\n/)[0]
+    end
+    @text = @t
+    @title = @t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
+    @title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く
+  %>
+  <% if image.to_s != '' then %>
+    <% if image =~ /https?:\/\/.+\.(png|jpe?g|gif)/i %>
+      <% @imageurl = image %>
+    <% else %>
+      <% @imageurl = "http://gyazo.com/#{image}.png" %>
+    <% end %>
     <%= erb :icon %>
   <% else %>
-    <% @entry = entry %>
     <%= erb :texticon %>
   <% end %>
 <% } %>
-
 
   <p>
   <br clear='all'>
 </div>
 <p>
-
-  <!-- src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-97Tqd24a0eosRi_oY4GC4RtFrf4ldqo&sensor=false"> -->
 
 </body>
 </html>

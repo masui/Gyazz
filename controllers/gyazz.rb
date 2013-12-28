@@ -366,7 +366,7 @@ get "/:name/__random" do |name|
   page = Gyazz::Page.new(name,title)
 
   @page = page
-  erb :page2
+  erb :page
 end
 
 # ページ表示
