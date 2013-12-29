@@ -2,6 +2,8 @@
 
 module Gyazz
   class Page
+    include Attr
+
     @@timestamp = nil
 
     def initialize(wiki,title)
@@ -111,11 +113,11 @@ module Gyazz
       # 代表画像
       firstline = data.split(/\n/)[0]
       if firstline =~ /gyazo.com\/(\w{32})\.png/i then
-        self.repimage = $1
+        self['repimage'] = $1
       elsif firstline =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
-        self.repimage = "#{$1}.#{$2}"
+        self['repimage'] = "#{$1}.#{$2}"
       else
-        self.repimage= ''
+        self['repimage'] = ''
       end
 
       status # 'conflict' or 'noconflict'
@@ -166,19 +168,19 @@ module Gyazz
       File.exist?(accessfile) ? File.read(accessfile).split : []
     end
 
-    def repimagefile
-      "#{dir}/repimage"
-    end
-
-    def repimage
-      File.exist?(repimagefile) ? File.read(repimagefile).chomp : nil
-    end
-    
-    def repimage=(image)
-      File.open(repimagefile,"w"){ |f|
-        f.puts image
-      }
-    end
+#    def repimagefile
+#      "#{dir}/repimage"
+#    end
+#
+#    def repimage
+#      File.exist?(repimagefile) ? File.read(repimagefile).chomp : nil
+#    end
+#    
+#    def repimage=(image)
+#      File.open(repimagefile,"w"){ |f|
+#        f.puts image
+#      }
+#    end
 
     def modtime
       File.mtime(curfile)

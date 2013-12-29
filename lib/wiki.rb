@@ -2,25 +2,13 @@
 
 module Gyazz
   class Wiki
+    include Attr
+
     def initialize(name)
       @name = name
       Gyazz.id2title(id,@name) # nameとIDとの対応を登録
     end
     attr_reader :name
-
-    def [](key)
-      attr = SDBM.open("#{dir}/attr",0644)
-      val = attr[key]
-      attr.close
-      val
-    end
-
-    def []=(key,val)
-      attr = SDBM.open("#{dir}/attr",0644)
-      attr[key] = val
-      attr.close
-      val
-    end
 
     def dir
       dir = "#{FILEROOT}/#{id}"

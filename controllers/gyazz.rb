@@ -203,7 +203,7 @@ end
 get "/:name/__list" do |name|
   wiki = Gyazz::Wiki.new(name)
   wiki.pages.collect { |page|
-    [page.title, page.modtime.to_i, "#{name}/#{page.title}", page.repimage]
+    [page.title, page.modtime.to_i, "#{name}/#{page.title}", page['repimage']]
   }.to_json
 end
 

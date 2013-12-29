@@ -75,7 +75,7 @@ Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
 
 <% @page.related_pages.each { |page| %>
   <%
-    image = page.repimage
+    image = page['repimage']
     @url = "/#{page.wiki.name}/#{URI.encode(page.title)}"
     @t = page.title
     if @t =~ /^[0-9]{14}/ then
