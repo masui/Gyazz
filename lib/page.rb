@@ -4,8 +4,6 @@ module Gyazz
   class Page
     include Attr
 
-    @@timestamp = nil
-
     def initialize(wiki,title)
       @wiki = wiki
       if wiki.class == String
@@ -15,12 +13,10 @@ module Gyazz
       @title = title
       Gyazz.id2title(id,title) # titleとIDとの対応セット
 
-      @@timestamp = SDBM.open("#{@wiki.dir}/timestamp",0644) unless @@timestamp
-      @attr = {}
-      @attr['do_auth'] = 'false'
-      @attr['write_authorized'] = 'true'
+      self['do_auth'] = 'false'
+      self['write_authorized'] = 'true'
     end
-    attr_reader :wiki, :title, :attr
+    attr_reader :wiki, :title
 
     def dir
       dir = "#{@wiki.dir}/#{id}"
@@ -49,6 +45,10 @@ module Gyazz
       file = datafile(version)
       s = (File.exist?(file) ? File.read(file)  : '')
       s.sub(/\s+$/,'')
+    end
+
+    def timestampkey(line)
+      "TimeStamp-#{line}"
     end
     
     def write(data,browser_md5=nil)
@@ -94,10 +94,9 @@ module Gyazz
 
       # 各行のタイムスタンプ保存
       data.split(/\n/).each { |line|
-        l = line.sub(/^\s*/,'')
-        if !@@timestamp[@title+l] then
-          @@timestamp[@title+l] = Time.now.stamp
-        end
+        line.sub!(/^\s*/,'')
+        line.sub!(/\s*$/,'')
+        self[timestampkey(line)] = Time.now.stamp unless self[timestampkey(line)]
       }
 
       # リンク情報更新
@@ -123,7 +122,7 @@ module Gyazz
       status # 'conflict' or 'noconflict'
     end
 
-    def data(version=nil) # erbに渡すための情報を付加
+    def data(version=nil) # page.erbに渡すための情報を付加
       ret = {}
       ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
       if version.to_i > 0 then
@@ -132,7 +131,7 @@ module Gyazz
         ret['age'] = ret['data'].collect { |line|
           line.sub!(/^\s*/,'')
           line.sub!(/\s*$/,'')
-          ts = @@timestamp[@title+line]
+          ts = self[timestampkey(line)]
           t = (ts ? ts.to_time : Time.now)
           (Time.now - t).to_i
         }
