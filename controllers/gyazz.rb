@@ -238,7 +238,7 @@ end
 #-----------------------------------------------------
 
 get "/:name/rss.xml" do |name|
-  rss(name,app_root)
+  Gyazz::Wiki.new(name).rss(app_root)
 end
 
 #-----------------------------------------------------

@@ -6,7 +6,7 @@ MAXH = 12
 module Gyazz
   class Page
     # 古い変更/新しい変更を考慮して履歴を視覚化する
-    def modify_log
+    def __modify_log
       now = Time.now
       v = []
       modify_history.each { |timestamp|
@@ -26,7 +26,7 @@ module Gyazz
     
     # PNG視覚化
     def modify_png
-      v = modify_log
+      v = __modify_log
       data = []
       hotcolors = [[255,255,0],[255,255,40],[255,255,80],[255,255,120],[255,255,160],[255,255,200]]
       bgcolor = [255,255,255]

@@ -2,6 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
 require 'backports'
+require 'rss/maker'
 
 $:.unshift File.dirname(__FILE__)
 
