@@ -23,10 +23,10 @@
   <script type="text/javascript">
   var name =  '<%= escape_jsvar @page.wiki.name %>';
   var title = '<%= escape_jsvar @page.title %>';
-  var root =  '';
+  var root =  '<%= app_root %>';
   var version = 0;
 
-  var do_auth = <%= @page['do_auth'] %>;
+  var do_auth = <%= @page.auth_page? ? 'true' : 'false' %>;
   var write_authorized = <%= @page['write_authorized'] %>;
 
   $(document).ready(function(){ // この場所にないと駄目?

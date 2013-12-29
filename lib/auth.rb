@@ -100,7 +100,6 @@ module Gyazz
     end
 
     def auth_page?
-      puts title
       all_auth_page? || write_auth_page?
     end
 
@@ -120,7 +119,7 @@ module Gyazz
       result += buf.sort_by { rand }.join("\n")
     end
 
-    def anstext
+    def authanswer
       result = []
       buf = []
       a = text.split(/\n/)
@@ -136,9 +135,19 @@ module Gyazz
       result.sort.join(",")
     end
 
+    def auth_cookie # 認証用クッキーの名前
+      (wiki.name + title + text).md5
+    end
+
   end
 
   class Wiki
+    def cookie_authorized?(name)
+      page = Page.new(self.name).text
+      request.cookies[auth_cookie(name,title)].to_s != ''
+    end
+
+
     def auth_page_exist?(name)
       Page.new(self.name).text
       File.exist?(Gyazz.datafile(name,title)) && File.read(Gyazz.datafile(name,title)).gsub(/[\n\s]/,'') != ""

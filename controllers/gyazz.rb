@@ -51,9 +51,7 @@ post '/__write' do
   title = params[:title]
   orig_md5 = params[:orig_md5]
   postdata = params[:data]
-
-  page = Gyazz::Page.new(name,title)
-  page.write(postdata,orig_md5)
+  Gyazz::Page.new(name,title).write(postdata,orig_md5)
 end
 
 get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
@@ -61,13 +59,11 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   if params[:name] then
     name = params[:name]
     title = params[:title]
-  else
+  else # この仕様は削除すべき
     name = data.shift
     title = data.shift
   end
-  page = Gyazz::Page.new(name,title)
-  page.write(data)
-  #writedata(name,title,data)
+  Gyazz::Page.new(name,title).write(data)
   redirect("/#{name}/#{title}")
 end
 
@@ -112,19 +108,15 @@ end
 # * 認証ページがある状態で、読み出し権限のある人が読み書き認証ページにアクセスすると、上と同様
 #
 
-# 認証文字列取得
+# なぞなぞ認証チャレンジ文字列取得
 post '/__tellauth' do
-  postdata = params[:data].split(/\n/)
-  name = postdata[0]
-  title = postdata[1]
-  useranswer = postdata[2]
-  correctanswer = ansstring(Gyazz::Page.new(name,title).text)
-  if useranswer == correctanswer then # 認証成功!
-    # Cookie設定
-    if title == ALL_AUTH then
-      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
-    elsif title == WRITE_AUTH then
-      response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
+  name = params[:name]
+  title = params[:title]
+  useranswer = params[:authstr]
+  page = Gyazz::Page.new(name,title)
+  if page.auth_page? then
+    if useranswer == page.authanswer then # 認証成功!
+      response.set_cookie(page.auth_cookie, {:value => 'authorized', :path => '/' })
     end
   end
 end
@@ -143,9 +135,9 @@ post '/__upload' do
     file_ext = File.extname(param[:filename]).to_s
     tempfile.close # 消してしまう
 
-    hash = Gyazz.md5(file_contents)
+    hash = file_contents.md5
     savefile = "#{hash}#{file_ext}"
-    savepath = "#{Gyazz.uploaddir}/#{savefile}"
+    savepath = "#{FILEROOT}/upload/#{savefile}"
     File.open(savepath, 'wb'){ |f| f.write(file_contents) }
 
     savefile
@@ -364,7 +356,7 @@ get '/:name/*' do
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
   @page = Gyazz::Page.new(name,title)
-  @page.access
+  @page.record_access_history
 
   erb :page
 end

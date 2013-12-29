@@ -158,18 +158,18 @@ module Gyazz
       }
     end
 
-    def accessfile
+    def __accessfile
       "#{dir}/access"
     end
 
-    def access # ページへのアクセス時刻を記録
-      File.open(accessfile,"a"){ |f|
+    def record_access_history # ページへのアクセス時刻を記録
+      File.open(__accessfile,"a"){ |f|
         f.puts Time.now.stamp
       }
     end
 
     def access_history
-      File.exist?(accessfile) ? File.read(accessfile).split : []
+      File.exist?(__accessfile) ? File.read(__accessfile).split : []
     end
 
     def modtime

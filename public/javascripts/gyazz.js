@@ -8,6 +8,7 @@
 //  var title = 'MIRAIPEDIA';
 //  var root =  'http://masui.sfc.keio.ac.jp/Gyazz';
 //  var version = 0;
+//  var do_auth = true;
 
 var name_id;
 var title_id;
@@ -381,11 +382,14 @@ function deleteblankdata(){ // 空白行を削除
 // 認証文字列をサーバに送る
 function tell_auth(){
     authstr = authbuf.sort().join(",");
-    postdata = "data=" + encodeURIComponent(name + "\n" + title + "\n" + authstr);
+    postdata = "data=";
     $.ajax({
         type: "POST",
 	async: true,
-	url: root + "/__tellauth",
+	url: root + "/__tellauth" + 
+	    "?name=" + encodeURIComponent(name) +
+	    "&title=" + encodeURIComponent(title) +
+	    "&authstr=" + encodeURIComponent(authstr),
 	data: postdata
     });
 }
