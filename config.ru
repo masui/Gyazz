@@ -15,6 +15,7 @@ require 'lib/visualize'
 require 'lib/auth'
 require 'lib/time'
 require 'lib/attr'
+require 'lib/rss'
 
 require 'lib/page'
 require 'lib/wiki'
