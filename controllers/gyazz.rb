@@ -168,7 +168,7 @@ end
 # サイト属性設定API (settings.erbから呼ばれる)
 get '/__setattr/:name/:key/:val' do |name,key,val|
   wiki = Gyazz::Wiki.new(name)
-  wiki.attr[key] = val
+  wiki[key] = val
 end
 
 #-----------------------------------------------------
@@ -177,12 +177,15 @@ end
 
 # ページリスト表示
 get "/:name" do |name|
-  search(name)
+  @wiki = Gyazz::Wiki.new(name)
+  # @pages = search(@wiki)
+  @pages = @wiki.pages
   erb :search
 end
 
 get "/:name/" do |name|
-  search(name)
+  @wiki = Gyazz::Wiki.new(name)
+  @pages = @wiki.pages
   erb :search
 end
 
@@ -190,13 +193,18 @@ end
 # どこで使ってるのか??
 # 日付ソートする場合もあるのに仕様がヘンでは?
 get "/:name/__sort" do |name|
-  search(name,'',true)
+  @wiki = Gyazz::Wiki.new(name)
+  @pages = @wiki.pages('',:title)
+  # search(name,'',true)
   erb :search
 end
 
-# gyazz-ruby gem のためのもの
+# gyazz-ruby gem のためのもの??
 get "/:name/__list" do |name|
-  list(name)
+  wiki = Gyazz::Wiki.new(name)
+  wiki.pages.collect { |page|
+    [page.title, page.modtime.to_i, "#{name}/#{page.title}", page.repimage]
+  }.to_json
 end
 
 #-----------------------------------------------------
@@ -355,17 +363,13 @@ end
 
 # ランダムにページを表示
 get "/:name/__random" do |name|
+  #  # ここも認証とかランダム化とか必要
   wiki = Gyazz::Wiki.new(name)
-  titles = wiki.hottitles
-  len = titles.length
+  pages = wiki.pages
+  len = pages.length
   ignore = len / 2 # 新しい方からignore個は選ばない
   ignore = 0
-  title = titles[ignore + rand(len-ignore)]
-
-  # ここも認証とかランダム化とか必要
-  # ランダム化が必要なものは表示すべきでない
-  @page = Gyazz::Page.new(name,title)
-
+  @page = pages[ignore + rand(len-ignore)]
   erb :page
 end
 

@@ -2,60 +2,50 @@
 
 require 'asearch'
 
-def search(name,query='',namesort=false)
-  @wiki = Gyazz::Wiki.new(name)
+def search(wiki,query='',namesort=false)
+  # @wiki = Gyazz::Wiki.new(name)
 
-  @ids = @wiki.pageids
+  func = (namesort ? :title : wiki['sortbydate'] ? :createtime : :accesstime)
 
-  @hotids =
-    if namesort then
-      @ids.sort { |a,b|
-        Gyazz.id2title(b) <=> Gyazz.id2title(a)
-      }
-    elsif @wiki.attr['sortbydate'] then
-      @wiki.pages.sort { |pagea,pageb|
-        pageb.createtime <=> pagea.createtime
-      }.collect { |page|
-        page.id
-      }
-    else
-      @wiki.pages.sort { |pagea,pageb|
-        pageb.accesstime <=> pagea.accesstime
-      }.collect { |page|
-        page.id
-      }
-    end
+  # @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
 
-  @q = query
-  @matchids = @hotids
-  if @q != '' then
-    @matchids = @hotids.find_all { |id|
-      title = Gyazz.id2title(id)
-      content = Gyazz::Page.new(name,title).text
-      title.match(/#{@q}/i) || content.match(/#{@q}/i)
-    }
-  end
-
-  @pagetitle = (query == '' ? 'ページリスト' : "「#{query}」検索結果")
-
-  # ページタイトルが日付だけだったりするページの場合は1行目を表示タイトルにする
-  @disptitle = {}
-  @hotids.each { |id|
-    title = Gyazz.id2title(id)
-    @disptitle[id] = title
-    if title =~ /^[0-9]{14}$/ then
-      @disptitle[id] = title + " " + Gyazz::Page.new(name,title).text.split(/\n/)[0]
-    end
+  wiki.pages.sort { |pagea,pageb|
+    pageb.send(func) <=> pagea.send(func)
+  }.find_all { |page|
+    query == '' ||
+    page.title.match(/#{query}/i) || page.text.match(/#{query}/i)
   }
+    
+  # @q = query
+
+  #  @matchids = @hotids
+  #  if @q != '' then
+  #    @matchids = @hotids.find_all { |id|
+  #      title = Gyazz.id2title(id)
+  #      content = Gyazz::Page.new(name,title).text
+  #      title.match(/#{@q}/i) || content.match(/#{@q}/i)
+  #    }
+  #  end
+
+
+  #  # ページタイトルが日付だけだったりするページの場合は1行目を表示タイトルにする
+  #  @disptitle = {}
+  #  @hotids.each { |id|
+  #    title = Gyazz.id2title(id)
+  #    @disptitle[id] = title
+  #    if title =~ /^[0-9]{14}$/ then
+  #      @disptitle[id] = title + " " + Gyazz::Page.new(name,title).text.split(/\n/)[0]
+  #    end
+  #  }
 end
 
 # gyazz-ruby で使うためのもの? 意味がよくわからない
-def list(name)
-  Gyazz::Wiki.new(name).hottitles.collect { |title|
-    page = Gyazz::Page.new(name,title)
-    [title, page.modtime.to_i, "#{name}/#{title}", page.repimage]
-  }.to_json
-end
+#def list(name)
+#  Gyazz::Wiki.new(name).hottitles.collect { |title|
+#    page = Gyazz::Page.new(name,title)
+#    [title, page.modtime.to_i, "#{name}/#{title}", page.repimage]
+#  }.to_json
+#end
 
 ## 似たページ名を探す
 ## "macruby", "Mac Ruby", "mac ruby" -> MacRuby

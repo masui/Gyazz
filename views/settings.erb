@@ -34,8 +34,8 @@ $(document).ready(function(){
 </div>
 
 <p>
-<input <%= @wiki.attr['searchable'] == 'true' ? 'checked' : '' %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
-<input <%= @wiki.attr['sortbydate'] == 'true' ? 'checked' : '' %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
+<input <%= @wiki['searchable'] == 'true' ? 'checked' : '' %> type='checkbox' id='searchable'>検索エンジンのクロールを許可する<p>
+<input <%= @wiki['sortbydate'] == 'true' ? 'checked' : '' %> type='checkbox' id='sortbydate'>新しい順にリストする<p>
 
 </body>
 </html>

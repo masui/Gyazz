@@ -9,7 +9,8 @@
 </head>
 <body>
   <div class="title">
-    <span class='wordtitle'><%= @wiki.name %> <%= @pagetitle %> (<%= @matchids.length %>)</span>
+    <% pagetitle = (@q.to_s == '' ? 'ページリスト' : "「#{@q}」検索結果") %>
+    <span class='wordtitle'><%= @wiki.name %> <%= pagetitle %> (<%= @pages.length %>)</span>
     <form action="/__search/<%= @wiki.name %>" method="get" style="float:right;font-size:12pt;">
       <input height='20' name='q' type='text' value='<%= @q %>'>
       <input type='submit' value='検索'>
@@ -18,19 +19,11 @@
   <p>
   <div>
     <div style="float:left;">
-      <% @matchids.each { |id| %>
-        <% title = Gyazz.id2title(id) %>
-	<% disptitle = @disptitle[id] %>
-        <% shorttitle = disptitle.sub(/\[\[http\S*\s+(.*)\]\]/){ $1 } %>
-	<% if @wiki.attr['sortbydate'] == 'true' then %>
-	<%   Gyazz::Page.new(@wiki,title).createtime.stamp =~ /(....)(..)(..)(..)(..)(..)/ %>
-	<%   datestr = "#{$1}/#{$2}/#{$3} #{$4}:#{$5}:#{$6}" %>
-	<%   shorttitle = datestr + ' ' + shorttitle %>
-	<% end %>
-        <% url = "/#{@wiki.name}/#{title}" %>
+      <% @pages.each { |page| %>
+        <% url = "/#{@wiki.name}/#{page.title}" %>
         <div class="listedit0__xxx">
-          <img id="<%= id %>" src="/<%= @wiki.name %>/<%= title %>/modify.png" width=50 height=12>
-          <a href="<%= url %>" class='tag'><%= escape_html shorttitle %></a>
+          <img id="<%= page.id %>" src="/<%= @wiki.name %>/<%= page.title %>/modify.png" width=50 height=12>
+          <a href="<%= url %>" class='tag'><%= escape_html page.title %></a>
         </div>
       <% } %>
     </div>

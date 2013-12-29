@@ -5,9 +5,22 @@ module Gyazz
     def initialize(name)
       @name = name
       Gyazz.id2title(id,@name) # nameとIDとの対応を登録
-      @attr = SDBM.open("#{dir}/attr",0644) unless @attr
     end
-    attr_reader :name, :attr
+    attr_reader :name
+
+    def [](key)
+      attr = SDBM.open("#{dir}/attr",0644)
+      val = attr[key]
+      attr.close
+      val
+    end
+
+    def []=(key,val)
+      attr = SDBM.open("#{dir}/attr",0644)
+      attr[key] = val
+      attr.close
+      val
+    end
 
     def dir
       dir = "#{FILEROOT}/#{id}"
@@ -19,39 +32,52 @@ module Gyazz
       @name.md5
     end
 
-    def pageids
+    def allpages
       Dir.open(dir).find_all { |file|
-        title = Gyazz.id2title(file)
-        # タイトル先頭が「.」のものはリストしない
-        file =~ /^[\da-f]{32}$/ && title != '' && title !~ /^\./ && Page.new(self,title).curdata != ''
+        file =~ /^[\da-f]{32}$/
+      }.collect { |id|
+        Gyazz.id2title(id)
+      }.find_all { |title|
+        title != ''
+      }.collect { |title|
+        Page.new(self,title)
+      }
+    end
+
+    def disppages
+      # タイトル先頭が「.」のもの、空のものはリストしない
+      allpages.find_all { |page|
+        page.title !~ /^\./ && page.text != ''
       }
     end
 
     def titles
-      pageids.collect { |pageid|
-        Gyazz.id2title(pageid)
+      disppages.collect { |page|
+        page.title
       }
     end
     
-    # ページのIDのリストを新しい順に
-    def hotids
-      pageids.sort { |a,b|
-        pagea = Page.new(self,Gyazz.id2title(a))
-        pageb = Page.new(self,Gyazz.id2title(b))
-        pageb.modtime <=> pagea.modtime
-      }
-    end
+    #    # ページのIDのリストを新しい順に
+    #    def hotids
+    #      pageids.sort { |a,b|
+    #        pagea = Page.new(self,Gyazz.id2title(a))
+    #        pageb = Page.new(self,Gyazz.id2title(b))
+    #        pageb.modtime <=> pagea.modtime
+    #      }
+    #    end
+    #    
+    #    # ページのタイトルのリストを新しい順に
+    #    def hottitles
+    #      hotids.collect { |id|
+    #        Gyazz.id2title(id)
+    #      }
+    #    end
     
-    # ページのタイトルのリストを新しい順に
-    def hottitles
-      hotids.collect { |id|
-        Gyazz.id2title(id)
-      }
-    end
-    
-    def pages
-      hottitles.collect { |title|
-        Page.new(self,title)
+    def pages(query='',method = :accesstime)
+      disppages.sort { |pagea,pageb|
+        pageb.send(method) <=> pagea.send(method)
+      }.find_all { |page|
+        query == '' || page.title.match(/#{query}/i) || page.text.match(/#{query}/i)
       }
     end
   end
