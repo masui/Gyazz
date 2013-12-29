@@ -274,14 +274,17 @@ get '/:name/*/json/:version' do
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
-  response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
+  response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
   Gyazz::Page.new(name,title).data(version).to_json
   #
-  # 認証ページのときは順番を入れ換える操作必要
+  # 認証ページのときは順番を入れ換える操作必要 *******
+  # それとも認証できてないときは何もかえさないのがスジか?
+  #
 
   #
   # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
   # 候補ページを追加してJSONで返すといいのかも?
+  # Page.new でやるべきかもしれない
   #
   # こんな感じのコードを入れる
   #  if !data or data.strip.empty? or data.strip == "(empty)"
@@ -299,24 +302,10 @@ end
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')
-  text = Gyazz::Page.new(name,title).text
-
-  #
-  # 「.読み出し認証」のときはデータを並びかえる (2012/5/4)
-  # この場所でやるべきか?
-  #
-  if auth_page_exist?(name,ALL_AUTH) then
-    if !cookie_authorized?(name,ALL_AUTH) && title == ALL_AUTH then
-      data = randomize(data)
-    end
-  elsif auth_page_exist?(name,WRITE_AUTH) then
-    if !cookie_authorized?(name,WRITE_AUTH) && title == WRITE_AUTH then
-      data = randomize(data)
-    end
-  else
-  end
-  # response["Access-Control-Allow-Origin"] = "*" Ajaxを許可するオマジナイ... 要るのか?
-  text
+  page = Gyazz::Page.new(name,title)
+  # なぞなぞ認証できてない場合は並べかえ *******
+  cookie_authorized = false
+  (!cookie_authorized && page.auth_page?) ? page.randomtext : page.text
 end
 
 #-----------------------------------------------------
@@ -348,7 +337,7 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   version = params[:version].to_i
   @page = Gyazz::Page.new(name,title)
   @version = version
-  @write_authorized = true # ここはちゃんとやる
+  @write_authorized = true # ここはちゃんとやる ******
 
   erb :edit
 end

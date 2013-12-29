@@ -47,6 +47,10 @@ module Gyazz
       s.sub(/\s+$/,'')
     end
 
+    def exist?
+      text != ''
+    end
+
     def timestampkey(line)
       "TimeStamp-#{line}"
     end

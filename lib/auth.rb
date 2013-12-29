@@ -86,11 +86,65 @@ end
 # なぞなぞ認証のためのもの
 #
 
-ALL_AUTH = '.完全認証'
-WRITE_AUTH = '.書込認証'
+module Gyazz
+  ALL_AUTH = '.完全認証'
+  WRITE_AUTH = '.書込認証'
 
-def auth_page_exist?(name,title)
-  File.exist?(Gyazz.datafile(name,title)) && File.read(Gyazz.datafile(name,title)).gsub(/[\n\s]/,'') != ""
+  class Page
+    def all_auth_page?
+      title == ALL_AUTH
+    end
+
+    def write_auth_page?
+      title == WRITE_AUTH
+    end
+
+    def auth_page?
+      puts title
+      all_auth_page? || write_auth_page?
+    end
+
+    def randomtext
+      result = ""
+      buf = []
+      a = text.split(/\n/)
+      a.each_with_index { |s,i|
+        if s =~ /^\S/ then
+          result += buf.sort_by { rand }.join("\n")
+          result += "#{s}\n"
+          buf = []
+        else
+          buf << s
+        end
+      }
+      result += buf.sort_by { rand }.join("\n")
+    end
+
+    def anstext
+      result = []
+      buf = []
+      a = text.split(/\n/)
+      a.each_with_index { |s,i|
+        if s =~ /^\S/ then
+          result << buf[0] if buf.length > 0
+          buf = []
+        else
+          buf << s
+        end
+      }
+      result << buf[0] if buf.length > 0
+      result.sort.join(",")
+    end
+
+  end
+
+  class Wiki
+    def auth_page_exist?(name)
+      Page.new(self.name).text
+      File.exist?(Gyazz.datafile(name,title)) && File.read(Gyazz.datafile(name,title)).gsub(/[\n\s]/,'') != ""
+    end
+  end
+
 end
 
 def auth_cookie(name,title)
@@ -100,54 +154,6 @@ end
 
 def cookie_authorized?(name,title)
   request.cookies[auth_cookie(name,title)].to_s != ''
-end
-
-# buf[]の内容をランダムにつなげて出力
-def _randomout(buf)
-  len = buf.length
-  if len > 0 then
-    len.times { |i|
-      ind = rand(len-i)
-      tmp = buf[i+ind]
-      buf[i+ind] = buf[i]
-      buf[i] = tmp
-    }
-    buf.join("\n")+"\n"
-  else
-    ''
-  end
-end
-
-def randomize(text)
-  result = ""
-  buf = []
-  a = text.split(/\n/)
-  a.each_with_index { |s,i|
-    if s =~ /^\S/ then
-      result += _randomout(buf)
-      result += "#{s}\n"
-      buf = []
-    else
-      buf << s
-    end
-  }
-  result + _randomout(buf)
-end
-
-def ansstring(text)
-  result = []
-  buf = []
-  a = text.split(/\n/)
-  a.each_with_index { |s,i|
-    if s =~ /^\S/ then
-      result << buf[0] if buf.length > 0
-      buf = []
-    else
-      buf << s
-    end
-  }
-  result << buf[0] if buf.length > 0
-  result.sort.join(",")
 end
 
 if $0 == __FILE__ then
