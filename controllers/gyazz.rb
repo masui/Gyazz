@@ -201,8 +201,7 @@ end
 
 # gyazz-ruby gem のためのもの??
 get "/:name/__list" do |name|
-  wiki = Gyazz::Wiki.new(name)
-  wiki.pages.collect { |page|
+  Gyazz::Wiki.new(name).pages.collect { |page|
     [page.title, page.modtime.to_i, "#{name}/#{page.title}", page['repimage']]
   }.to_json
 end
@@ -276,7 +275,7 @@ get '/:name/*/json/:version' do
   title = params[:splat].join('/')
   version = params[:version].to_i
   response["Access-Control-Allow-Origin"] = "*" # Ajaxを許可するオマジナイ
-  data = Gyazz::Page.new(name,title).data(version)
+  Gyazz::Page.new(name,title).data(version).to_json
   #
   # 認証ページのときは順番を入れ換える操作必要
 
@@ -294,8 +293,6 @@ get '/:name/*/json/:version' do
   #      data = "\n-> [[#{suggest_title}]]" if suggest_title
   #    end
   #  end
-
-  data.to_json
 end
 
 # ページをテキストデータとして取得
@@ -329,7 +326,6 @@ end
 get '/:name/*/related' do
   name = params[:name]
   title = params[:splat].join('/')
-
   # 2ホップ先まで取得してしまうのだが
   Gyazz::Page.new(name,title).related_pages.collect { |page|
     page.title
