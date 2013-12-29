@@ -64,6 +64,7 @@ module Gyazz
         }
       end
 
+      # 書込みコンフリクトを調べる
       if curdata.md5 == browser_md5 || curdata == '' || browser_md5.nil? then
         File.open(curfile,"w"){ |f|
           f.print(newdata)
@@ -166,20 +167,6 @@ module Gyazz
     def access_history
       File.exist?(accessfile) ? File.read(accessfile).split : []
     end
-
-#    def repimagefile
-#      "#{dir}/repimage"
-#    end
-#
-#    def repimage
-#      File.exist?(repimagefile) ? File.read(repimagefile).chomp : nil
-#    end
-#    
-#    def repimage=(image)
-#      File.open(repimagefile,"w"){ |f|
-#        f.puts image
-#      }
-#    end
 
     def modtime
       File.mtime(curfile)

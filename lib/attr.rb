@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+#
+# ページやサイトの属性記録に page[key] = val, wiki[key] = val などを利用できるようにするモジュール
+#
 module Gyazz
   module Attr
     def [](key)
