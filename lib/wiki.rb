@@ -44,35 +44,18 @@ module Gyazz
       }
     end
 
-    def disppages
-      # タイトル先頭が「.」のもの、空のものはリストしない
+    def validpages # 中身が空でないもの
       allpages.find_all { |page|
-        page.title !~ /^\./ && page.text != ''
+        page.text != ''
       }
     end
 
-    def titles
-      disppages.collect { |page|
-        page.title
+    def disppages # タイトル先頭が「.」でないもの
+      validpages.find_all { |page|
+        page.title !~ /^\./
       }
     end
-    
-    #    # ページのIDのリストを新しい順に
-    #    def hotids
-    #      pageids.sort { |a,b|
-    #        pagea = Page.new(self,Gyazz.id2title(a))
-    #        pageb = Page.new(self,Gyazz.id2title(b))
-    #        pageb.modtime <=> pagea.modtime
-    #      }
-    #    end
-    #    
-    #    # ページのタイトルのリストを新しい順に
-    #    def hottitles
-    #      hotids.collect { |id|
-    #        Gyazz.id2title(id)
-    #      }
-    #    end
-    
+
     def pages(query='',method = :accesstime)
       disppages.sort { |pagea,pageb|
         pageb.send(method) <=> pagea.send(method)

@@ -1,7 +1,8 @@
 <html>
 <head>
+  <% pagetitle = (@q.to_s == '' ? 'ページリスト' : "「#{@q}」検索結果") %>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title><%= @wiki.name %> <%= @pagetitle %></title>
+  <title><%= @wiki.name %> <%= pagetitle %></title>
   <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
   <link rel="alternate" href="/<%= @wiki.name %>/rss.xml" title="<%= @wiki.name %> RSS" type="application/rss+xml" />
   <link rel="shortcut icon" href="/favicon.ico">
@@ -9,7 +10,6 @@
 </head>
 <body>
   <div class="title">
-    <% pagetitle = (@q.to_s == '' ? 'ページリスト' : "「#{@q}」検索結果") %>
     <span class='wordtitle'><%= @wiki.name %> <%= pagetitle %> (<%= @pages.length %>)</span>
     <form action="/__search/<%= @wiki.name %>" method="get" style="float:right;font-size:12pt;">
       <input height='20' name='q' type='text' value='<%= @q %>'>

@@ -34,7 +34,9 @@ get "/__search/:name" do |name|
   if q == '' then
     redirect "/#{name}/"
   else
-    search(name,q)
+    @wiki = Gyazz::Wiki.new(name)
+    @pages = @wiki.pages(q)
+    @q = q
     erb :search
   end
 end
@@ -178,7 +180,6 @@ end
 # ページリスト表示
 get "/:name" do |name|
   @wiki = Gyazz::Wiki.new(name)
-  # @pages = search(@wiki)
   @pages = @wiki.pages
   erb :search
 end
@@ -195,7 +196,6 @@ end
 get "/:name/__sort" do |name|
   @wiki = Gyazz::Wiki.new(name)
   @pages = @wiki.pages('',:title)
-  # search(name,'',true)
   erb :search
 end
 
