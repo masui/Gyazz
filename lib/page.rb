@@ -48,10 +48,6 @@ module Gyazz
       "#{dir}/curfile"
     end
 
-    def curdata
-      File.exist?(curfile) ? File.read(curfile) : ''
-    end
-
     def datafile(version=0)
       files = [curfile] + backupfiles
       files[version.to_i] || files.last
@@ -76,7 +72,7 @@ module Gyazz
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
-      olddata = curdata
+      olddata = text
 
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
