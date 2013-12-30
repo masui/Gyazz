@@ -135,7 +135,7 @@ module Gyazz
       firstline = data.split(/\n/)[0]
       if firstline =~ /gyazo.com\/(\w{32})\.png/i then
         self['repimage'] = $1
-      elsif firstline =~ /(https?:\/\/.+)\.(png|jpe?g|gif)/i
+      elsif firstline =~ /(https?:\/\/\S+)\.(png|jpe?g|gif)/i
         self['repimage'] = "#{$1}.#{$2}"
       else
         self['repimage'] = ''

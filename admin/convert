@@ -18,7 +18,7 @@ exit if olddir.nil? || newdir.nil?
 
 def command(s)
   puts s
-  system s
+  system s if s =~ /mkdir/
 end
 
 class String
@@ -27,64 +27,9 @@ class String
   end
 end
 
-id2title = SDBM.open("#{newdir}/id2title",0644)
-
-Dir.open(olddir).find_all { |file|
+wikis = Dir.open(olddir).find_all { |file|
   file =~ /^[\da-f]{32}$/
-}.each { |wikiid|
-  command "mkdir #{newdir}/#{wikiid}"
-  Dir.open("#{olddir}/#{wikiid}").find_all { |file|
-    file =~ /^[\da-f]{32}$/
-  }.each { |pageid|
-    command "mkdir #{newdir}/#{wikiid}/#{pageid}"
-    command "/bin/cp #{olddir}/#{wikiid}/#{pageid} #{newdir}/#{wikiid}/#{pageid}/curfile"
-
-    if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}") then
-      Dir.open("#{olddir}/#{wikiid}/backups/#{pageid}").find_all { |file|
-        file =~ /^\d{14}$/
-      }.each { |backupdate|
-        command "/bin/cp #{olddir}/#{wikiid}/backups/#{pageid}/#{backupdate} #{newdir}/#{wikiid}/#{pageid}/#{backupdate}"
-      }
-    end
-
-    if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}/access") then
-      command "/bin/cp #{olddir}/#{wikiid}/backups/#{pageid}/access #{newdir}/#{wikiid}/#{pageid}/access"
-    end
-
-    if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}/timestamp.dir") then
-      puts "Copy timestamps...."
-      olddb = SDBM.open("#{olddir}/#{wikiid}/backups/#{pageid}/timestamp")
-      newdb = SDBM.open("#{newdir}/#{wikiid}/#{pageid}/attr",0644)
-      olddb.each { |key,val|
-        puts "#{key}, #{val} => "
-        newdb["TimeStamp-#{key[0..950]}"] = val
-      }
-      olddb.close
-      newdb.close
-    end
-
-  }
-  if File.exist?("#{olddir}/#{wikiid}/repimage.dir") then
-    puts "Copy repimages...."
-    db = SDBM.open("#{olddir}/#{wikiid}/repimage",0644)
-    db.each { |pagetitle,val|
-      puts "repimage[#{pagetitle}] = #{val}"
-      pageid = pagetitle.md5
-      newdb = SDBM.open("#{newdir}/#{wikiid}/#{pageid}/attr",0644)
-      newdb['repimage'] = val
-      newdb.close
-    }
-    db.close
-  end
-  if File.exist?("#{olddir}/#{wikiid}/pair.dir") then
-    command "/bin/cp #{olddir}/#{wikiid}/pair.dir #{newdir}/#{wikiid}/pair.dir"
-    command "/bin/cp #{olddir}/#{wikiid}/pair.pag #{newdir}/#{wikiid}/pair.pag"
-    pairdb = SDBM.open("#{olddir}/#{wikiid}/pair",0644)
-    pairdb.keys.each { |key|
-      key1, key2 = key.split(/\t/)
-      id2title[key1.md5] = key1
-      id2title[key2.md5] = key2
-    }
-    pairdb.close
-  end
+}
+wikis.each { |wikiid|
+  system "ruby convert1 #{olddir} #{newdir} #{wikiid}"
 }
