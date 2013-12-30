@@ -38,12 +38,14 @@ Dir.open(olddir).find_all { |file|
   }.each { |pageid|
     command "mkdir #{newdir}/#{wikiid}/#{pageid}"
     command "/bin/cp #{olddir}/#{wikiid}/#{pageid} #{newdir}/#{wikiid}/#{pageid}/curfile"
-  
-    Dir.open("#{olddir}/#{wikiid}/backups/#{pageid}").find_all { |file|
-      file =~ /^\d{14}$/
-    }.each { |backupdate|
-      command "/bin/cp #{olddir}/#{wikiid}/backups/#{pageid}/#{backupdate} #{newdir}/#{wikiid}/#{pageid}/#{backupdate}"
-    }
+
+    if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}") then
+      Dir.open("#{olddir}/#{wikiid}/backups/#{pageid}").find_all { |file|
+        file =~ /^\d{14}$/
+      }.each { |backupdate|
+        command "/bin/cp #{olddir}/#{wikiid}/backups/#{pageid}/#{backupdate} #{newdir}/#{wikiid}/#{pageid}/#{backupdate}"
+      }
+    end
 
     if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}/access") then
       command "/bin/cp #{olddir}/#{wikiid}/backups/#{pageid}/access #{newdir}/#{wikiid}/#{pageid}/access"
@@ -55,7 +57,7 @@ Dir.open(olddir).find_all { |file|
       newdb = SDBM.open("#{newdir}/#{wikiid}/#{pageid}/attr",0644)
       olddb.each { |key,val|
         puts "#{key}, #{val} => "
-        newdb["TimeStamp-#{key}"] = val
+        newdb["TimeStamp-#{key[0..950]}"] = val
       }
       olddb.close
       newdb.close
@@ -72,6 +74,7 @@ Dir.open(olddir).find_all { |file|
       newdb['repimage'] = val
       newdb.close
     }
+    db.close
   end
   if File.exist?("#{olddir}/#{wikiid}/pair.dir") then
     command "/bin/cp #{olddir}/#{wikiid}/pair.dir #{newdir}/#{wikiid}/pair.dir"
