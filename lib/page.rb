@@ -76,16 +76,17 @@ module Gyazz
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
+      olddata = curdata
 
       # 最新データをバックアップ
-      if curdata != "" && curdata != newdata then
+      if olddata != "" && olddata != newdata then
         File.open("#{dir}/#{Time.now.stamp}",'w'){ |f|
-          f.print(curdata)
+          f.print(olddata)
         }
       end
 
       # 書込みコンフリクトを調べる
-      if curdata.md5 == browser_md5 || curdata == '' || browser_md5.nil? then
+      if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
         File.open(curfile,"w"){ |f|
           f.print(newdata)
         }
@@ -122,7 +123,7 @@ module Gyazz
 
       # リンク情報更新
       pair = Pair.new("#{@wiki.dir}/pair")
-      curdata.keywords.each { |keyword|
+      olddata.keywords.each { |keyword|
         pair.delete(title,keyword)
       }
       newdata.keywords.each { |keyword|
