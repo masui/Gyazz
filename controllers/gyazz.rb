@@ -17,8 +17,23 @@ configure do
 end
 
 before '/:name/*' do
-  # 認証に使う予定
+  name = params[:name]
   puts "BEFORE #{params[:name]} #{params[:splat]}"
+  title = params[:splat][0]
+
+  pass if title.index(Gyazz::ALL_AUTH) == 0
+  pass if title.index(Gyazz::WRITE_AUTH) == 0
+  #
+  # パスワード認証に成功してるか、なぞなぞ認証に成功してればOK
+  #
+  wiki = Gyazz::Wiki.new(name)
+  if !wiki.password_authorized?(request) then
+    if !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) &&
+        !Gyazz::Page.new(wiki,Gyazz::WRITE_AUTH).cookie_authorized?(request) then
+      response['WWW-Authenticate'] = %(Basic realm="#{name}")
+      throw(:halt, [401, "Not authorized.\n"])
+    end
+  end
 end
 
 get '/' do
@@ -267,11 +282,38 @@ get '/:name/*/json/:version' do
   title = params[:splat].join('/')
   version = params[:version].to_i
   response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
-  Gyazz::Page.new(name,title).data(version).to_json
+
+  wiki = Gyazz::Wiki.new(name)
+  page = Gyazz::Page.new(wiki,title)
+
+  data = page.data(version)
+
   #
-  # 認証ページのときは順番を入れ換える操作必要 *******
-  # それとも認証できてないときは何もかえさないのがスジか?
+  # 認証ページのときは順番を入れ換える
+  #                   完全認証OK  書込み認証OK   完全認証ページ 書込認証ページ
+  #                   OK          OK             OK             OK
+  #                   OK          NG             OK             OK
+  #                   NG          OK             NG             OK
+  #                   NG          NG             NG             NG
   #
+  #   完全認証ページ  〇          
+  #   書込認証ページ  〇
+  #
+  if !wiki.password_authorized?(request) then
+    if title == Gyazz::ALL_AUTH then
+      if !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) then
+        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+      end
+    elsif title == Gyazz::WRITE_AUTH then
+      # puts Gyazz::Page.new(wiki,title).cookie_authorized?(request)
+      if !Gyazz::Page.new(wiki,Gyazz::WRITE_AUTH).cookie_authorized?(request) &&
+          !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) then
+        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+      end
+    end
+  end
+
+  data.to_json
 
   #
   # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
@@ -358,60 +400,7 @@ get '/:name/*' do
   @page = Gyazz::Page.new(name,title)
   @page.record_access_history
 
+  #### write_authorizedをここで計算
+
   erb :page
 end
-
-
-# ページ表示
-#  authorized_by_cookie = false
-#  write_authorized = true
-#  if auth_page_exist?(name,ALL_AUTH) then
-#    if title != ALL_AUTH then
-#      if !cookie_authorized?(name,ALL_AUTH) then
-#        # redirect "/401.html"
-#      else
-#        authorized_by_cookie = true
-#      end
-#    else
-#      if !cookie_authorized?(name,ALL_AUTH) then
-#        write_authorized = false
-#      end
-#    end
-#  else
-#    if title == ALL_AUTH then
-#      response.set_cookie(auth_cookie(name,ALL_AUTH), {:value => 'authorized', :path => '/' })
-#    end
-#
-#    if auth_page_exist?(name,WRITE_AUTH) then
-#      rawdata = File.read(Gyazz.datafile(name,WRITE_AUTH))
-#      #if title != WRITE_AUTH then
-#        if !cookie_authorized?(name,WRITE_AUTH) then
-#          write_authorized = false
-#        end
-#      #end
-#    else
-#      if title == WRITE_AUTH then
-#        response.set_cookie(auth_cookie(name,WRITE_AUTH), {:value => 'authorized', :path => '/' })
-#      end
-#    end
-#  end
-#
-#  if !password_authorized?(name) then
-#    if title != ALL_AUTH then
-#      if !authorized_by_cookie then
-#        response['WWW-Authenticate'] = %(Basic realm="#{name}")
-#        throw(:halt, [401, "Not authorized.\n"])
-#      end
-#    else
-#      # write_authorized = false
-#    end
-#  end
-#
-#  @page = page(name,title,write_authorized)
-#  erb :page
-#
-#  #puts "Gyazz.rb: name=#{name}"
-#  #@page = Page.new(name,title)
-#  #erb :page
-#
-#end

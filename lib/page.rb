@@ -14,7 +14,7 @@ module Gyazz
       Gyazz.id2title(id,title) # titleとIDとの対応セット
 
       self['do_auth'] = 'false'
-      self['write_authorized'] = 'true'
+      self['write_authorized'] = 'true' # ***********
     end
     attr_reader :wiki, :title
 
