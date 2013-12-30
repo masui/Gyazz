@@ -7,6 +7,12 @@
   <link rel="alternate" href="/<%= @wiki.name %>/rss.xml" title="<%= @wiki.name %> RSS" type="application/rss+xml" />
   <link rel="shortcut icon" href="/favicon.ico">
   <script language="JavaScript" src='/javascripts/jquery.js'></script>
+  <script language="JavaScript" src='/javascripts/jquery.lazyload.min.js'></script>
+  <script>
+  $(function() {
+    $('.lazyload').lazyload();
+  });
+  </script>
 </head>
 <body>
   <div class="title">
@@ -22,7 +28,10 @@
       <% @pages.each { |page| %>
         <% url = "/#{@wiki.name}/#{page.title}" %>
         <div class="listedit0__xxx">
-          <img id="<%= page.id %>" src="/<%= @wiki.name %>/<%= page.title %>/modify.png" width=50 height=12>
+          <img id="<%= page.id %>"
+             class="lazyload"
+	     src="data:image/gif;base64,R0lGODdhMgAMAPAAAMzMzAAAACH/C1hNUCBEYXRhWE1QAz94cAAsAAAAADIADAAAAheEj6nL7Q+jnLTai7PevPsPhuJIlmZSAAA7"
+	     data-original="/<%= @wiki.name %>/<%= page.title %>/modify.png" src="" width="50" height="12">
           <a href="<%= url %>" class='tag'><%= escape_html page.title %></a>
         </div>
       <% } %>
