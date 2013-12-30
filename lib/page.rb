@@ -13,9 +13,6 @@ module Gyazz
       @title = title
       Gyazz.id2title(id,title) # titleとIDとの対応セット
 
-      self['do_auth'] = 'false'
-      self['write_authorized'] = 'true' # ***********
-
       #
       # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
       # 候補ページを追加してJSONで返すといいのかも?
@@ -54,9 +51,15 @@ module Gyazz
     end
 
     def text(version=0)
-      file = datafile(version)
-      s = (File.exist?(file) ? File.read(file)  : '')
-      s.sub(/\s+$/,'')
+      if version == 0 && @text
+        return @text
+      else
+        file = datafile(version)
+        s = (File.exist?(file) ? File.read(file)  : '')
+        s.sub(/\s+$/,'')
+        @text = s if version == 0
+        s
+      end
     end
 
     def exist?
@@ -72,6 +75,7 @@ module Gyazz
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
+      @text = newdata
       olddata = text
 
       # 最新データをバックアップ
@@ -102,6 +106,7 @@ module Gyazz
           system "patch #{curfile} < #{patchfile}"
           File.delete newfile, patchfile
           status = 'conflict'
+          @text = nil
         else
           File.open(curfile,"w"){ |f|
             f.print newdata
@@ -209,39 +214,3 @@ module Gyazz
     end
   end
 end
-
-# def page(name,title,write_authorized=false)
-#   page = {}
-# 
-#   # ロボット検索可能かどうか
-#   page['searchable'] = attr(name,'searchable')
-# 
-#   page['do_auth'] = false
-# 
-#   #  page['rawdata'] = ''
-#   #  data_file = Gyazz.datafile(name,title)
-#   #  if File.exist?(data_file) then
-#   #    page['rawdata'] = File.read(data_file)
-#   #    if title == ALL_AUTH then
-#   #      if !cookie_authorized?(name,ALL_AUTH) then
-#   #        page['rawdata'] = randomize(page['rawdata'])
-#   #        page['do_auth'] = true
-#   #      end
-#   #    elsif title == WRITE_AUTH then
-#   #      if !cookie_authorized?(name,WRITE_AUTH) then
-#   #        page['rawdata'] = randomize(page['rawdata'])
-#   #        page['do_auth'] = true
-#   #      end
-#   #    end
-#   #  end
-# 
-#   page['write_authorized'] = write_authorized
-# 
-#   page['name'] = name
-#   page['title'] = title
-#   page['related'] = related_pages(name,title) # この中でURL生成したりしてるのがよくない
-# 
-#   page
-# 
-#   # response["Access-Control-Allow-Origin"] = "*"
-# end
