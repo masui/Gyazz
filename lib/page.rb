@@ -15,9 +15,7 @@ module Gyazz
       Gyazz.id2title(id,title) # titleとIDとの対応セット
 
       #
-      # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
-      # 候補ページを追加してJSONで返すといいのかも?
-      # Page.new でやるべきかもしれない
+      # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック *******
       #
       # こんな感じのコードを入れる
       #  if !data or data.strip.empty? or data.strip == "(empty)"

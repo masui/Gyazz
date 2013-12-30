@@ -121,10 +121,7 @@ module Gyazz
     end
 
     def cookie_authorized?(request)
-      val = request.cookies[auth_cookie].to_s != ''
-      puts "cookie_authorized? = #{val}"
-      puts "password_authorized? = #{wiki.password_authorized?(request)}"
-      val
+      request.cookies[auth_cookie].to_s != ''
     end
 
   end
