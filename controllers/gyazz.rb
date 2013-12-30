@@ -294,7 +294,6 @@ get '/:name/*/json/:version' do
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
-  puts "/#{name}/#{title}/json/#{version}"
   response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
 
   wiki = Gyazz::Wiki.new(name)
