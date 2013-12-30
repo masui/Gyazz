@@ -45,9 +45,10 @@ module Gyazz
     end
 
     def pages(query='',method = :accesstime)
-      disppages.sort { |pagea,pageb|
+      pages = disppages.sort { |pagea,pageb|
         pageb.send(method) <=> pagea.send(method)
-      }.find_all { |page|
+      }
+      query == '' ? pages : pages.find_all { |page|
         query == '' || page.title.match(/#{query}/i) || page.text.match(/#{query}/i)
       }
     end
