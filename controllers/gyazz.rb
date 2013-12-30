@@ -26,35 +26,26 @@ before '/:name/*' do
   #
   # 認証が存在しないか、パスワード認証に成功してるか、なぞなぞ認証に成功してればOK
   #
-  wiki = Gyazz::Wiki.new(name) 
-  #if wiki.no_auth? || (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) then
-    # OK
-  #else
+  wiki = Gyazz::Wiki.new(name)
+  authorized = true
+  if wiki.password_required? || wiki.all_auth_page.exist? then
+    authorized = false
+    authorized = true if wiki.password_authorized?(request)
+    authorized = true if wiki.all_auth_page.cookie_authorized?(request)
+  end
 
-  if wiki.password_required?
-    if wiki.password_authorized?(request)
-      # OK
-    else
+  if !authorized
+    if wiki.password_required? then
       response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
-    end
-  else
-    if wiki.all_auth_page.exist? && !wiki.all_auth_page.cookie_authorized?(request) then
+    else
       throw(:halt, [401, "Not authorized.\n"])
     end
   end
-
-  #  if !wiki.password_authorized?(request) then
-  #    if !Gyazz::Page.new(name,Gyazz::ALL_AUTH).cookie_authorized?(request) &&
-  #        !Gyazz::Page.new(name,Gyazz::WRITE_AUTH).cookie_authorized?(request) then
-  #      response['WWW-Authenticate'] = %(Basic realm="#{name}")
-  #      throw(:halt, [401, "Not authorized.\n"])
-  #    end
-  #  end
 end
 
 get '/' do
-  redirect "#{DEFAULTPAGE}"
+  redirect URI.encode("#{DEFAULTPAGE}")
 end
 
 #-----------------------------------------------------
@@ -64,7 +55,7 @@ end
 get "/__search/:name" do |name|
   q = params[:q]
   if q == '' then
-    redirect "/#{name}/"
+    redirect URI.encode("/#{name}")
   else
     @wiki = Gyazz::Wiki.new(name)
     @pages = @wiki.pages(q)
@@ -91,7 +82,7 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   if params[:name] then
     name = params[:name]
     title = params[:title]
-  else # この仕様は削除すべき
+  else # この仕様は削除すべき ********
     name = data.shift
     title = data.shift
   end
@@ -273,7 +264,8 @@ end
 get '/:name/*/icon' do
   name = params[:name]
   title = params[:splat].join('/')
-  image = repimage(name,title)
+  page = Gyazz::Page.new(name,title)
+  image = page['repimage']
   halt 404, "image not found" if image.to_s.empty?
   redirect case image
            when /^https?:\/\/.+\.(png|jpe?g|gif)$/i
@@ -291,7 +283,10 @@ end
 get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
-  redirect "/#{name}/#{title}/json/0"
+  #
+  # nameが漢字のときうまくリダイレクトされないorz
+  #
+  redirect URI.encode("/#{name}/#{title}/json/0")
 end
 
 # 古いバージョンのJSONを取得
@@ -299,6 +294,7 @@ get '/:name/*/json/:version' do
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
+  puts "/#{name}/#{title}/json/#{version}"
   response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
 
   wiki = Gyazz::Wiki.new(name)
@@ -336,19 +332,6 @@ get '/:name/*/json/:version' do
     end
   end
 
-  #  else
-  #    if page.all_auth_page? then
-  #      if !all_auth_page.cookie_authorized?(request) then
-  #        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
-  #      end
-  #    elsif page.write_auth_page? then
-  #      if !write_auth_page.cookie_authorized?(request) &&
-  #          !all_auth_page.cookie_authorized?(request) then
-  #        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
-  #      end
-  #    end
-  #  end
-
   data.to_json
 end
 
@@ -356,10 +339,29 @@ end
 get '/:name/*/text' do
   name = params[:name]
   title = params[:splat].join('/')
+  wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(name,title)
-  # なぞなぞ認証できてない場合は並べかえ *******
-  cookie_authorized = false
-  (!cookie_authorized && page.auth_page?) ? page.randomtext : page.text
+
+  # なぞなぞ認証できてない場合は並べかえ
+  text = page.text
+  if !page.all_auth_page? && !page.write_auth_page? then
+    # 認証問題ページでなければ問題なし
+  else
+    if wiki.password_authorized?(request) then
+      # パスワード認証成功してるときは問題なし
+    else
+      if wiki.all_auth_page.cookie_authorized?(request) then
+        # 完全認証なぞなぞに答えてるときは問題なし
+      else
+        if page.write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
+          # 書込認証なぞなぞに答えたときはそのページは問題なし
+        else
+          text = page.randomtext
+        end
+      end
+    end
+  end
+  text
 end
 
 #-----------------------------------------------------
@@ -382,7 +384,7 @@ end
 get '/:name/*/__edit' do
   name = params[:name]
   title = params[:splat].join('/')
-  redirect "#{name}/#{title}/__edit/0"
+  redirect URI.encode("#{name}/#{title}/__edit/0")
 end
 
 get '/:name/*/__edit/:version' do       # 古いバージョンを編集
