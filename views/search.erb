@@ -1,6 +1,8 @@
 <html>
 <head>
   <% pagetitle = (@q.to_s == '' ? 'ページリスト' : "「#{@q}」検索結果") %>
+  <% sortbydate = (@wiki['sortbydate'] == 'true' ? true : false) %>
+  <% pages = @wiki.pages(@q, (sortbydate ? :createtime : :accesstime)) %>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><%= @wiki.name %> <%= pagetitle %></title>
   <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
@@ -16,7 +18,7 @@
 </head>
 <body>
   <div class="title">
-    <span class='wordtitle'><%= @wiki.name %> <%= pagetitle %> (<%= @pages.length %>)</span>
+    <span class='wordtitle'><%= @wiki.name %> <%= pagetitle %> (<%= pages.length %>)</span>
     <form action="/__search/<%= @wiki.name %>" method="get" style="float:right;font-size:12pt;">
       <input height='20' name='q' type='text' value='<%= @q %>'>
       <input type='submit' value='検索'>
@@ -25,14 +27,16 @@
   <p>
   <div>
     <div style="float:left;">
-      <% @pages.each { |page| %>
+      <% pages.each { |page| %>
+        <% title = page.title %>
+	<% title = "#{page.createtime.stamp} #{title}" if sortbydate%>
         <% url = "/#{@wiki.name}/#{page.title}" %>
         <div class="listedit0__xxx">
           <img id="<%= page.id %>"
              class="lazyload"
 	     src="data:image/gif;base64,R0lGODdhMgAMAPAAAMzMzAAAACH/C1hNUCBEYXRhWE1QAz94cAAsAAAAADIADAAAAheEj6nL7Q+jnLTai7PevPsPhuJIlmZSAAA7"
 	     data-original="/<%= @wiki.name %>/<%= page.title %>/modify.png" src="" width="50" height="12">
-          <a href="<%= url %>" class='tag'><%= escape_html page.title %></a>
+          <a href="<%= url %>" class='tag'><%= escape_html title %></a>
         </div>
       <% } %>
     </div>

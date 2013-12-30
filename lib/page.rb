@@ -190,7 +190,7 @@ module Gyazz
     end
 
     def modtime
-      File.mtime(curfile)
+      File.exist?(curfile)? File.mtime(curfile) : Time.now
     end
     
     def modify_history

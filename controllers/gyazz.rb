@@ -58,7 +58,6 @@ get "/__search/:name" do |name|
     redirect URI.encode("/#{name}")
   else
     @wiki = Gyazz::Wiki.new(name)
-    @pages = @wiki.pages(q)
     @q = q
     erb :search
   end
@@ -212,6 +211,7 @@ end
 get "/:name/__sort" do |name|
   @wiki = Gyazz::Wiki.new(name)
   @pages = @wiki.pages('',:title)
+  puts @pages
   erb :search
 end
 
