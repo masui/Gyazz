@@ -318,19 +318,17 @@ get '/:name/*/json/:version' do
   #   書込認証ページ  〇
   #
 
-  all_auth_page = wiki.all_auth_page
-  write_auth_page = wiki.write_auth_page
-
   if !page.all_auth_page? && !page.write_auth_page? then
     # 認証問題ページでなければ問題なし
   else
     if wiki.password_authorized?(request) then
       # パスワード認証成功してるときは問題なし
     else
-      if all_auth_page.cookie_authorized?(request) then
+      if wiki.all_auth_page.cookie_authorized?(request) then
         # 完全認証なぞなぞに答えてるときは問題なし
       else
-        if page.write_auth_page? && write_auth_page.cookie_authorized?(request)
+        if page.write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
+          # 書込認証なぞなぞに答えたときはそのページは問題なし
         else
           data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
         end
@@ -394,15 +392,12 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
   page['version'] = version.to_s
-  puts wiki.all_auth_page.cookie_authorized?(request).to_s
-  puts wiki.password_authorized?(request).to_s
   writable = 
     wiki.no_auth? ||
     (wiki.password_required? && wiki.password_authorized?(request)) ||
     (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
     (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
   page['writable'] = writable.to_s
-  puts writable
 
   @page = page
   erb :edit
@@ -438,7 +433,6 @@ get '/:name/*' do
     (wiki.password_required? && wiki.password_authorized?(request)) ||
     (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
     (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
-  puts writable
   page['writable'] = writable.to_s
 
   @page = page
