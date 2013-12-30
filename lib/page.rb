@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 module Gyazz
   class Page
@@ -52,11 +53,11 @@ module Gyazz
 
     def text(version=0)
       if version == 0 && @text
-        return @text
+        @text
       else
         file = datafile(version)
         s = (File.exist?(file) ? File.read(file)  : '')
-        s.sub(/\s+$/,'')
+        s.sub!(/\s+$/,'')
         @text = s if version == 0
         s
       end
@@ -204,7 +205,8 @@ module Gyazz
     end
 
     def accesstime
-      access_history.last.to_s
+      File.atime(curfile)
+      # access_history.last.to_s
     end
 
     def related_pages
