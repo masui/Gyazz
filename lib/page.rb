@@ -15,6 +15,22 @@ module Gyazz
 
       self['do_auth'] = 'false'
       self['write_authorized'] = 'true' # ***********
+
+      #
+      # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
+      # 候補ページを追加してJSONで返すといいのかも?
+      # Page.new でやるべきかもしれない
+      #
+      # こんな感じのコードを入れる
+      #  if !data or data.strip.empty? or data.strip == "(empty)"
+      #    similar_titles = similar_page_titles(name, title)
+      #    unless similar_titles.empty?
+      #      suggest_title = similar_titles.sort{|a,b|
+      #        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
+      #      }.first
+      #      data = "\n-> [[#{suggest_title}]]" if suggest_title
+      #    end
+      #  end
     end
     attr_reader :wiki, :title
 
@@ -48,7 +64,7 @@ module Gyazz
     end
 
     def exist?
-      text != ''
+      text != '' && text != '(empty)'
     end
 
     def timestampkey(line)
@@ -204,8 +220,6 @@ end
 #   page['searchable'] = attr(name,'searchable')
 # 
 #   page['do_auth'] = false
-# 
-#   page['rawdata'] = readdata(name,title)['data'].join("\n")
 # 
 #   #  page['rawdata'] = ''
 #   #  data_file = Gyazz.datafile(name,title)

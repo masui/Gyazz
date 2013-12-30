@@ -15,7 +15,7 @@
     var title = '<%= escape_jsvar @page.title %>';
     var root =  '<%= app_root %>';
     var orig_md5 = '<%= @page.text(@version).md5 %>';
-    var write_authorized = <%= @write_authorized %>;
+    var writable = <%= @page['writable'] %>;
     </script>
   </head>
   <body>
@@ -31,7 +31,7 @@
       </form>
     </div>
     <p>
-    <textarea id='contents' rows='40' cols='100'><%= sanitize(@page.text(@version)) %></textarea>
+    <textarea id='contents' rows='40' cols='100'><%= sanitize(@page.text(@page['version'])) %></textarea>
     <script type='text/javascript'>
     var textarea = document.getElementById('contents');
     data = textarea.value;

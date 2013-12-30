@@ -398,7 +398,7 @@ function tell_auth(){
 // 行をクリックしたとき呼ばれる
 function linefunc(n){
     return function(event){
-	if(write_authorized){
+	if(writable){
 	    eline = n;
 	}
 	if(do_auth){
@@ -875,7 +875,7 @@ function tag(s,line){
 };
 
 function writedata(){
-    if(!write_authorized) return;
+    if(!writable) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(datastr);
 

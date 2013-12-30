@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" href="/gyazz.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="alternate" type="application/rss+xml" title="<%= @page.wiki.name %> RSS Feed" href="/<%= @page.wiki.name %>/rss.xml" />
-  <meta name="robots" content="<%= @page['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
+  <meta name="robots" content="<%= @page.wiki['searchable'] ? 'index,follow' : 'noindex,nofollow' %>">
 
   <script language="JavaScript" src='/javascripts/pbsearch.js'></script>
   <script language="JavaScript" src='/javascripts/pbdict.js'></script>
@@ -27,7 +27,7 @@
   var version = 0;
 
   var do_auth = <%= @page.auth_page? ? 'true' : 'false' %>;
-  var write_authorized = <%= @page['write_authorized'] %>;
+  var writable = <%= @page['writable'] %>;
 
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();

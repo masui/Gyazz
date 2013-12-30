@@ -18,22 +18,39 @@ end
 
 before '/:name/*' do
   name = params[:name]
-  puts "BEFORE #{params[:name]} #{params[:splat]}"
   title = params[:splat][0]
 
   pass if title.index(Gyazz::ALL_AUTH) == 0
   pass if title.index(Gyazz::WRITE_AUTH) == 0
+  pass if title == 'rss.xml'
   #
-  # パスワード認証に成功してるか、なぞなぞ認証に成功してればOK
+  # 認証が存在しないか、パスワード認証に成功してるか、なぞなぞ認証に成功してればOK
   #
-  wiki = Gyazz::Wiki.new(name)
-  if !wiki.password_authorized?(request) then
-    if !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) &&
-        !Gyazz::Page.new(wiki,Gyazz::WRITE_AUTH).cookie_authorized?(request) then
+  wiki = Gyazz::Wiki.new(name) 
+  #if wiki.no_auth? || (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) then
+    # OK
+  #else
+
+  if wiki.password_required?
+    if wiki.password_authorized?(request)
+      # OK
+    else
       response['WWW-Authenticate'] = %(Basic realm="#{name}")
       throw(:halt, [401, "Not authorized.\n"])
     end
+  else
+    if wiki.all_auth_page.exist? && !wiki.all_auth_page.cookie_authorized?(request) then
+      throw(:halt, [401, "Not authorized.\n"])
+    end
   end
+
+  #  if !wiki.password_authorized?(request) then
+  #    if !Gyazz::Page.new(name,Gyazz::ALL_AUTH).cookie_authorized?(request) &&
+  #        !Gyazz::Page.new(name,Gyazz::WRITE_AUTH).cookie_authorized?(request) then
+  #      response['WWW-Authenticate'] = %(Basic realm="#{name}")
+  #      throw(:halt, [401, "Not authorized.\n"])
+  #    end
+  #  end
 end
 
 get '/' do
@@ -177,6 +194,7 @@ end
 # サイト属性設定API (settings.erbから呼ばれる)
 get '/__setattr/:name/:key/:val' do |name,key,val|
   wiki = Gyazz::Wiki.new(name)
+  puts "#{key} ==> #{val}"
   wiki[key] = val
 end
 
@@ -251,7 +269,7 @@ end
 # アイコンデータ
 #-----------------------------------------------------
 
-## ページの代表画像があればリダイレクトする
+## ページの代表画像があればリダイレクトする *******
 get '/:name/*/icon' do
   name = params[:name]
   title = params[:splat].join('/')
@@ -299,37 +317,41 @@ get '/:name/*/json/:version' do
   #   完全認証ページ  〇          
   #   書込認証ページ  〇
   #
-  if !wiki.password_authorized?(request) then
-    if title == Gyazz::ALL_AUTH then
-      if !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) then
-        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
-      end
-    elsif title == Gyazz::WRITE_AUTH then
-      # puts Gyazz::Page.new(wiki,title).cookie_authorized?(request)
-      if !Gyazz::Page.new(wiki,Gyazz::WRITE_AUTH).cookie_authorized?(request) &&
-          !Gyazz::Page.new(wiki,Gyazz::ALL_AUTH).cookie_authorized?(request) then
-        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+
+  all_auth_page = wiki.all_auth_page
+  write_auth_page = wiki.write_auth_page
+
+  if !page.all_auth_page? && !page.write_auth_page? then
+    # 認証問題ページでなければ問題なし
+  else
+    if wiki.password_authorized?(request) then
+      # パスワード認証成功してるときは問題なし
+    else
+      if all_auth_page.cookie_authorized?(request) then
+        # 完全認証なぞなぞに答えてるときは問題なし
+      else
+        if page.write_auth_page? && write_auth_page.cookie_authorized?(request)
+        else
+          data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+        end
       end
     end
   end
 
-  data.to_json
-
-  #
-  # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック ... ここでやるべきか?
-  # 候補ページを追加してJSONで返すといいのかも?
-  # Page.new でやるべきかもしれない
-  #
-  # こんな感じのコードを入れる
-  #  if !data or data.strip.empty? or data.strip == "(empty)"
-  #    similar_titles = similar_page_titles(name, title)
-  #    unless similar_titles.empty?
-  #      suggest_title = similar_titles.sort{|a,b|
-  #        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
-  #      }.first
-  #      data = "\n-> [[#{suggest_title}]]" if suggest_title
+  #  else
+  #    if page.all_auth_page? then
+  #      if !all_auth_page.cookie_authorized?(request) then
+  #        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+  #      end
+  #    elsif page.write_auth_page? then
+  #      if !write_auth_page.cookie_authorized?(request) &&
+  #          !all_auth_page.cookie_authorized?(request) then
+  #        data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
+  #      end
   #    end
   #  end
+
+  data.to_json
 end
 
 # ページをテキストデータとして取得
@@ -369,10 +391,20 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version].to_i
-  @page = Gyazz::Page.new(name,title)
-  @version = version
-  @write_authorized = true # ここはちゃんとやる ******
+  wiki = Gyazz::Wiki.new(name)
+  page = Gyazz::Page.new(wiki,title)
+  page['version'] = version.to_s
+  puts wiki.all_auth_page.cookie_authorized?(request).to_s
+  puts wiki.password_authorized?(request).to_s
+  writable = 
+    wiki.no_auth? ||
+    (wiki.password_required? && wiki.password_authorized?(request)) ||
+    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
+    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
+  page['writable'] = writable.to_s
+  puts writable
 
+  @page = page
   erb :edit
 end
 
@@ -388,6 +420,7 @@ get "/:name/__random" do |name|
   len = pages.length
   ignore = len / 2 # 新しい方からignore個は選ばない
   ignore = 0
+
   @page = pages[ignore + rand(len-ignore)]
   erb :page
 end
@@ -397,10 +430,17 @@ get '/:name/*' do
   name = params[:name]               # Wikiの名前   (e.g. masui)
   title = params[:splat].join('/')   # ページの名前 (e.g. TODO)
 
-  @page = Gyazz::Page.new(name,title)
-  @page.record_access_history
+  wiki = Gyazz::Wiki.new(name)
+  page = Gyazz::Page.new(wiki,title)
+  page.record_access_history
+  writable = 
+    wiki.no_auth? ||
+    (wiki.password_required? && wiki.password_authorized?(request)) ||
+    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
+    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
+  puts writable
+  page['writable'] = writable.to_s
 
-  #### write_authorizedをここで計算
-
+  @page = page
   erb :page
 end
