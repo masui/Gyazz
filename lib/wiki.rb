@@ -34,7 +34,8 @@ module Gyazz
 
     def validpages # 中身が空でないもの
       allpages.find_all { |page|
-        page.text != ''
+        File.exist?(page.curfile)
+        # page.text != '' # これが遅い
       }
     end
 

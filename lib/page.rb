@@ -50,15 +50,9 @@ module Gyazz
     end
 
     def text(version=0)
-      if version == 0 && @text
-        @text
-      else
-        file = datafile(version)
-        s = (File.exist?(file) ? File.read(file)  : '')
-        s.sub!(/\s+$/,'')
-        @text = s if version == 0
-        s
-      end
+      file = datafile(version)
+      s = (File.exist?(file) ? File.read(file)  : '')
+      s.sub(/\s+$/,'')
     end
 
     def exist?
@@ -74,7 +68,6 @@ module Gyazz
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
-      @text = newdata
       olddata = text
 
       # 最新データをバックアップ
@@ -105,7 +98,6 @@ module Gyazz
           system "patch #{curfile} < #{patchfile}"
           File.delete newfile, patchfile
           status = 'conflict'
-          @text = nil
         else
           File.open(curfile,"w"){ |f|
             f.print newdata
@@ -203,7 +195,7 @@ module Gyazz
     end
 
     def accesstime
-      File.atime(curfile)
+      File.exist?(curfile) ? File.atime(curfile) : Time.now
       # access_history.last.to_s
     end
 
