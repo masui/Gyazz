@@ -3,9 +3,11 @@ require File.expand_path 'test_helper', File.dirname(__FILE__)
 
 class MD5Test < MiniTest::Unit::TestCase
   def setup
+    @wiki = Gyazz::Wiki.new('test_wiki')
   end
 
   def teardown
+    system "/bin/rm -r -f #{@wiki.dir}"
   end
 
   def test_1
@@ -14,7 +16,6 @@ class MD5Test < MiniTest::Unit::TestCase
   end
 
   def test_2
-    wiki = Gyazz::Wiki.new('test_wiki')
-    assert Gyazz.id2title(wiki.name.md5) == wiki.name
+    assert Gyazz.id2title(@wiki.name.md5) == @wiki.name
   end
 end
