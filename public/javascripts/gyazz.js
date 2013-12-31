@@ -538,6 +538,13 @@ function display(delay){
 	
 	// 各行のバックグラウンド色設定
 	$("#listbg"+i).css('background-color',version > 0 ? bgcol(dt[i]) : 'transparent');
+	if(version > 0){
+	    $("#listbg"+i).addClass('hover');
+            d = new Date();
+            t = d.getTime() - dt[i] * 1000;
+            dd = new Date(t);
+	    $("#listbg"+i).attr('title',dd.toLocaleString());
+	}
     }
     
     for(i=data.length;i<1000;i++){
@@ -560,8 +567,6 @@ function display(delay){
     //jQuery.kill_referrer.rewrite.init();
     follow_scroll();
 }
-
-
 
 function adjustIframeSize(newHeight,i) {
     var frame= document.getElementById("gistFrame"+i);
