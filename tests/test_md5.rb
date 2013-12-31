@@ -12,4 +12,9 @@ class MD5Test < MiniTest::Unit::TestCase
     s = 'abcdefg'
     assert s.md5 =~ /^[\da-f]{32}$/
   end
+
+  def test_2
+    wiki = Gyazz::Wiki.new('test_wiki')
+    assert Gyazz.id2title(wiki.name.md5) == wiki.name
+  end
 end
