@@ -3,6 +3,7 @@ require 'sinatra'
 require 'rack/test'
 
 $:.unshift File.expand_path '../', File.dirname(__FILE__)
+require 'lib/attr'
 require 'lib/wiki'
 require 'lib/page'
 require 'lib/auth'
