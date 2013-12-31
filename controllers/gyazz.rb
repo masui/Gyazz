@@ -89,46 +89,7 @@ get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   redirect("/#{name}/#{title}")
 end
 
-#
-# 認証の考え方
-#
-# 読み書き認証だけ設定されている場合
-#   読出しはOK
-#   書込みだけNG
-#   HPなどの場合
-# 読出し認証だけ設定されている場合???
-#      読出しも書込みもNG
-#   or 読出しも書込みもOK
-#
-#   読出し 書込み
-#   O      O               通常
-#   O      X       => O O  HP      書込み認証
-#   X      X       => O O  秘密    秘密認証 - basic認証と同等
-#   X      0               無い
-#
-#                 r_authorized rw_authorized
-#  普通にアクセス true         true          UIPediaなど
-#  書込み禁止     true         false         HPなど
-#  読出し禁止     false        false         増井研など
-#
-#
-# 認証のアルゴリズム
-#
-# auth_page_exist?()      認証ページが存在して空じゃない
-# r_cookie_authorized?()  Cookieで認証されている
-# r_authorized            読出し権限あり
-# rw_cookie_authorized?() Cookieで認証されている
-# rw_authorized
-#
-# * 認証ページが存在しない状態で認証ページ編集しはじめた人には読み書き/読み出しCookieを与える ★★
-# * 読み書き権限のある人には読み書き認証ページをrandomizeしない
-# * 読み出し権限のある人には読み出し認証ページをrandomizeしない
-# * 認証ページがある状態で、権限のない人が読み出し認証ページにアクセスすると
-#  randomizeされる。読み出しはできる。書き込みはできない。
-# * 認証ページがある状態で、権限のない人が読み書き認証ページにアクセスすると
-#  randomizeされる。読み出しはできる。書き込みはできない。
-# * 認証ページがある状態で、読み出し権限のある人が読み書き認証ページにアクセスすると、上と同様
-#
+# 認証の考え方は auth.rb を参照
 
 # なぞなぞ認証チャレンジ文字列取得
 post '/__tellauth' do
@@ -301,17 +262,7 @@ get '/:name/*/json/:version' do
 
   data = page.data(version)
 
-  #
-  # 認証ページのときは順番を入れ換える
-  #                   完全認証OK  書込み認証OK   完全認証ページ 書込認証ページ
-  #                   OK          OK             OK             OK
-  #                   OK          NG             OK             OK
-  #                   NG          OK             NG             OK
-  #                   NG          NG             NG             NG
-  #
-  #   完全認証ページ  〇          
-  #   書込認証ページ  〇
-  #
+  # 未認証状態でなぞなぞページにアクセスしたときはテキストを並べかえる
 
   if !page.all_auth_page? && !page.write_auth_page? then
     # 認証問題ページでなければ問題なし
