@@ -319,7 +319,7 @@ get '/:name/*/json/:version' do
     if wiki.password_authorized?(request) then
       # パスワード認証成功してるときは問題なし
     else
-      if wiki.all_auth_page.cookie_authorized?(request) then
+      if wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request) then
         # 完全認証なぞなぞに答えてるときは問題なし
       else
         if page.write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
@@ -330,7 +330,7 @@ get '/:name/*/json/:version' do
       end
     end
   end
-
+  
   data.to_json
 end
 
