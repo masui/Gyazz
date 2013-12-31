@@ -3,6 +3,8 @@
   <meta charset='utf-8'>
   <title><%= @page.wiki.name %> / <%= @page.title %></title>
   <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
+  <link rel="stylesheet" href="/stylesheets/tipTip.css" type="text/css" />
+
   <link rel="apple-touch-icon" href="/gyazz.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="alternate" type="application/rss+xml" title="<%= @page.wiki.name %> RSS Feed" href="/<%= @page.wiki.name %>/rss.xml" />
@@ -13,6 +15,7 @@
   <script language="JavaScript" src='/javascripts/utf.js'></script>
   <script language="JavaScript" src='/javascripts/md5.js'></script>
   <script language="JavaScript" src='/javascripts/location.js'></script>
+  <script language="JavaScript" src='/javascripts/jquery.tipTip.js'></script>
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
   <!-- <script language="JavaScript" src='/javascripts/jQuery.kill_referrer.js'></script> -->
@@ -33,6 +36,14 @@
     $('#rawdata').hide();
     setup();
     getdata();
+
+    $(".hover").tipTip({
+	maxWidth: "auto", //ツールチップ最大幅
+	edgeOffset: 3, //要素からのオフセット距離
+	activation: "hover", //hoverで表示、clickでも可能 
+	defaultPosition: "top" //デフォルト表示位置
+	});
+  
   })
 
   </script>
