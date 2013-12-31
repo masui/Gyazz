@@ -52,13 +52,13 @@ module Gyazz
     end
 
     def text(version=0)
-      if version == 0 && @@text[title] then
-        return @@text[title]
+      if version == 0 && @@text[wiki.name+title] then
+        return @@text[wiki.name+title]
       else
         file = datafile(version)
         s = (File.exist?(file) ? File.read(file)  : '')
         s.sub!(/\s+$/,'')
-        @@text[title] = s if version == 0
+        @@text[wiki.name+title] = s if version == 0
         s
       end
     end
@@ -77,7 +77,7 @@ module Gyazz
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
       olddata = text
-      @@text[title] = newdata
+      @@text[wiki.name+title] = newdata
 
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
@@ -107,7 +107,7 @@ module Gyazz
           system "patch #{curfile} < #{patchfile}"
           File.delete newfile, patchfile
           status = 'conflict'
-          @@text[title] = nil
+          @@text[wiki.name+title] = nil
         else
           File.open(curfile,"w"){ |f|
             f.print newdata
