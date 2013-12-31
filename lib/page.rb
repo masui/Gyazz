@@ -52,6 +52,7 @@ module Gyazz
     end
 
     def text(version=0)
+      # self['accesstime'] = Time.now.stamp
       if version == 0 && @@text[wiki.name+title] then
         return @@text[wiki.name+title]
       else
@@ -205,6 +206,7 @@ module Gyazz
     end
 
     def accesstime
+      #self['accesstime'] ? self['accesstime'].to_time : File.exist?(curfile) ? File.atime(curfile) : Time.now
       File.exist?(curfile) ? File.atime(curfile) : Time.now
       # access_history.last.to_s
     end
