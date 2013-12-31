@@ -117,8 +117,7 @@ module Gyazz
 
       # 各行のタイムスタンプ保存
       data.split(/\n/).each { |line|
-        line.sub!(/^\s*/,'')
-        line.sub!(/\s*$/,'')
+        line.strip!
         self[timestampkey(line)] = Time.now.stamp unless self[timestampkey(line)]
       }
 
@@ -152,9 +151,7 @@ module Gyazz
         datafile(version) =~ /\/(\d{14})$/
         ret['date'] = $1
         ret['age'] = ret['data'].collect { |line|
-          line.sub!(/^\s*/,'')
-          line.sub!(/\s*$/,'')
-          ts = self[timestampkey(line)]
+          ts = self[timestampkey(line.strip)]
           t = (ts ? ts.to_time : Time.now)
           (Time.now - t).to_i
         }
@@ -200,7 +197,6 @@ module Gyazz
 
     def createtime
       modify_history[0].to_time
-      # backupids[0] ? backupids[0].to_time : File.mtime(curfile)
     end
 
     def accesstime

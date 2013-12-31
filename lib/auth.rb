@@ -115,14 +115,14 @@ module Gyazz
       a.each_with_index { |s,i|
         if s =~ /^\S/ then
           result += buf.sort_by { rand }.join("\n")
-          result += "\n#{s}\n"
+          result += "\n" if result != ""
+          result += "#{s}\n"
           buf = []
         else
           buf << s
         end
       }
       result += buf.sort_by { rand }.join("\n")
-      result.sub(/\s*/,'')
     end
 
     def authanswer
