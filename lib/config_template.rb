@@ -1,9 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: emacs-mule -*-
 
-# FILEROOT = "/Users/masui/Gyazz/data"             # Gyazzãƒ‡ãƒ¼ã‚¿ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
-FILEROOT = "/tmp"
+module Gyazz
+  # FILEROOT = "/Users/masui/Gyazz/data"             # Gyazz’¥Ç’¡¼’¥¿’¥Ç’¥£’¥ì’¥¯’¥È’¥ê
+  FILEROOT = "/tmp"
 
-# DEFAULTPAGE = "/index.html"
-DEFAULTPAGE = "/Gyazz/#{URI.encode('ç›®æ¬¡')}"
+  # DEFAULTPAGE = "/index.html"
+  DEFAULTPAGE = "/Gyazz/#{URI.encode('’ÌÜ’¼¡')}"
 
-SESSION_SECRET = "this is session secret (please change)" 
+  SESSION_SECRET = "this is session secret (please change)" 
+end
+

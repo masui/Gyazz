@@ -11,7 +11,7 @@ module Gyazz
     attr_reader :name
 
     def dir
-      dir = "#{FILEROOT}/#{id}"
+      dir = "#{Gyazz::FILEROOT}/#{id}"
       Dir.mkdir(dir) unless File.exist?(dir)
       dir
     end

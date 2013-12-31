@@ -8,9 +8,7 @@ module Gyazz
 
     def initialize(wiki,title)
       @wiki = wiki
-      if wiki.class == String
-        @wiki = Wiki.new(wiki)
-      end
+      @wiki = Wiki.new(wiki) if wiki.class == String
 
       @title = title
       Gyazz.id2title(id,title) # titleとIDとの対応セット

@@ -10,7 +10,7 @@ require 'date'
 
 # Cookieを使う
 enable :sessions
-set :session_secret, SESSION_SECRET # 塩
+set :session_secret, Gyazz::SESSION_SECRET # 塩
 
 configure do
   set :protection, :except => :frame_options
@@ -45,7 +45,7 @@ before '/:name/*' do
 end
 
 get '/' do
-  redirect URI.encode("#{DEFAULTPAGE}")
+  redirect URI.encode("#{Gyazz::DEFAULTPAGE}")
 end
 
 #-----------------------------------------------------
@@ -120,7 +120,7 @@ post '/__upload' do
 
     hash = file_contents.md5
     savefile = "#{hash}#{file_ext}"
-    savepath = "#{FILEROOT}/upload/#{savefile}"
+    savepath = "#{Gyazz::FILEROOT}/upload/#{savefile}"
     File.open(savepath, 'wb'){ |f| f.write(file_contents) }
 
     savefile
@@ -129,7 +129,7 @@ end
 
 # アップロードされたファイルにアクセス
 get "/upload/:filename" do |filename|
-  send_file "#{FILEROOT}/upload/#{filename}"
+  send_file "#{Gyazz::FILEROOT}/upload/#{filename}"
 end
 
 #-----------------------------------------------------

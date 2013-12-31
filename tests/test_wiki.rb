@@ -18,7 +18,7 @@ class WikiTest < MiniTest::Unit::TestCase
   def test_1
     assert File.exists?(@wiki.dir)
     assert File.ftype(@wiki.dir) == 'directory'
-    assert @wiki.dir.index(FILEROOT) == 0
+    assert @wiki.dir.index(Gyazz::FILEROOT) == 0
     cleanup
   end
 
