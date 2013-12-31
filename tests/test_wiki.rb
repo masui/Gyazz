@@ -25,18 +25,15 @@ class WikiTest < MiniTest::Unit::TestCase
   def test_pages
     page = Gyazz::Page.new(@wiki,'test1')
     page.write('abc')
-    assert @wiki.pageids.length == 1
+    assert @wiki.pages.length == 1
     page = Gyazz::Page.new(@wiki,'test2')
     page.write('abc')
-    assert @wiki.pageids.length == 2
+    assert @wiki.pages.length == 2
     page = Gyazz::Page.new(@wiki,'test1')
     page.write('def')
-    assert @wiki.pageids.length == 2
-    titles = @wiki.titles
-    assert titles.member?('test1')
-    assert titles.member?('test2')
-    @wiki.pageids.each { |page|
-      assert page =~ /^[\da-f]{32}$/
+    assert @wiki.pages.length == 2
+    @wiki.pages.each { |page|
+      assert page.id =~ /^[\da-f]{32}$/
     }
     @wiki.pages.each { |page|
       assert page.class == Gyazz::Page

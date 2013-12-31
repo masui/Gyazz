@@ -152,30 +152,6 @@ module Gyazz
   end
 end
 
-if $0 == __FILE__ then
-  s = <<EOF
-[[gyazo.png]]
- A
- B
- C
- D
- E
-[[gyazo2.png]]
- F
- G
-2+3=
- 4
- 5
- 6
- 7
- 8
-aaaa
-bbbbb
- jjjj
-EOF
-  print randomize(s)
-  puts ansstring(s)
-end
 
 
 

@@ -10,6 +10,5 @@ class RSSTest < MiniTest::Unit::TestCase
   
   def test_1
     # 全然テストしてない
-    rss('Gyazz')
   end
 end
