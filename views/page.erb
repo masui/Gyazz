@@ -41,7 +41,7 @@
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <% if @page['write_authorized'] then %>
+    <% if @page['writable'] then %>
       <a href='/<%= @page.wiki.name %>/<%= @page.title %>/__edit/0' id='title'>
       <%= sanitize(@page.title) %>
       </a>
