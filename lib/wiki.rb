@@ -46,7 +46,8 @@ module Gyazz
       }
     end
 
-    def pages(query='',method = :accesstime)
+    # def pages(query='',method = :accesstime)
+    def pages(query='',method = :modtime)
       pages = disppages.sort { |pagea,pageb|
         pageb.send(method) <=> pagea.send(method)
       }

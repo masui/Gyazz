@@ -2,7 +2,7 @@
 <head>
   <% pagetitle = (@q.to_s == '' ? 'ページリスト' : "「#{@q}」検索結果") %>
   <% sortbydate = (@wiki['sortbydate'] == 'true' ? true : false) %>
-  <% pages = @wiki.pages(@q, (sortbydate ? :createtime : :accesstime)) %>
+  <% pages = @wiki.pages(@q, (sortbydate ? :createtime : :modtime)) %>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><%= @wiki.name %> <%= pagetitle %></title>
   <link rel="stylesheet" href="/stylesheets/gyazz.css" type="text/css">
