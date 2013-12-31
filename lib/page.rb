@@ -204,15 +204,7 @@ module Gyazz
     end
 
     def accesstime
-      #self['accesstime'] ? self['accesstime'].to_time : File.exist?(curfile) ? File.atime(curfile) : Time.now
       File.exist?(curfile) ? File.atime(curfile) : Time.now
-      # access_history.last.to_s
-    end
-
-    def related_pages
-      related_titles(self).collect { |title|
-        Page.new(@wiki,title)
-      }
     end
   end
 end
