@@ -26,7 +26,7 @@
   var root =  '<%= app_root %>';
   var version = 0;
 
-  var do_auth = <%= @page.auth_page? ? 'true' : 'false' %>;
+  var do_auth = <%= @page.is_auth_page? ? 'true' : 'false' %>;
   var writable = <%= @page['writable'] %>;
 
   $(document).ready(function(){ // この場所にないと駄目?

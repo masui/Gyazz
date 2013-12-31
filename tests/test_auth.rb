@@ -34,7 +34,7 @@ bbbbb
 EOF
     page.write(s)
     assert @wiki.auth_page_exist?
-    assert page.all_auth_page?
+    assert page.is_all_auth_page?
     assert page.text.size == page.randomtext.size
     assert page.text != page.randomtext
     assert page.auth_cookie.length == 32

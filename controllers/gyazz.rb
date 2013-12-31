@@ -264,7 +264,7 @@ get '/:name/*/json/:version' do
 
   # 未認証状態でなぞなぞページにアクセスしたときはテキストを並べかえる
 
-  if !page.all_auth_page? && !page.write_auth_page? then
+  if !page.is_all_auth_page? && !page.is_write_auth_page? then
     # 認証問題ページでなければ問題なし
   else
     if wiki.password_authorized?(request) then
@@ -273,7 +273,7 @@ get '/:name/*/json/:version' do
       if wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request) then
         # 完全認証なぞなぞに答えてるときは問題なし
       else
-        if page.write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
+        if page.is_write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
           # 書込認証なぞなぞに答えたときはそのページは問題なし
         else
           data['data'] = page.randomtext.sub(/\n+$/,'').split(/\n/)
@@ -294,7 +294,7 @@ get '/:name/*/text' do
 
   # なぞなぞ認証できてない場合は並べかえ
   text = page.text
-  if !page.all_auth_page? && !page.write_auth_page? then
+  if !page.is_all_auth_page? && !page.is_write_auth_page? then
     # 認証問題ページでなければ問題なし
   else
     if wiki.password_authorized?(request) then
@@ -303,7 +303,7 @@ get '/:name/*/text' do
       if wiki.all_auth_page.cookie_authorized?(request) then
         # 完全認証なぞなぞに答えてるときは問題なし
       else
-        if page.write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
+        if page.is_write_auth_page? && wiki.write_auth_page.cookie_authorized?(request)
           # 書込認証なぞなぞに答えたときはそのページは問題なし
         else
           text = page.randomtext
@@ -345,7 +345,7 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   page = Gyazz::Page.new(wiki,title)
   page['version'] = version.to_s
   writable = 
-    wiki.no_auth? ||
+    wiki.has_no_auth_pages? ||
     (wiki.password_required? && wiki.password_authorized?(request)) ||
     (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
     (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
@@ -381,7 +381,7 @@ get '/:name/*' do
   page = Gyazz::Page.new(wiki,title)
   page.record_access_history
   writable = 
-    wiki.no_auth? ||
+    wiki.has_no_auth_pages? ||
     (wiki.password_required? && wiki.password_authorized?(request)) ||
     (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
     (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))

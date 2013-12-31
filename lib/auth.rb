@@ -40,7 +40,7 @@
 
 module Gyazz
   class Wiki
-    def no_auth?
+    def has_no_auth_pages?
       !password_required? && !auth_page_exist?
     end
   end
@@ -96,16 +96,16 @@ module Gyazz
   end
 
   class Page
-    def all_auth_page?
+    def is_all_auth_page?
       title == ALL_AUTH
     end
 
-    def write_auth_page?
+    def is_write_auth_page?
       title == WRITE_AUTH
     end
 
-    def auth_page?
-      all_auth_page? || write_auth_page?
+    def is_auth_page?
+      is_all_auth_page? || is_write_auth_page?
     end
 
     def randomtext
