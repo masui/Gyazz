@@ -142,7 +142,7 @@ module Gyazz
     end
 
     def auth_cookie # 認証用クッキーの名前
-      (wiki.name + title + text).md5
+      (Gyazz::SESSION_SECRET + wiki.name + title + text).md5
     end
 
     def cookie_authorized?(request)

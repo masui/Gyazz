@@ -97,7 +97,7 @@ post '/__tellauth' do
   title = params[:title]
   useranswer = params[:authstr]
   page = Gyazz::Page.new(name,title)
-  if page.auth_page? then
+  if page.is_auth_page? then
     if useranswer == page.authanswer then # 認証成功!
       response.set_cookie(page.auth_cookie, {:value => 'authorized', :path => '/' })
     end
