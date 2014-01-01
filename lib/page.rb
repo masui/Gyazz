@@ -36,7 +36,28 @@ module Gyazz
     end
 
     def titlestr
-      title =~ /^[0-9]{14}$/ ? text.split(/\n/)[0] : title
+      if title =~ /^[0-9]{14}$/ then 
+        newtitle = text.split(/\n/)[0]
+        while newtitle =~ /^(.*)(\[\[([^\n\r]+)\]\])(.*)$/ do
+          pre = $1
+          tag = $3
+          post = $4
+          a = tag.split(/ /)
+          if a[0] =~ /^http/ then
+            if a[1] =~ /^http/ then
+              newtitle = pre + "<<<" + tag + ">>>" + post
+            else
+              a.shift
+              newtitle = pre + a.join(' ') + post
+            end
+          else
+            newtitle = pre + tag + post
+          end
+        end
+        newtitle.gsub(/<<</,'[[').gsub(/>>>/,']]')
+      else
+        title
+      end
     end
 
     def id
