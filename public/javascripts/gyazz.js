@@ -40,7 +40,7 @@ var orig_md5; // getdata()したときのMD5
 
 var KC = {
     tab:9, enter:13, ctrlD:17, left:37, up:38, right:39, down:40,
-    p:80, n:78
+    k:75, n:78, p:80
 };
 
 var authbuf = [];
@@ -249,6 +249,29 @@ $(document).keydown(function(event){
 		edited = true;
 	    }
 	}
+    }
+    else if(kc == KC.k && ck){ // Ctrl+K カーソルより右側を削除する
+      setTimeout(function(){ // Mac用。ctrl+kでカーソルより後ろを削除するまで待つ
+        var input_tag = $("#newtext");
+        var cursor_pos = input_tag[0].selectionStart;
+        if(input_tag.val().length > cursor_pos){ // ctrl+kでカーソルより後ろが削除されていない場合
+          input_tag.val( input_tag.val().substring(0, cursor_pos) ); // 削除する
+          input_tag.selectionStart = cursor_pos;
+          input_tag.selectionEnd = cursor_pos;
+        }
+        if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
+          data[editline] = "";
+          deleteblankdata();
+          display();
+          edited = true;
+          setTimeout(function(){
+            // カーソルを行頭に移動
+            input_tag = $("#newtext")[0];
+            input_tag.selectionStart = 0;
+            input_tag.selectionEnd = 0;
+          }, 10);
+        }
+      }, 10);
     }
     else if(kc == KC.down && ck && editline >= 0 && editline < data.length-1){ // Ctrl+↓ = 下の行と入れ替え
         var current_line_data = data[editline];
