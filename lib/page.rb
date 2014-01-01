@@ -77,7 +77,7 @@ module Gyazz
 
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
-        File.open("#{dir}/#{Time.now.stamp}",'w'){ |f|
+        File.open("#{dir}/#{modtime.stamp}",'w'){ |f|
           f.print(olddata)
         }
       end
@@ -146,7 +146,7 @@ module Gyazz
       ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
       if version.to_i >= 0 then
         datafile(version) =~ /\/(\d{14})$/
-        ret['date'] = $1
+        ret['date'] = (version > 0 ? $1 : modtime.stamp)
         ret['age'] = ret['data'].collect { |line|
           ts = self[timestampkey(line.strip)]
           t = (ts ? ts.to_time : Time.now)
