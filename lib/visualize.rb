@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
-# -*- ruby -*-
 
-MAX = 25
-MAXH = 12
+#
+# * アクセス履歴と編集履歴をどう表示するべきか
+# * 古い重要なページはアクセス履歴だけたまってくるはず
+# * ずっと編集され続けるページもあるだろう
+# * 両方を一目了然に表示したい
+#
 
 module Gyazz
+  MAX = 25
+  MAXH = 12
+
   class Page
     # 古い変更/新しい変更を考慮して履歴を視覚化する
-    def __modify_log
+    def log(history)
       now = Time.now
       v = []
-      modify_history.each { |timestamp|
+      history.each { |timestamp|
         t = timestamp.to_time
         #
         # issue #59 を参照
@@ -27,28 +33,41 @@ module Gyazz
     
     # PNG視覚化
     def modify_png
-      v = __modify_log
+      alog = log(access_history)
+      mlog = log(modify_history)
       data = []
+
+      #
+      # 新しいものは背景を黄色くする
+      #
       hotcolors = [[255,255,0],[255,255,40],[255,255,80],[255,255,120],[255,255,160],[255,255,200]]
       bgcolor = [255,255,255]
       (0..5).each { |j|
-        hv = v[j].to_i
-        bgcolor = hotcolors[j] if hv > 0
+        bgcolor = hotcolors[5-j] if mlog[5-j] > 0
       }
-      #####bgcolor = [200,200,200]
       (0...MAXH).each { |y|
         data[y] = []
         (0...MAX).each { |x|
           data[y][x] = bgcolor
         }
       }
+      #
+      # 櫛状にアクセスを表示
+      #
       (0...MAX).each { |i|
-        d = v[i].to_i
+        d = alog[i]
         d = MAXH if d >= MAXH
-        c = 8 - (v[i].to_i/10)
+        c = 8 - (alog[i]/10)
         c = 0 if c < 0
         (0...d).each { |y|
           data[MAXH-y-1][MAX-i-1] = [c*20, c*20, c*20]
+        }
+      }
+      (0...MAX).each { |i|
+        d = mlog[i]
+        d = MAXH/2 if d >= MAXH/2
+        (0...d).each { |y|
+          data[MAXH-y-1][MAX-i-1] = [0,0,0]
         }
       }
       PNG.png(data)

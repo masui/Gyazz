@@ -201,7 +201,9 @@ module Gyazz
     end
 
     def accesstime
-      File.exist?(curfile) ? File.atime(curfile) : Time.now
+      # File.exist?(curfile) ? File.atime(curfile) : Time.now
+      t = access_history.last
+      t ? t.to_time : Time.now
     end
   end
 end
