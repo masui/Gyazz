@@ -28,7 +28,9 @@ module Gyazz
         ind = MAX-1 if ind >= MAX
         v[ind] = v[ind].to_i + 1
       }
-      (0..MAX).collect { |i| v[i].to_i }
+      (0..MAX).collect { |i|
+        (Math.log(v[i].to_i+0.9) * 3).to_i
+      }
     end
     
     # PNG視覚化
