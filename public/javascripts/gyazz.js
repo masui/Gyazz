@@ -563,14 +563,14 @@ function display(delay){
 	// 各行のバックグラウンド色設定
 	$("#listbg"+i).css('background-color',version >= 0 ? bgcol(dt[i]) : 'transparent');
 	if(version >= 0){
-	    $("#listbg"+i).addClass('hover');
+	    $("#list"+i).addClass('hover');
             d = new Date();
             t = d.getTime() - dt[i] * 1000;
             dd = new Date(t);
-	    $("#listbg"+i).attr('title',dd.toLocaleString());
+	    $("#list"+i).attr('title',dd.toLocaleString());
 	    $(".hover").tipTip({
 	    	maxWidth: "auto", //ツールチップ最大幅
-	    	edgeOffset: 10, //要素からのオフセット距離
+	    	edgeOffset: 5, //要素からのオフセット距離
 	    	activation: "hover", //hoverで表示、clickでも可能 
 	    	defaultPosition: "bottom" //デフォルト表示位置
 	    });
