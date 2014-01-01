@@ -503,7 +503,7 @@ function display(delay){
 		       ( m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i) )){ // gistエンベッド
 			// https://gist.github.com/1748966 のやり方
 			var gisturl = m[1];
-			var gistFrame = document.crea1teElement("iframe");
+			var gistFrame = document.createElement("iframe");
 			gistFrame.setAttribute("width", "100%");
 			gistFrame.id = "gistFrame" + i;
 			gistFrame.style.border = 'none';
