@@ -44,8 +44,8 @@ module Gyazz
       #
       hotcolors = [[255,255,0],[255,255,40],[255,255,80],[255,255,120],[255,255,160],[255,255,200]]
       bgcolor = [255,255,255]
-      (0..5).each { |j|
-        bgcolor = hotcolors[5-j] if mlog[5-j] > 0
+      5.downto(0).each { |j|
+        bgcolor = hotcolors[j] if mlog[j] > 0
       }
       (0...MAXH).each { |y|
         data[y] = []
