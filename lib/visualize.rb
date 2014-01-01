@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- ruby -*-
 
 MAX = 25
 MAXH = 12
@@ -17,7 +18,7 @@ module Gyazz
         #
         d = (now - t).to_i / (60 * 60 * 24) # 時間
         d = 1 if d == 0
-        ind = (Math.log(d) / Math.log(1.3)).floor
+        ind = (Math.log(d) / Math.log(1.5)).floor
         ind = MAX-1 if ind >= MAX
         v[ind] = v[ind].to_i + 1
       }
