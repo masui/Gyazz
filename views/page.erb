@@ -27,7 +27,6 @@
   var name =  '<%= escape_jsvar @page.wiki.name %>';
   var title = '<%= escape_jsvar @page.title %>';
   var root =  '<%= app_root %>';
-  var version = 0;
 
   var do_auth = <%= @page.is_auth_page? ? 'true' : 'false' %>;
   var writable = <%= @page['writable'] %>;

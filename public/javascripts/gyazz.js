@@ -7,9 +7,9 @@
 //  var name =  '増井研';
 //  var title = 'MIRAIPEDIA';
 //  var root =  'http://masui.sfc.keio.ac.jp/Gyazz';
-//  var version = 0;
 //  var do_auth = true;
 
+var version = 0;
 var name_id;
 var title_id;
 

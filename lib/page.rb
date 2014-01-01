@@ -44,7 +44,6 @@ module Gyazz
     end
 
     def datafile(version=0)
-      files = [curfile] + backupfiles
       files[version.to_i] || files.last
     end
 
@@ -169,6 +168,10 @@ module Gyazz
       backupids.collect { |backupid|
         "#{dir}/#{backupid}"
       }
+    end
+
+    def files
+      [curfile] + backupfiles
     end
 
     def __accessfile
