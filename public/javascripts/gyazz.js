@@ -251,25 +251,26 @@ $(document).keydown(function(event){
 	}
     }
     else if(kc == KC.k && ck){ // Ctrl+K カーソルより右側を削除する
+      var input_tag = $("input#newtext");
+      if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
+        data[editline] = ""; // 現在の行を削除
+        deleteblankdata();
+        display();
+        edited = true;
+        setTimeout(function(){
+          // カーソルを行頭に移動
+          input_tag = $("#newtext");
+          input_tag[0].selectionStart = 0;
+          input_tag[0].selectionEnd = 0;
+        }, 10);
+        return;
+      }
       setTimeout(function(){ // Mac用。ctrl+kでカーソルより後ろを削除するまで待つ
-        var input_tag = $("#newtext");
         var cursor_pos = input_tag[0].selectionStart;
         if(input_tag.val().length > cursor_pos){ // ctrl+kでカーソルより後ろが削除されていない場合
-          input_tag.val( input_tag.val().substring(0, cursor_pos) ); // 削除する
+          input_tag.val( input_tag.val().substring(0, cursor_pos) ); // カーソルより後ろを削除
           input_tag.selectionStart = cursor_pos;
           input_tag.selectionEnd = cursor_pos;
-        }
-        if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
-          data[editline] = "";
-          deleteblankdata();
-          display();
-          edited = true;
-          setTimeout(function(){
-            // カーソルを行頭に移動
-            input_tag = $("#newtext")[0];
-            input_tag.selectionStart = 0;
-            input_tag.selectionEnd = 0;
-          }, 10);
         }
       }, 10);
     }
