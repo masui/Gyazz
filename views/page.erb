@@ -79,10 +79,7 @@ Search: <input type="text" id="query" autocomplete="off" onkeyup="search(event)"
     image = page['repimage']
     @url = "/#{page.wiki.name}/#{URI.encode(page.title)}"
     @t = page.title
-    if @t =~ /^[0-9]{14}/ then
-      file = "#{wiki.topdir}/#{@t.md5}"
-      @t = File.read(file).split(/\n/)[0]
-    end
+    @t = Gyazz::Page.new(page.wiki,@t).text.split(/\n/)[0] if @t =~ /^[0-9]{14}$/
     @text = @t
     @title = @t.sub(/^\d+\/\d+\/\d+\s+\d+:\d+:\d+\s+/,'').sub(/\[\[http\S+\s+(.*)\]\]/){ $1 }
     @title.sub!(/^[0-9a-f]{10}-/,'') # アップロードデータ管理用のハッシュを名前から除く

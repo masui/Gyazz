@@ -203,7 +203,7 @@ module Gyazz
     def accesstime
       # File.exist?(curfile) ? File.atime(curfile) : Time.now
       t = access_history.last
-      t ? t.to_time : Time.now
+      t ? t.to_time : "20000101000000".to_time
     end
   end
 end

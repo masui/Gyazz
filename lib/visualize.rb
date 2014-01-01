@@ -60,7 +60,9 @@ module Gyazz
         c = 8 - (alog[i]/10)
         c = 0 if c < 0
         (0...d).each { |y|
-          data[MAXH-y-1][MAX-i-1] = [c*20, c*20, c*20]
+          # data[MAXH-y-1][MAX-i-1] = [c*20, c*20, c*20]
+          # data[MAXH-y-1][MAX-i-1] = [0,0,255]
+          data[MAXH-y-1][MAX-i-1] = [128,128,128]
         }
       }
       (0...MAX).each { |i|
