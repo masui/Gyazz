@@ -9,7 +9,7 @@
 //  var root =  'http://masui.sfc.keio.ac.jp/Gyazz';
 //  var do_auth = true;
 
-var version = 0;
+var version = -1;
 var name_id;
 var title_id;
 
@@ -202,7 +202,7 @@ $(document).keyup(function(event){
     data[editline] = $("#newtext").val();
     
     // 数秒入力がなければデータ書き込み
-    if(version == 0 && !event.ctrlKey && edited){
+    if(version == -1 && !event.ctrlKey && edited){
 	if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
 	    if(sendTimeout) clearTimeout(sendTimeout);
 	    sendTimeout = setTimeout("writedata()",1300);
@@ -347,7 +347,7 @@ $(document).keydown(function(event){
 	getdata();
     }
     else if(ck && kc == KC.right){
-	if(version > 0){
+	if(version >= 0){
 	    version -= 1;
 	    getdata();
 	}
@@ -445,8 +445,8 @@ function display(delay){
 	    zoomlevel == -1 ? '#e0e0c0' :
 	    zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
     $("body").css('background-color',bgcolor);
-    $('#datestr').text(version > 0 ? datestr : '');
-    $('#title').attr('href',root + "/" + name + "/" + title + "/" + "__edit" + "/" + version);
+    $('#datestr').text(version >= 0 ? datestr : '');
+    $('#title').attr('href',root + "/" + name + "/" + title + "/" + "__edit" + "/" + (version >= 0 ? version : 0));
     
     var i;
     if(delay){ // ちょっと待ってもう一度呼び出す!
@@ -503,7 +503,7 @@ function display(delay){
 		       ( m = data[i].match(/\[\[(https:\/\/gist\.github\.com.*\?.*)\]\]/i) )){ // gistエンベッド
 			// https://gist.github.com/1748966 のやり方
 			var gisturl = m[1];
-			var gistFrame = document.createElement("iframe");
+			var gistFrame = document.crea1teElement("iframe");
 			gistFrame.setAttribute("width", "100%");
 			gistFrame.id = "gistFrame" + i;
 			gistFrame.style.border = 'none';
@@ -537,13 +537,22 @@ function display(delay){
 	}
 	
 	// 各行のバックグラウンド色設定
-	$("#listbg"+i).css('background-color',version > 0 ? bgcol(dt[i]) : 'transparent');
-	if(version > 0){
+	$("#listbg"+i).css('background-color',version >= 0 ? bgcol(dt[i]) : 'transparent');
+	if(version >= 0){
 	    $("#listbg"+i).addClass('hover');
             d = new Date();
             t = d.getTime() - dt[i] * 1000;
             dd = new Date(t);
 	    $("#listbg"+i).attr('title',dd.toLocaleString());
+	    $(".hover").tipTip({
+	    	maxWidth: "auto", //ツールチップ最大幅
+	    	edgeOffset: 10, //要素からのオフセット距離
+	    	activation: "hover", //hoverで表示、clickでも可能 
+	    	defaultPosition: "bottom" //デフォルト表示位置
+	    });
+	}
+	else {
+	    $("#listbg"+i).removeClass('hover');
 	}
     }
     
@@ -920,7 +929,7 @@ function writedata(){
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({
 	async: false,
-	url: root + "/" + name + "/" + title + "/json/" + version,
+	url: root + "/" + name + "/" + title + "/json/" + (version >= 0 ? version : '0'),
 	success: function(msg){
 	    d = JSON.parse(msg);
 	    datestr = d['date'];
@@ -1003,7 +1012,7 @@ function addimage(id)
 // 最新のページに更新
 function reload()
 {
-    version = 0;
+    version = -1;
     getdata();
     // display(); getdata()で呼ばれるはず
     if(reloadTimeout) clearTimeout(reloadTimeout);

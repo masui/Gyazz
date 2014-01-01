@@ -144,7 +144,7 @@ module Gyazz
     def data(version=nil) # page.erbに渡すための情報を付加
       ret = {}
       ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
-      if version.to_i > 0 then
+      if version.to_i >= 0 then
         datafile(version) =~ /\/(\d{14})$/
         ret['date'] = $1
         ret['age'] = ret['data'].collect { |line|
