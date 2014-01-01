@@ -35,6 +35,10 @@ module Gyazz
       dir
     end
 
+    def titlestr
+      title =~ /^[0-9]{14}$/ ? text.split(/\n/)[0] : title
+    end
+
     def id
       @title.md5
     end

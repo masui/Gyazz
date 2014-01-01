@@ -28,7 +28,7 @@
   <div>
     <div style="float:left;">
       <% pages.each { |page| %>
-        <% title = page.title %>
+        <% title = page.titlestr %>
 	<% title = "#{page.createtime.stamp} #{title}" if sortbydate%>
         <% url = "/#{@wiki.name}/#{page.title}" %>
         <div class="listedit0__xxx">
