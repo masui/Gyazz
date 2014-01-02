@@ -3,6 +3,7 @@
 module Gyazz
   class Page
     @@text = {}
+    @@access = {}
 
     include Attr
 
@@ -207,7 +208,7 @@ module Gyazz
       File.open(__accessfile,"a"){ |f|
         f.puts Time.now.stamp
       }
-      @accesstime = Time.now.stamp
+      @@access[wiki.name+title] = Time.now.stamp
     end
 
     def access_history
@@ -228,11 +229,14 @@ module Gyazz
 
     def accesstime
       # File.exist?(curfile) ? File.atime(curfile) : Time.now
-      if !@accesstime then
+      ind = wiki.name+title
+      atime = @@access[ind]
+      if !atime
+        puts "record access time .. #{title}"
         t = access_history.last
-        @accesstime = (t ? t.to_time : "20000101000000".to_time)
+        atime = @@access[ind] = (t ? t.to_time : "20000101000000".to_time).stamp
       end
-      @accesstime
+      atime
     end
   end
 end
