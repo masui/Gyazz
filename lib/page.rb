@@ -232,7 +232,6 @@ module Gyazz
       ind = wiki.name+title
       atime = @@access[ind]
       if !atime
-        puts "record access time .. #{title}"
         t = access_history.last
         atime = @@access[ind] = (t ? t.to_time : "20000101000000".to_time).stamp
       end
