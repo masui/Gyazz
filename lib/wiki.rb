@@ -56,7 +56,6 @@ module Gyazz
       allpages.find_all { |page|
         text = page.text
         text != '' && text != '(empty)' # これが遅い
-        #File.exist?(page.curfile)
       }
     end
 

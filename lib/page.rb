@@ -52,6 +52,7 @@ module Gyazz
     def titlestr
       if title =~ /^[0-9]{14}$/ then 
         newtitle = text.split(/\n/)[0]
+        newtitle = '' unless newtitle
         while newtitle =~ /^(.*)(\[\[([^\n\r]+)\]\])(.*)$/ do
           pre = $1
           tag = $3
