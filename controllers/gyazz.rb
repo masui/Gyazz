@@ -344,12 +344,7 @@ get '/:name/*/__edit/:version' do       # 古いバージョンを編集
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
   page['version'] = version.to_s
-  writable = 
-    wiki.has_no_auth_pages? ||
-    (wiki.password_required? && wiki.password_authorized?(request)) ||
-    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
-    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
-  page['writable'] = writable.to_s
+  page['writable'] = writable?(wiki,request).to_s
 
   @page = page
   erb :edit
@@ -369,12 +364,7 @@ get "/:name/__random" do |name|
   ignore = 0
 
   @page = pages[ignore + rand(len-ignore)]
-  writable = 
-    wiki.has_no_auth_pages? ||
-    (wiki.password_required? && wiki.password_authorized?(request)) ||
-    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
-    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
-  @page['writable'] = writable.to_s
+  @page['writable'] = writable?(wiki,request).to_s
 
   erb :page
 end
@@ -387,12 +377,7 @@ get '/:name/*' do
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
   page.record_access_history
-  writable = 
-    wiki.has_no_auth_pages? ||
-    (wiki.password_required? && wiki.password_authorized?(request)) ||
-    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
-    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
-  page['writable'] = writable.to_s
+  page['writable'] = writable?(wiki,request).to_s
 
   @page = page
   erb :page

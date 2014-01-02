@@ -16,4 +16,10 @@ helpers do
     s.gsub(/&/,'&amp;').gsub(/</,'&lt;')
   end
 
+  def writable?(wiki,request)
+    wiki.has_no_auth_pages? ||
+      (wiki.password_required? && wiki.password_authorized?(request)) ||
+      (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
+      (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
+  end
 end
