@@ -5,10 +5,11 @@ module Gyazz
     @@cached_page = {}
     @@orig_new = self.method(:new)
     def self.new(wiki,title)
-      if @@cached_page[title]
-        return @@cached_page[title]
+      ind = (wiki.class == String ? wiki : wiki.name) +','+title
+      if @@cached_page[ind]
+        return @@cached_page[ind]
       else
-        @@cached_page[title] = @@orig_new.call(wiki,title)
+        @@cached_page[ind] = @@orig_new.call(wiki,title)
       end
     end
 

@@ -34,7 +34,10 @@ module Gyazz
     end
 
     def allpages
+      puts "initialized = #{@initialized}"
       if !@initialized then
+        @initialized = true
+        puts "calc from dir"
         Dir.open(dir).find_all { |file|
           file =~ /^[\da-f]{32}$/
         }.collect { |id|
@@ -46,7 +49,6 @@ module Gyazz
         }
       else
         cached_pages.to_a
-        @initialized = true
       end
     end
 
