@@ -369,6 +369,13 @@ get "/:name/__random" do |name|
   ignore = 0
 
   @page = pages[ignore + rand(len-ignore)]
+  writable = 
+    wiki.has_no_auth_pages? ||
+    (wiki.password_required? && wiki.password_authorized?(request)) ||
+    (wiki.all_auth_page.exist? && wiki.all_auth_page.cookie_authorized?(request)) ||
+    (wiki.write_auth_page.exist? && wiki.write_auth_page.cookie_authorized?(request))
+  @page['writable'] = writable.to_s
+
   erb :page
 end
 
