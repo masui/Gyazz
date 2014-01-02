@@ -2,13 +2,26 @@
 
 module Gyazz
   class Wiki
+    @@cached_wiki = {}
+    @@orig_new = self.method(:new)
+    def self.new(name)
+      if @@cached_wiki[name]
+        return @@cached_wiki[name]
+      else
+        @@cached_wiki[name] = @@orig_new.call(name)
+      end
+    end
+
     include Attr
 
     def initialize(name)
       @name = name
       Gyazz.id2title(id,@name) # nameとIDとの対応を登録
+
+      @cached_pages = Set.new
     end
     attr_reader :name
+    attr :cached_pages, true
 
     def dir
       dir = "#{Gyazz::FILEROOT}/#{id}"
@@ -21,15 +34,20 @@ module Gyazz
     end
 
     def allpages
-      Dir.open(dir).find_all { |file|
-        file =~ /^[\da-f]{32}$/
-      }.collect { |id|
-        Gyazz.id2title(id)
-      }.find_all { |title|
-        title != ''
-      }.collect { |title|
-        Page.new(self,title)
-      }
+      if !@initialized then
+        Dir.open(dir).find_all { |file|
+          file =~ /^[\da-f]{32}$/
+        }.collect { |id|
+          Gyazz.id2title(id)
+        }.find_all { |title|
+          title != ''
+        }.collect { |title|
+          Page.new(self,title)
+        }
+      else
+        cached_pages.to_a
+        @initialized = true
+      end
     end
 
     def validpages # 中身が空でないもの

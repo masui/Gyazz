@@ -2,6 +2,16 @@
 
 module Gyazz
   class Page
+    @@cached_page = {}
+    @@orig_new = self.method(:new)
+    def self.new(wiki,title)
+      if @@cached_page[title]
+        return @@cached_page[title]
+      else
+        @@cached_page[title] = @@orig_new.call(wiki,title)
+      end
+    end
+
     @@text = {}
     @@access = {}
 
@@ -10,6 +20,8 @@ module Gyazz
     def initialize(wiki,title)
       @wiki = wiki
       @wiki = Wiki.new(wiki) if wiki.class == String
+
+      @wiki.cached_pages.add(self)
 
       @title = title
       Gyazz.id2title(id,title) # titleとIDとの対応セット
