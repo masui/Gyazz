@@ -76,8 +76,8 @@ post '/__write' do
   Gyazz::Page.new(name,title).write(postdata,orig_md5)
 end
 
-get '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
-  data = params[:data].split(/\n/)
+post '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
+  data = params[:data]
   if params[:name] then
     name = params[:name]
     title = params[:title]
