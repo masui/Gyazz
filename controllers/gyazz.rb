@@ -89,6 +89,14 @@ post '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   redirect("/#{name}/#{title}")
 end
 
+get '/__write__' do # 無条件書き込み
+  data = params[:data]
+  name = params[:name]
+  title = params[:title]
+  Gyazz::Page.new(name,title).write(data)
+  redirect("/#{name}/#{title}")
+end
+
 # 認証の考え方は auth.rb を参照
 
 # なぞなぞ認証チャレンジ文字列取得
