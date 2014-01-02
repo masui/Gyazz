@@ -87,13 +87,15 @@ module Gyazz
     end
 
     def text(version=0)
-      if version == 0 && @@text[wiki.name+title] then
-        return @@text[wiki.name+title]
+      ind = wiki.name + title
+      cachedtext = @@text[ind]
+      if version == 0 && cachedtext then
+        cachedtext
       else
         file = datafile(version)
         s = (File.exist?(file) ? File.read(file)  : '')
         s.sub!(/\s+$/,'')
-        @@text[wiki.name+title] = s if version == 0
+        @@text[ind] = s if version == 0
         s
       end
     end
