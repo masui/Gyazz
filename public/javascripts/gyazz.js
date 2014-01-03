@@ -25,6 +25,7 @@ var spaces = [];      // 行に空白がいくつ含まれているか (桁揃�
 var posy = [];
 
 var datestr = '';
+var showold = false;
 
 var sendTimeout;                     // 放置すると書き込み
 var reloadTimeout = null;            // 放っておくとリロードするように
@@ -462,7 +463,6 @@ function setup(){ // 初期化
         return false;
     });
 
-    var showold = false;
     $('#historyimage').hover(
 	function(){
 	    showold = true;
@@ -500,7 +500,7 @@ function display(delay){
 	    zoomlevel == -1 ? '#e0e0c0' :
 	    zoomlevel == -2 ? '#c0c0a0' : '#a0a080';
     $("body").css('background-color',bgcolor);
-    $('#datestr').text(version >= 0 ? datestr : '');
+    $('#datestr').text(version >= 0 || showold ? datestr : '');
     $('#title').attr('href',root + "/" + name + "/" + title + "/" + "__edit" + "/" + (version >= 0 ? version : 0));
     
     var i;
