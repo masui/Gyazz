@@ -248,27 +248,28 @@ end
 # ページデータ取得
 #-----------------------------------------------------
 
-# ページをJSONデータとして取得
+# 古いバージョンのJSONを取得
 get '/:name/*/json' do
   name = params[:name]
   title = params[:splat].join('/')
-  #
-  # nameが漢字のときうまくリダイレクトされないorz
-  #
-  redirect URI.encode("/#{name}/#{title}/json/0")
-end
-
-# 古いバージョンのJSONを取得
-get '/:name/*/json/:version' do
-  name = params[:name]
-  title = params[:splat].join('/')
-  version = params[:version].to_i
+  version = params[:version]
+  age = params[:age]
   response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
 
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
 
-  data = page.data(version)
+  if age then # 指定されたageレベルの古さのデータを取得
+    vts = page.vis_timestamp(age.to_i)
+    version = 0
+    page.modify_history.reverse.each { |timestamp|
+      break if timestamp < vts
+      version += 1
+    }
+    data = page.data(version)
+  else
+    data = page.data(version.to_s.to_i)
+  end
 
   # 未認証状態でなぞなぞページにアクセスしたときはテキストを並べかえる
 

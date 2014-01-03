@@ -35,14 +35,13 @@
     setup();
     getdata();
   })
-
   </script>
 </head>
 
 <body>
 <div class='title'>
   <span class='wordtitle'>
-    <img src='/<%= @page.wiki.name %>/<%= @page.title %>/modify.png' height=18 width=80>
+    <img id='historyimage' src='/<%= @page.wiki.name %>/<%= @page.title %>/modify.png' height=18 width=80>
     <% if @page['writable'] then %>
       <a href='/<%= @page.wiki.name %>/<%= @page.title %>/__edit/0' id='title'>
       <%= sanitize(@page.title) %>

@@ -32,6 +32,11 @@ module Gyazz
         (Math.log(v[i].to_i+0.9) * 3).to_i
       }
     end
+
+    # v[n] に対応する大体の日付を計算する
+    def vis_timestamp(n)
+      (Time.now - Math.exp(n * Math.log(1.5)).ceil * 60 * 60 * 24).stamp
+    end
     
     # PNG視覚化
     def modify_png

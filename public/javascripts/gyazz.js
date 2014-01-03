@@ -461,6 +461,37 @@ function setup(){ // 初期化
         sendfiles(files);
         return false;
     });
+
+    var showold = false;
+    $('#historyimage').hover(
+	function(){
+	    showold = true;
+	},
+	function(){
+	    showold = false;
+	    getdata();
+	}
+    );
+
+    $('#historyimage').mousemove(
+	function(event){
+	    var imagewidth = parseInt($('#historyimage').attr('width'));
+	    var age = Math.floor((imagewidth + $('#historyimage').offset().left - event.pageX) * 25 / imagewidth);
+	    // $('#debug').text(Math.floor((imagewidth + $('#historyimage').offset().left - event.pageX) * 25 / imagewidth));
+	    $.ajax({
+		async: false,
+		url: root + "/" + name + "/" + title + "/json?age=" + age,
+		success: function(msg){
+		    d = JSON.parse(msg);
+		    datestr = d['date'];
+		    dt = d['age'];
+		    data = d['data'];
+		    orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
+		    search();
+		}
+	    });
+	}
+    );
 }
 
 function display(delay){
@@ -562,12 +593,11 @@ function display(delay){
 	
 	// 各行のバックグラウンド色設定
 	$("#listbg"+i).css('background-color',version >= 0 ? bgcol(dt[i]) : 'transparent');
-	if(version >= 0){
+	if(version >= 0){ // ツールチップに行の作成時刻を表示
 	    $("#list"+i).addClass('hover');
-            d = new Date();
-            t = d.getTime() - dt[i] * 1000;
-            dd = new Date(t);
-	    $("#list"+i).attr('title',dd.toLocaleString());
+            date = new Date();
+            createdate = new Date(date.getTime() - dt[i] * 1000);
+	    $("#list"+i).attr('title',createdate.toLocaleString());
 	    $(".hover").tipTip({
 	    	maxWidth: "auto", //ツールチップ最大幅
 	    	edgeOffset: 5, //要素からのオフセット距離
@@ -953,7 +983,7 @@ function writedata(){
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({
 	async: false,
-	url: root + "/" + name + "/" + title + "/json/" + (version >= 0 ? version : '0'),
+	url: root + "/" + name + "/" + title + "/json?version=" + (version >= 0 ? version : '0'),
 	success: function(msg){
 	    d = JSON.parse(msg);
 	    datestr = d['date'];
@@ -1106,3 +1136,4 @@ function follow_scroll(){
     
     $("body").stop().animate({'scrollTop': currentLinePos - windowHeight/2}, 200);
 };
+
