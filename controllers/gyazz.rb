@@ -78,21 +78,21 @@ end
 
 post '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   data = params[:data]
-  if params[:name] then
-    name = params[:name]
-    title = params[:title]
-  else # この仕様は削除すべき ********
-    name = data.shift
-    title = data.shift
+  name = params[:name]
+  title = params[:title]
+  if !data or name.to_s.empty? or title.to_s.empty?
+    halt 400, 'Bad Request: parameter "data", "name", "title" require'
   end
   Gyazz::Page.new(name,title).write(data)
-  redirect("/#{name}/#{title}")
 end
 
 get '/__write__' do # 無条件書き込み
   data = params[:data]
   name = params[:name]
   title = params[:title]
+  if !data or name.to_s.empty? or title.to_s.empty?
+    halt 400, 'Bad Request: parameter "data", "name", "title" require'
+  end
   Gyazz::Page.new(name,title).write(data)
   redirect("/#{name}/#{title}")
 end
