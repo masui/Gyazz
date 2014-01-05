@@ -55,7 +55,7 @@ module Gyazz
     def validpages # 中身が空でないもの
       allpages.find_all { |page|
         text = page.text
-        text != '' && text != '(empty)' # これが遅い
+        text !~ /^\s*$/ && text != '(empty)' # これが遅い
       }
     end
 

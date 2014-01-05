@@ -24,12 +24,12 @@ end
 
 id2title = SDBM.open("#{newdir}/id2title",0644)
 
-command "mkdir #{newdir}/#{wikiid}"
+command "mkdir #{newdir}/#{wikiid}" if !File.exist?("#{newdir}/#{wikiid}")
 pageids = Dir.open("#{olddir}/#{wikiid}").find_all { |file|
   file =~ /^[\da-f]{32}$/
 }
 pageids.each { |pageid|
-  command "mkdir #{newdir}/#{wikiid}/#{pageid}"
+  command "mkdir #{newdir}/#{wikiid}/#{pageid}" if !File.exist?("#{newdir}/#{wikiid}/#{pageid}")
   command "/bin/cp #{olddir}/#{wikiid}/#{pageid} #{newdir}/#{wikiid}/#{pageid}/curfile"
   
   if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}") then
@@ -47,18 +47,20 @@ pageids.each { |pageid|
   
   if File.exist?("#{olddir}/#{wikiid}/backups/#{pageid}/timestamp.dir") then
     puts "Copy timestamps...."
-    data = {}
-    olddb = SDBM.open("#{olddir}/#{wikiid}/backups/#{pageid}/timestamp")
-    olddb.each { |key,val|
-      puts "#{key}, #{val} => "
-      data[key] = val
-    }
-    olddb.close
-    newdb = SDBM.open("#{newdir}/#{wikiid}/#{pageid}/attr",0644)
-    data.each { |key,val|
-      newdb["TimeStamp-#{key[0..950]}"] = val
-    }
-    newdb.close
+    system "ruby copy_timestamp #{olddir} #{newdir} #{wikiid} #{pageid}"
+
+    # data = {}
+    # olddb = SDBM.open("#{olddir}/#{wikiid}/backups/#{pageid}/timestamp")
+    # olddb.each { |key,val|
+    #   puts "#{key}, #{val} => "
+    #   data[key] = val
+    # }
+    # olddb.close
+    # newdb = SDBM.open("#{newdir}/#{wikiid}/#{pageid}/attr",0644)
+    # data.each { |key,val|
+    #   newdb["TimeStamp-#{key[0..950]}"] = val
+    # }
+    # newdb.close
   end
   
 }
@@ -79,6 +81,7 @@ if File.exist?("#{olddir}/#{wikiid}/repimage.dir") then
   }
 end
 if File.exist?("#{olddir}/#{wikiid}/pair.dir") then
+  puts "Copy pair data..."
   command "/bin/cp #{olddir}/#{wikiid}/pair.dir #{newdir}/#{wikiid}/pair.dir"
   command "/bin/cp #{olddir}/#{wikiid}/pair.pag #{newdir}/#{wikiid}/pair.pag"
   pairdb = SDBM.open("#{olddir}/#{wikiid}/pair",0644)
