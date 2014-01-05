@@ -73,7 +73,7 @@ module Gyazz
         }
       }
       (0...MAX).each { |i|
-        d = mlog[i]
+        d = mlog[i] / 2
         d = MAXH/2 if d >= MAXH/2
         (0...d).each { |y|
           data[MAXH-y-1][MAX-i-1] = [0,0,0]
