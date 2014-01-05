@@ -193,7 +193,7 @@ module Gyazz
       ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
       if version.to_i >= 0 then
         datafile(version) =~ /\/(\d{14})$/
-        ret['date'] = (version > 0 ? $1 : modtime.stamp)
+        ret['date'] = (version == 0 ? modtime.stamp : $1 ? $1 : '')
         ret['age'] = ret['data'].collect { |line|
           ts = self[timestampkey(line.strip)]
           t = (ts ? ts.to_time : Time.now)
