@@ -386,7 +386,7 @@ get '/:name/*' do
 
   wiki = Gyazz::Wiki.new(name)
   page = Gyazz::Page.new(wiki,title)
-  page.record_access_history
+  page.record_access_history         # アクセスログを記録。ロボットなどからのアクセスは記録したくないが...
   page['writable'] = writable?(wiki,request).to_s
 
   @page = page
