@@ -49,14 +49,14 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
     var version = 0;
     $.ajax({
 	    async: false,
-		url: root + "/" + name + "/" + title + "/text/" + version,
+		url: root + "/" + name + "/" + title + "/text",
 		success: function(msg){
 		d = msg.split(/\n/);
 		datestr = d.shift();
 		data = [];
 		dt = [];
 		for(var i=0;i<d.length;i++){
-		    s = d[i]
+		    s = d[i];
 			if(s != ''){
 			    t = 0;
 			    if(version > 0){
