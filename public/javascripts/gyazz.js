@@ -21,6 +21,9 @@ var dt = [];          // 背景色
 var doi = [];
 var zoomlevel = 0;
 var spaces = [];      // 行に空白がいくつ含まれているか (桁揃えに利用)
+var cache = {
+    history : { } // #historyimageをなぞって表示するページ履歴 key:age, value:response
+};
 
 var posy = [];
 
@@ -477,6 +480,19 @@ function setup(){ // 初期化
         function(event){
             var imagewidth = parseInt($('#historyimage').attr('width'));
             var age = Math.floor((imagewidth + $('#historyimage').offset().left - event.pageX) * 25 / imagewidth);
+
+            var show_history = function(res){
+                datestr = res['date'];
+                dt = res['age'];
+                data = res['data'];
+                orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
+                search();
+            };
+
+            if(cache.history[age]){
+                show_history(cache.history[age]);
+                return;
+            }
             $.ajax({
                 type: "GET",
                 async: false,
@@ -485,11 +501,8 @@ function setup(){ // 初期化
                     age: age
                 },
                 success: function(res){
-                    datestr = res['date'];
-                    dt = res['age'];
-                    data = res['data'];
-                    orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
-                    search();
+                    cache.history[age] = res;
+                    show_history(res);
                 }
             });
         }
@@ -979,6 +992,7 @@ function writedata(){
             }
             else {
                 orig_md5 = MD5_hexhash(utf16to8(datastr));
+                cache.history = {}; // cacheをリセット
             }
         }
     });
