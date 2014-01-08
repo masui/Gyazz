@@ -942,8 +942,10 @@ function tag(s,line){
     return elements.join(' ');
 };
 
+var posting = false;
 function writedata(){
     if(!writable) return;
+    if(posting) return;
     datastr = data.join("\n").replace(/\n+$/,'')+"\n";
     postdata = "data=" + encodeURIComponent(datastr);
     
@@ -963,6 +965,7 @@ function writedata(){
         },
         
         success: function(msg){
+	    posting = false;
             $("#newtext").css('background-color','#ddd');
             if(msg.match(/^conflict/)){
                 // 再読み込み
