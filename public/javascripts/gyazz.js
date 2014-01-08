@@ -406,16 +406,16 @@ function deleteblankdata(){ // 空白行を削除
 
 // 認証文字列をサーバに送る
 function tell_auth(){
-    authstr = authbuf.sort().join(",");
-    postdata = "data=";
+    var authstr = authbuf.sort().join(",");
     $.ajax({
         type: "POST",
         async: true,
-        url: root + "/__tellauth" + 
-            "?name=" + encodeURIComponent(name) +
-            "&title=" + encodeURIComponent(title) +
-            "&authstr=" + encodeURIComponent(authstr),
-        data: postdata
+        url: root + "/__tellauth",
+        data: {
+            name: name,
+            title: title,
+            authstr: authstr
+        }
     });
 }
 
@@ -946,26 +946,25 @@ var posting = false;
 function writedata(){
     if(!writable) return;
     if(posting) return;
-    datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    postdata = "data=" + encodeURIComponent(datastr);
-    
+    var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
+
     $.ajax({
         type: "POST",
         async: true,
-        url: root + "/__write" + 
-            "?name=" + encodeURIComponent(name) +
-            "&title=" + encodeURIComponent(title) +
-            "&orig_md5=" + encodeURIComponent(orig_md5),
-        data: postdata,
-        
+        url: root + "/__write",
+        data: {
+            name: name,
+            title: title,
+            orig_md5: orig_md5,
+            data: datastr
+        },
         beforeSend: function(xhr,settings){
             //alert(xhr);
             //xhr.setRequestHeader("Content-Type" , "text/html; charset=utf-8");
             return true;
         },
-        
         success: function(msg){
-	    posting = false;
+            posting = false;
             $("#newtext").css('background-color','#ddd');
             if(msg.match(/^conflict/)){
                 // 再読み込み
