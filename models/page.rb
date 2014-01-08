@@ -132,7 +132,11 @@ module Gyazz
       end
 
       # 書込みコンフリクトを調べる
-      if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
+      #
+      # 一時的にコンフリクト調査をやめ
+      #
+      # if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
+      if true then
         File.open(curfile,"w"){ |f|
           f.print(newdata)
         }
@@ -149,15 +153,18 @@ module Gyazz
             f.print newdata
           }
           system "diff -c #{oldfile} #{newfile} > #{patchfile}"
-          system "patch #{curfile} < #{patchfile}"
+          system "patch -f #{curfile} < #{patchfile}" #### -f added
           File.delete newfile, patchfile
           status = 'conflict'
-          @@text[wiki.name+title] = nil
+
+          # @@text[wiki.name+title] = nil
+          @@text[wiki.name+title] = File.read(curfile).sub!(/\s+$/,'')
         else
-          #File.open(curfile,"w"){ |f|
-          #  f.print newdata
-          #}
-          status = 'noconflict - no oldfile'
+          File.open(curfile,"w"){ |f|
+            f.print newdata
+          }
+          # status = 'noconflict - no oldfile'
+          status = 'noconflict'
         end
       end
 
@@ -187,6 +194,7 @@ module Gyazz
         self['repimage'] = ''
       end
 
+      puts "status = #{status}"
       status # 'conflict' or 'noconflict'
     end
 

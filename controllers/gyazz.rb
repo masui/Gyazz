@@ -154,7 +154,6 @@ end
 # サイト属性設定API (settings.erbから呼ばれる)
 get '/__setattr/:name/:key/:val' do |name,key,val|
   wiki = Gyazz::Wiki.new(name)
-  puts "#{key} ==> #{val}"
   wiki[key] = val
 end
 
@@ -251,6 +250,7 @@ end
 
 # 古いバージョンのJSONを取得
 get '/:name/*/json' do
+  puts "Get old versions of json"
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version]

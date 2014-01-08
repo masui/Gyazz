@@ -994,11 +994,11 @@ function writedata(){
                 getdata();
             }
 	    else if(msg == 'noconflict'){
-		getdata();
+		// getdata(); // ????
 	    }
 	    else {
-		alert("Can't find old data - something's wrong.");
-		// getdata();
+		//alert("Can't find old data - something's wrong.");
+		getdata();
 		// alert(datastr);
 	    }
 		    
