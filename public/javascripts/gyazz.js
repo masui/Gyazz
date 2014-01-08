@@ -1126,6 +1126,7 @@ function follow_scroll(){
     
     // 編集中かどうかチェック
     if(editline < 0) return;
+    if(showold) return;
     
     var currentLinePos = $("#newtext").offset().top;
     if( !(currentLinePos && currentLinePos > 0) ) return;
