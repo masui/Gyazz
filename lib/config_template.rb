@@ -1,11 +1,11 @@
-# -*- coding: emacs-mule -*-
+# -*- coding: utf-8 -*-
 
 module Gyazz
-  # FILEROOT = "/Users/masui/Gyazz/data"             # Gyazz’¥Ç’¡¼’¥¿’¥Ç’¥£’¥ì’¥¯’¥È’¥ê
+  # FILEROOT = "/Users/masui/Gyazz/data" # Gyazzãƒ‡ãƒ¼ã‚¿ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
   FILEROOT = "/tmp"
 
   # DEFAULTPAGE = "/index.html"
-  DEFAULTPAGE = "/Gyazz/#{URI.encode('’ÌÜ’¼¡')}"
+  DEFAULTPAGE = "/Gyazz/ç›®æ¬¡"
 
   SESSION_SECRET = "this is session secret (please change)" 
 end
