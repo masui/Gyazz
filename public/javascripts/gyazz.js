@@ -485,7 +485,7 @@ function setup(){ // 初期化
                 datestr = res['date'];
                 dt = res['age'];
                 data = res['data'];
-                orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
+                // orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
                 search();
             };
 
