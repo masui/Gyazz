@@ -963,6 +963,8 @@ function writedata(){
     if(posting) return;
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
 
+    cache.history = {}; // 履歴cacheをリセット
+
     $.ajax({
         type: "POST",
         async: true,
@@ -981,6 +983,7 @@ function writedata(){
         success: function(msg){
             posting = false;
             $("#newtext").css('background-color','#ddd');
+	    //$("#debug").text(msg);
             if(msg.match(/^conflict/)){
                 // 再読み込み
                 getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
@@ -990,10 +993,19 @@ function writedata(){
                 alert("このページは編集できません");
                 getdata();
             }
-            else {
-                orig_md5 = MD5_hexhash(utf16to8(datastr));
-                cache.history = {}; // cacheをリセット
-            }
+	    else if(msg == 'noconflict'){
+		getdata();
+	    }
+	    else {
+		alert("Can't find old data - something's wrong.");
+		// getdata();
+		// alert(datastr);
+	    }
+		    
+            //else {
+            //    orig_md5 = MD5_hexhash(utf16to8(datastr));
+            //    cache.history = {}; // cacheをリセット
+            //}
         }
     });
 }

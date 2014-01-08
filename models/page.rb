@@ -121,7 +121,7 @@ module Gyazz
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
       newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
-      olddata = text
+      olddata = text.sub(/\n+$/,'')+"\n"
       @@text[wiki.name+title] = newdata
 
       # 最新データをバックアップ
@@ -154,10 +154,10 @@ module Gyazz
           status = 'conflict'
           @@text[wiki.name+title] = nil
         else
-          File.open(curfile,"w"){ |f|
-            f.print newdata
-          }
-          status = 'noconflict'
+          #File.open(curfile,"w"){ |f|
+          #  f.print newdata
+          #}
+          status = 'noconflict - no oldfile'
         end
       end
 
