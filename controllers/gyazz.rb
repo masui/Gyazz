@@ -185,7 +185,7 @@ get "/:name/__sort" do |name|
   erb :search
 end
 
-# gyazz-ruby gem のためのもの??
+# gyazz-ruby gem の Gyazz::Wiki#pages 用API
 get "/:name/__list" do |name|
   Gyazz::Wiki.new(name).pages.collect { |page|
     [page.title, page.modtime.to_i, "#{name}/#{page.title}", page['repimage']]
@@ -292,7 +292,7 @@ get '/:name/*/json' do
     end
   end
   
-  # content_type 'application/json'
+  content_type 'application/json'
   data.to_json
 end
 
