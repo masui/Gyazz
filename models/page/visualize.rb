@@ -41,7 +41,10 @@ module Gyazz
     # PNG視覚化
     def modify_png
       alog = log(access_history)
-      mlog = log(modify_history)
+      # 最新ファイルの更新時刻は除去しておく
+      modify_history2 = modify_history.dup
+      modify_history2.pop
+      mlog = log(modify_history2)
       data = []
 
       #
