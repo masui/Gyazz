@@ -292,6 +292,7 @@ get '/:name/*/json' do
     end
   end
   
+  content_type 'application/json'
   data.to_json
 end
 
@@ -321,6 +322,7 @@ get '/:name/*/text' do
       end
     end
   end
+  content_type 'text/html'
   text
 end
 
