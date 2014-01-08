@@ -477,15 +477,17 @@ function setup(){ // 初期化
         function(event){
             var imagewidth = parseInt($('#historyimage').attr('width'));
             var age = Math.floor((imagewidth + $('#historyimage').offset().left - event.pageX) * 25 / imagewidth);
-            // $('#debug').text(Math.floor((imagewidth + $('#historyimage').offset().left - event.pageX) * 25 / imagewidth));
             $.ajax({
+                type: "GET",
                 async: false,
-                url: root + "/" + name + "/" + title + "/json?age=" + age,
-                success: function(msg){
-                    d = JSON.parse(msg);
-                    datestr = d['date'];
-                    dt = d['age'];
-                    data = d['data'];
+                url: root + "/" + name + "/" + title + "/json",
+                data: {
+                    age: age
+                },
+                success: function(res){
+                    datestr = res['date'];
+                    dt = res['age'];
+                    data = res['data'];
                     orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
                     search();
                 }
@@ -984,13 +986,16 @@ function writedata(){
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
     $.ajax({
+        type: "GET",
         async: false,
-        url: root + "/" + name + "/" + title + "/json?version=" + (version >= 0 ? version : '0'),
-        success: function(msg){
-            d = JSON.parse(msg);
-            datestr = d['date'];
-            dt = d['age'];
-            data = d['data'];
+        url: root + "/" + name + "/" + title + "/json",
+        data: {
+            version: version >= 0 ? version : 0
+        },
+        success: function(res){
+            datestr = res['date'];
+            dt = res['age'];
+            data = res['data'];
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
         }
