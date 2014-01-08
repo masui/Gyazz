@@ -592,7 +592,7 @@ function display(delay){
         }
         
         // 各行のバックグラウンド色設定
-        $("#listbg"+i).css('background-color',version >= 0 ? bgcol(dt[i]) : 'transparent');
+        $("#listbg"+i).css('background-color',(version >= 0 || showold) ? bgcol(dt[i]) : 'transparent');
         if(version >= 0){ // ツールチップに行の作成時刻を表示
             $("#list"+i).addClass('hover');
             date = new Date();
