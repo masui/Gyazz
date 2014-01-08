@@ -7,21 +7,21 @@ require 'set'
 
 $:.unshift File.dirname(__FILE__)
 
+## load libraries
 require 'lib/config'
 require 'lib/pair'
 require 'lib/keyword'
-require 'lib/related'
 require 'lib/png'
-require 'lib/visualize'
 require 'lib/auth'
 require 'lib/time'
-require 'lib/attr'
-require 'lib/rss'
-
-require 'lib/page'
-require 'lib/wiki'
 require 'lib/md5'
 
+## load models
+require 'models/attr'
+require 'models/page'
+require 'models/wiki'
+
+## load helpers
 require 'helpers/helper'
 
 require 'controllers/gyazz'

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require File.expand_path 'wiki/rss', File.dirname(__FILE__)
 
 module Gyazz
   class Wiki
