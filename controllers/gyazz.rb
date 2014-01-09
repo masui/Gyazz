@@ -180,7 +180,6 @@ end
 get "/:name/__sort" do |name|
   @wiki = Gyazz::Wiki.new(name)
   @pages = @wiki.pages('',:title)
-  puts @pages
   erb :search
 end
 

@@ -120,9 +120,17 @@ module Gyazz
       # ブラウザからの要求のときはbrowser_md5に値がセットされる
       # gyazz-ruby のAPIや強制書込みの場合はbrowser_md5はセットされない
   
-      newdata = data.sub(/\n+$/,'')+"\n"      # newdata: 新規書込みデータ
-      olddata = text.sub(/\n+$/,'')+"\n"
+      newdata = data.gsub(/\n+/,"\n").sub(/\n+\Z/,'')+"\n" # newdata: 新規書込みデータ
+      olddata = text.gsub(/\n+/,"\n").sub(/\n+\Z/,'')+"\n" # \Z は文字列の最後
       @@text[wiki.name+title] = newdata
+
+      puts "Write request======"
+      puts "data = "
+      puts data
+      puts "browser_md5 = #{browser_md5}"
+      puts "olddata = "
+      puts olddata
+      puts "olddata.md5 = #{olddata.md5}"
 
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
@@ -133,10 +141,7 @@ module Gyazz
 
       # 書込みコンフリクトを調べる
       #
-      # 一時的にコンフリクト調査をやめ
-      #
-      # if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
-      if true then
+      if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
         File.open(curfile,"w"){ |f|
           f.print(newdata)
         }
@@ -147,6 +152,19 @@ module Gyazz
           File.read(f).md5 == browser_md5
         }
         if oldfile then
+          puts "OLDDATA FOUND"
+          puts "browser_md5 = #{browser_md5}"
+          puts "olddata = "
+          puts olddata
+          puts "olddata.md5 = #{olddata.md5}"
+          puts "oldfile found #{oldfile}"
+          puts "oldfile----"
+          oldtext = File.read(oldfile)
+          puts oldtext
+          puts "oldfile.md5 = #{oldtext.md5}"
+          puts "newfile-----"
+          puts newdata
+
           newfile = "/tmp/newfile#{$$}"
           patchfile = "/tmp/patchfile#{$$}"
           File.open(newfile,"w"){ |f|
@@ -163,8 +181,8 @@ module Gyazz
           File.open(curfile,"w"){ |f|
             f.print newdata
           }
-          # status = 'noconflict - no oldfile'
-          status = 'noconflict'
+          status = 'noconflict - no oldfile'
+          # status = 'noconflict'
         end
       end
 
@@ -200,7 +218,7 @@ module Gyazz
 
     def data(version=nil) # page.erbに渡すための情報を付加
       ret = {}
-      ret['data'] = text(version).sub(/\n+$/,'').split(/\n/)
+      ret['data'] = text(version).gsub(/\n+/,"\n").sub(/\n+\Z/,'').split(/\n/)
       if version.to_i >= 0 then
         datafile(version) =~ /\/(\d{14})$/
         ret['date'] = (version == 0 ? modtime.stamp : $1 ? $1 : '')

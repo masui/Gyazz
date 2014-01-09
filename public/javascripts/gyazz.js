@@ -106,7 +106,7 @@ function bgcol(t){
             return "#" + hex2(r) + hex2(g) + hex2(b);
         }
     }
-}
+};
 
 function addblankline(line,indent){
     editline = line;
@@ -961,6 +961,8 @@ var posting = false;
 function writedata(){
     if(!writable) return;
     if(posting) return;
+    posting = true;
+
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
 
     cache.history = {}; // 履歴cacheをリセット
@@ -994,18 +996,13 @@ function writedata(){
                 getdata();
             }
 	    else if(msg == 'noconflict'){
-		// getdata(); // ????
+		getdata(); // これをしないとorig_md5がセットされない
+		// orig_md5 = MD5_hexhash(utf16to8(datastr)); でいいのか?
 	    }
 	    else {
-		//alert("Can't find old data - something's wrong.");
+		alert("Can't find old data - something's wrong.");
 		getdata();
-		// alert(datastr);
 	    }
-		    
-            //else {
-            //    orig_md5 = MD5_hexhash(utf16to8(datastr));
-            //    cache.history = {}; // cacheをリセット
-            //}
         }
     });
 }
