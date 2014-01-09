@@ -249,7 +249,7 @@ end
 
 # 古いバージョンのJSONを取得
 get '/:name/*/json' do
-  puts "Get old versions of json"
+  puts "get /:name/*/json"
   name = params[:name]
   title = params[:splat].join('/')
   version = params[:version]

@@ -102,7 +102,7 @@ module Gyazz
       else
         file = datafile(version)
         s = (File.exist?(file) ? File.read(file)  : '')
-        s.sub!(/\s+$/,'')
+        s.sub!(/\s+\Z/,'')
         @@text[ind] = s if version == 0
         s
       end
@@ -124,14 +124,6 @@ module Gyazz
       olddata = text.gsub(/\n+/,"\n").sub(/\n+\Z/,'')+"\n" # \Z は文字列の最後
       @@text[wiki.name+title] = newdata
 
-      puts "Write request======"
-      puts "data = "
-      puts data
-      puts "browser_md5 = #{browser_md5}"
-      puts "olddata = "
-      puts olddata
-      puts "olddata.md5 = #{olddata.md5}"
-
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
         File.open("#{dir}/#{modtime.stamp}",'w'){ |f|
@@ -140,7 +132,6 @@ module Gyazz
       end
 
       # 書込みコンフリクトを調べる
-      #
       if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
         File.open(curfile,"w"){ |f|
           f.print(newdata)
@@ -152,19 +143,6 @@ module Gyazz
           File.read(f).md5 == browser_md5
         }
         if oldfile then
-          puts "OLDDATA FOUND"
-          puts "browser_md5 = #{browser_md5}"
-          puts "olddata = "
-          puts olddata
-          puts "olddata.md5 = #{olddata.md5}"
-          puts "oldfile found #{oldfile}"
-          puts "oldfile----"
-          oldtext = File.read(oldfile)
-          puts oldtext
-          puts "oldfile.md5 = #{oldtext.md5}"
-          puts "newfile-----"
-          puts newdata
-
           newfile = "/tmp/newfile#{$$}"
           patchfile = "/tmp/patchfile#{$$}"
           File.open(newfile,"w"){ |f|
@@ -176,7 +154,7 @@ module Gyazz
           status = 'conflict'
 
           # @@text[wiki.name+title] = nil
-          @@text[wiki.name+title] = File.read(curfile).sub!(/\s+$/,'')
+          @@text[wiki.name+title] = File.read(curfile).sub!(/\s+\Z/,'')
         else
           File.open(curfile,"w"){ |f|
             f.print newdata
@@ -212,7 +190,7 @@ module Gyazz
         self['repimage'] = ''
       end
 
-      puts "status = #{status}"
+      # puts "status = #{status}"
       status # 'conflict' or 'noconflict'
     end
 
