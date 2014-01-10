@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-class KeywordTest < MiniTest::Unit::TestCase
+class KeywordTest < MiniTest::Test
   def test_1
     s = "[[abc]] [[def]] などはキーワード"
     keywords = s.keywords

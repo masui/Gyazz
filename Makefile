@@ -8,4 +8,4 @@ push:
 testrun:
 	bundle exec rackup config.ru -p 3000
 test:
-	bundle exec ruby tests/run_suite.rb
+	bundle exec rake test
