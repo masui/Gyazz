@@ -210,7 +210,7 @@ $(document).keyup(function(event){
     //if(kc == 219 || kc == 221) return; // [ ] なんでやねん
     //if(kc == 8) return;
     
-    console.log("KeyCode = " + kc );
+    //console.log("KeyCode = " + kc );
 
     if(kc != 22 && kc != 21){
         // 入力途中の文字列を確定 
@@ -220,20 +220,7 @@ $(document).keyup(function(event){
 
     if(kc == 13){ // 改行
         if(sendTimeout) clearTimeout(sendTimeout);
-
-        //sendTimeout = setTimeout("writedata()",10000);
-	
-	//sendTimeout = setTimeout(function(){
-        //    s = $("input#newtext").val();
-	//    if(s && s != ''){
-	//	writedata();
-	//    }
-	//}, 5000);
-
-        // sendTimeout = setTimeout("writedata()",10000);
-
 	returnpressed = true;
-
         return;
     }
     
@@ -1006,8 +993,8 @@ function writedata(){
     //posting = true;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    console.log("==writedata==");
-    console.log(datastr);
+    //console.log("==writedata==");
+    //console.log(datastr);
 
     cache.history = {}; // 履歴cacheをリセット
 
@@ -1053,7 +1040,7 @@ function writedata(){
 }
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
-    console.log("getdata: editline = <" + editline + ">");
+    //console.log("getdata: editline = <" + editline + ">");
     $.ajax({
         type: "GET",
         async: false,
@@ -1065,32 +1052,34 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
             datestr = res['date'];
             dt = res['age'];
             data = res['data'];
-            console.log("getdata()====");
-            console.log(data.join("\n"));
+            //console.log("getdata()====");
+            //console.log(data.join("\n"));
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
 
             // ??? 日本語入力中の<input>にval()すると値が消えるのかも?
-
-            console.log("#newtext=<"+$("input#newtext").val()+">");
-            console.log("typeof=" + typeof(data[editline]));
-            console.log("editline = <" + editline + ">");
-            if(editline >= 0){
-                lll = '';
-                if(typeof(data[editline]) != 'undefined'){
-                    lll = data[editline];
-                    console.log("defined: lll = <" + lll + ">");
-                }
-                else {
-                    data[editline] = lll;
-                    console.log("undefined: lll = <" + lll + ">");
-                }
-                // $("input#newtext").val(lll); // ****
-                
-                console.log("after search-----");
-                console.log("line=<"+data[editline]+">");
-                console.log("#newtext=<"+$("input#newtext").val()+">");
-            }
+	    
+	    if(false){
+		console.log("#newtext=<"+$("input#newtext").val()+">");
+		console.log("typeof=" + typeof(data[editline]));
+		console.log("editline = <" + editline + ">");
+		if(editline >= 0){
+                    lll = '';
+                    if(typeof(data[editline]) != 'undefined'){
+			lll = data[editline];
+			console.log("defined: lll = <" + lll + ">");
+                    }
+                    else {
+			data[editline] = lll;
+			console.log("undefined: lll = <" + lll + ">");
+                    }
+                    // $("input#newtext").val(lll); // ****
+                    
+                    console.log("after search-----");
+                    console.log("line=<"+data[editline]+">");
+                    console.log("#newtext=<"+$("input#newtext").val()+">");
+		}
+	    }
         }
     });
 }

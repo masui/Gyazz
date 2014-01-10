@@ -124,14 +124,6 @@ module Gyazz
       olddata = text.gsub(/\n+/,"\n").sub(/\n+\Z/,'')+"\n" # \Z は文字列の最後
       @@text[wiki.name+title] = newdata
 
-      puts "Write request======"
-      puts "newdata = "
-      puts data
-      puts "browser_md5 = #{browser_md5}"
-      puts "olddata = "
-      puts olddata
-      puts "olddata.md5 = #{olddata.md5}"
-
       # 最新データをバックアップ
       if olddata != "" && olddata != newdata then
         File.open("#{dir}/#{modtime.stamp}",'w'){ |f|
@@ -142,7 +134,6 @@ module Gyazz
       # 書込みコンフリクトを調べる
       #
       if olddata.md5 == browser_md5 || olddata == '' || browser_md5.nil? then
-        puts "write new data to curfile"
         File.open(curfile,"w"){ |f|
           f.print(newdata)
         }
@@ -153,19 +144,6 @@ module Gyazz
           File.read(f).md5 == browser_md5
         }
         if oldfile then
-          puts "OLDDATA FOUND"
-          puts "browser_md5 = #{browser_md5}"
-          puts "olddata = "
-          puts olddata
-          puts "olddata.md5 = #{olddata.md5}"
-          puts "oldfile found #{oldfile}"
-          puts "oldfile----"
-          oldtext = File.read(oldfile)
-          puts oldtext
-          puts "oldfile.md5 = #{oldtext.md5}"
-          puts "newfile-----"
-          puts newdata
-
           newfile = "/tmp/newfile#{$$}"
           patchfile = "/tmp/patchfile#{$$}"
           File.open(newfile,"w"){ |f|
@@ -213,18 +191,12 @@ module Gyazz
         self['repimage'] = ''
       end
       
-      puts "cached text ="
-      puts @@text[wiki.name+title]
-
-      puts "status = #{status}"
       status # 'conflict' or 'noconflict'
     end
 
     def data(version=nil) # page.erbに渡すための情報を付加
       ret = {}
       ret['data'] = text(version).gsub(/\n+/,"\n").sub(/\n+\Z/,'').split(/\n/)
-      puts "/json data="
-      puts ret['data']
       if version.to_i >= 0 then
         datafile(version) =~ /\/(\d{14})$/
         ret['date'] = (version == 0 ? modtime.stamp : $1 ? $1 : '')
