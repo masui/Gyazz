@@ -138,9 +138,9 @@ post '/__upload' do
 end
 
 # アップロードされたファイルにアクセス
-get "/upload/:filename" do |filename|
-  send_file "#{Gyazz::FILEROOT}/upload/#{filename}"
-end
+#get "/upload/:filename" do |filename|
+#  send_file "#{Gyazz::FILEROOT}/upload/#{filename}"
+#end
 
 #-----------------------------------------------------
 # サイト属性関連
