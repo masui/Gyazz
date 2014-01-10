@@ -198,36 +198,49 @@ function destline_down(){
     return -1;
 }
 
+var returnpressed = false;
 $(document).keyup(function(event){
     var kc = event.which;
     var sk = event.shiftKey;
 
-    //if(kc == 22 || kc == 21 || kc == 13) return; //********
-
-    if(false){
-        //if(kc == 22 || kc == 21 || kc == 13) return; //********
-        if(kc == 22 || kc == 21) return; // 変換キー??
-        if(kc == 224) return; // 変換キー?
-        ////if(kc == 219) return; // [
-        ////if(kc == 221) return; // ]
-        //if(kc == 8) return; // Ctrl-H
-        //if(kc == 9) return; // Ctrl-I
-        if(kc ==KC.enter) return;
-    }
+    // 恐らくFirefox上の日本語入力対策
+    if(kc == 224) return;
+    if(kc == 22 || kc == 21) return;
+    if(kc == 17) return;
+    //if(kc == 219 || kc == 221) return; // [ ] なんでやねん
+    //if(kc == 8) return;
     
+    console.log("KeyCode = " + kc );
+
     if(kc != 22 && kc != 21){
         // 入力途中の文字列を確定 
         data[editline] = $("input#newtext").val();
-        console.log("keyup("+kc+") line=<"+data[editline]+">");
+        //console.log("keyup("+kc+") line=<"+data[editline]+">");
     }
-    if(kc == 13){
+
+    if(kc == 13){ // 改行
         if(sendTimeout) clearTimeout(sendTimeout);
-	return;
+
+        //sendTimeout = setTimeout("writedata()",10000);
+	
+	//sendTimeout = setTimeout(function(){
+        //    s = $("input#newtext").val();
+	//    if(s && s != ''){
+	//	writedata();
+	//    }
+	//}, 5000);
+
+        // sendTimeout = setTimeout("writedata()",10000);
+
+	returnpressed = true;
+
+        return;
     }
     
     // 数秒入力がなければデータ書き込み
     if(version == -1 && !event.ctrlKey && edited){
-        if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
+        if(sk || returnpressed || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
+	    returnpressed = false;
             if(sendTimeout) clearTimeout(sendTimeout);
             sendTimeout = setTimeout("writedata()",1300);
             $("input#newtext").css('background-color','#f0f0d0');
