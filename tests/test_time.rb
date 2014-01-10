@@ -1,6 +1,6 @@
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-class TimeTest < MiniTest::Unit::TestCase
+class TimeTest < MiniTest::Test
   def setup
   end
 

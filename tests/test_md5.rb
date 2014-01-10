@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-class MD5Test < MiniTest::Unit::TestCase
+class MD5Test < MiniTest::Test
   def setup
     @wiki = Gyazz::Wiki.new('test_wiki')
   end

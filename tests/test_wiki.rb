@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-class WikiTest < MiniTest::Unit::TestCase
+class WikiTest < MiniTest::Test
   def setup
     @wikiname = 'testtesttest'
     @wiki = Gyazz::Wiki.new(@wikiname)

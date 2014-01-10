@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-$:.unshift File.expand_path '../', File.dirname(__FILE__)
-require 'lib/config'
-require 'controllers/gyazz'
-
 # ENV['RACK_ENV'] = 'test'
 
-class TestTest < MiniTest::Unit::TestCase
+class TestTest < MiniTest::Test
   include Rack::Test::Methods
 
   def app
