@@ -201,16 +201,36 @@ function destline_down(){
 $(document).keyup(function(event){
     var kc = event.which;
     var sk = event.shiftKey;
+
+    //if(kc == 22 || kc == 21 || kc == 13) return; //********
+
+    if(false){
+        //if(kc == 22 || kc == 21 || kc == 13) return; //********
+        if(kc == 22 || kc == 21) return; // 変換キー??
+        if(kc == 224) return; // 変換キー?
+        ////if(kc == 219) return; // [
+        ////if(kc == 221) return; // ]
+        //if(kc == 8) return; // Ctrl-H
+        //if(kc == 9) return; // Ctrl-I
+        if(kc ==KC.enter) return;
+    }
     
-    // 入力途中の文字列を確定 
-    data[editline] = $("#newtext").val();
+    if(kc != 22 && kc != 21){
+        // 入力途中の文字列を確定 
+        data[editline] = $("input#newtext").val();
+        console.log("keyup("+kc+") line=<"+data[editline]+">");
+    }
+    if(kc == 13){
+        if(sendTimeout) clearTimeout(sendTimeout);
+	return;
+    }
     
     // 数秒入力がなければデータ書き込み
     if(version == -1 && !event.ctrlKey && edited){
         if(sk || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
             if(sendTimeout) clearTimeout(sendTimeout);
             sendTimeout = setTimeout("writedata()",1300);
-            $("#newtext").css('background-color','#f0f0d0');
+            $("input#newtext").css('background-color','#f0f0d0');
         }
     }
 });
@@ -255,28 +275,28 @@ $(document).keydown(function(event){
         }
     }
     else if(kc == KC.k && ck){ // Ctrl+K カーソルより右側を削除する
-	var input_tag = $("input#newtext");
-	if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
+        var input_tag = $("input#newtext");
+        if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
             data[editline] = ""; // 現在の行を削除
             deleteblankdata();
             display();
             edited = true;
             setTimeout(function(){
-		// カーソルを行頭に移動
-		input_tag = $("#newtext");
-		input_tag[0].selectionStart = 0;
-		input_tag[0].selectionEnd = 0;
+                // カーソルを行頭に移動
+                input_tag = $("#newtext");
+                input_tag[0].selectionStart = 0;
+                input_tag[0].selectionEnd = 0;
             }, 10);
             return;
-	}
-	setTimeout(function(){ // Mac用。ctrl+kでカーソルより後ろを削除するまで待つ
+        }
+        setTimeout(function(){ // Mac用。ctrl+kでカーソルより後ろを削除するまで待つ
             var cursor_pos = input_tag[0].selectionStart;
             if(input_tag.val().length > cursor_pos){ // ctrl+kでカーソルより後ろが削除されていない場合
-		input_tag.val( input_tag.val().substring(0, cursor_pos) ); // カーソルより後ろを削除
-		input_tag.selectionStart = cursor_pos;
-		input_tag.selectionEnd = cursor_pos;
+                input_tag.val( input_tag.val().substring(0, cursor_pos) ); // カーソルより後ろを削除
+                input_tag.selectionStart = cursor_pos;
+                input_tag.selectionEnd = cursor_pos;
             }
-	}, 10);
+        }, 10);
     }
     else if(kc == KC.down && ck && editline >= 0 && editline < data.length-1){ // Ctrl+↓ = 下の行と入れ替え
         var current_line_data = data[editline];
@@ -524,7 +544,7 @@ function display(delay){
         return;
     }
     
-    var input = $("#newtext");
+    var input = $("input#newtext");
     if(editline == -1){
         deleteblankdata();
         input.css('display','none');
@@ -547,8 +567,17 @@ function display(delay){
             if(i == editline){ // 編集行
                 t.css('display','inline').css('visibility','hidden');
                 p.css('display','block').css('visibility','hidden');
-                input.css('position','absolute').css('visibility','visible').css('left',xmargin+25).css('top',p.position().top).val(data[i]).mousedown(linefunc(i));
-                setTimeout(function(){ $("#newtext").focus(); }, 100); // 何故か少し待ってからfocus()を呼ばないとフォーカスされない...
+                input.css('position','absolute');
+                input.css('visibility','visible');
+                input.css('left',xmargin+25);
+                input.css('top',p.position().top);
+                input.blur();
+                //console.log("display() - set input tp <" + data[i] + ">");
+                input.val(data[i]); // Firefoxの場合日本語入力中にこれが効かないことがあるような... blurしておけば大丈夫かもしれない
+                input.focus();
+                //console.log("input = <" + input.val() + ">");
+                input.mousedown(linefunc(i));
+                setTimeout(function(){ $("input#newtext").focus(); }, 100); // 何故か少し待ってからfocus()を呼ばないとフォーカスされない...
             }
             else {
                 var lastchar = '';
@@ -957,25 +986,28 @@ function tag(s,line){
     return elements.join(' ');
 };
 
-var posting = false;
+//var posting = false;
 function writedata(){
     if(!writable) return;
-    if(posting) return;
-    posting = true;
+    //if(posting) return;
+    //posting = true;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
+    console.log("==writedata==");
+    console.log(datastr);
 
     cache.history = {}; // 履歴cacheをリセット
 
     $.ajax({
         type: "POST",
-        async: true,
+        async: false,
         url: root + "/__write",
         data: {
             name: name,
             title: title,
             orig_md5: orig_md5,
-            data: datastr
+            data: datastr,
+            date: Number(new Date)
         },
         beforeSend: function(xhr,settings){
             //alert(xhr);
@@ -983,9 +1015,9 @@ function writedata(){
             return true;
         },
         success: function(msg){
-            posting = false;
-            $("#newtext").css('background-color','#ddd');
-	    //$("#debug").text(msg);
+            //posting = false;
+            $("input#newtext").css('background-color','#ddd');
+            //$("#debug").text(msg);
             if(msg.match(/^conflict/)){
                 // 再読み込み
                 getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
@@ -995,19 +1027,20 @@ function writedata(){
                 alert("このページは編集できません");
                 getdata();
             }
-	    else if(msg == 'noconflict'){
-		getdata(); // これをしないとorig_md5がセットされない
-		// orig_md5 = MD5_hexhash(utf16to8(datastr)); でいいのか?
-	    }
-	    else {
-		alert("Can't find old data - something's wrong.");
-		getdata();
-	    }
+            else if(msg == 'noconflict'){
+                getdata(); // これをしないとorig_md5がセットされない
+                // orig_md5 = MD5_hexhash(utf16to8(datastr)); でいいのか?
+            }
+            else {
+                alert("Can't find old data - something's wrong.");
+                getdata();
+            }
         }
     });
 }
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
+    console.log("getdata: editline = <" + editline + ">");
     $.ajax({
         type: "GET",
         async: false,
@@ -1019,8 +1052,32 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
             datestr = res['date'];
             dt = res['age'];
             data = res['data'];
+            console.log("getdata()====");
+            console.log(data.join("\n"));
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
+
+            // ??? 日本語入力中の<input>にval()すると値が消えるのかも?
+
+            console.log("#newtext=<"+$("input#newtext").val()+">");
+            console.log("typeof=" + typeof(data[editline]));
+            console.log("editline = <" + editline + ">");
+            if(editline >= 0){
+                lll = '';
+                if(typeof(data[editline]) != 'undefined'){
+                    lll = data[editline];
+                    console.log("defined: lll = <" + lll + ">");
+                }
+                else {
+                    data[editline] = lll;
+                    console.log("undefined: lll = <" + lll + ">");
+                }
+                // $("input#newtext").val(lll); // ****
+                
+                console.log("after search-----");
+                console.log("line=<"+data[editline]+">");
+                console.log("#newtext=<"+$("input#newtext").val()+">");
+            }
         }
     });
 }
@@ -1156,7 +1213,7 @@ function follow_scroll(){
     if(editline < 0) return;
     if(showold) return;
     
-    var currentLinePos = $("#newtext").offset().top;
+    var currentLinePos = $("input#newtext").offset().top;
     if( !(currentLinePos && currentLinePos > 0) ) return;
     var currentScrollPos = $("body").scrollTop();
     var windowHeight = window.innerHeight;

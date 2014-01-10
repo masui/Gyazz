@@ -77,14 +77,23 @@ post '/__write' do
   Gyazz::Page.new(name,title).write(postdata,orig_md5)
 end
 
+lastdate = 0
 post '/__write__' do # 無条件書き込み (gyazz-rubyで利用)
   data = params[:data]
   name = params[:name]
   title = params[:title]
-  if !data or name.to_s.empty? or title.to_s.empty?
-    halt 400, 'Bad Request: parameter "data", "name", "title" require'
+  date = params[:date].to_i
+
+  if date > lastdate then
+    lastdate = date
+
+    if !data or name.to_s.empty? or title.to_s.empty?
+      halt 400, 'Bad Request: parameter "data", "name", "title" require'
+    end
+    Gyazz::Page.new(name,title).write(data)
+  else
+    puts "================順番錯綜======================="
   end
-  Gyazz::Page.new(name,title).write(data)
 end
 
 get '/__write__' do # 無条件書き込み
