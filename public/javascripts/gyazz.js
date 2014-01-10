@@ -210,12 +210,9 @@ $(document).keyup(function(event){
     //if(kc == 219 || kc == 221) return; // [ ] なんでやねん
     //if(kc == 8) return;
     
-    //console.log("KeyCode = " + kc );
-
     if(kc != 22 && kc != 21){
         // 入力途中の文字列を確定 
         data[editline] = $("input#newtext").val();
-        //console.log("keyup("+kc+") line=<"+data[editline]+">");
     }
 
     if(kc == 13){ // 改行
@@ -572,10 +569,8 @@ function display(delay){
                 input.css('left',xmargin+25);
                 input.css('top',p.position().top);
                 input.blur();
-                //console.log("display() - set input tp <" + data[i] + ">");
-                input.val(data[i]); // Firefoxの場合日本語入力中にこれが効かないことがあるような... blurしておけば大丈夫かもしれない
+                input.val(data[i]); // Firefoxの場合日本語入力中にこれが効かないことがあるような... blurしておけば大丈夫ぽい
                 input.focus();
-                //console.log("input = <" + input.val() + ">");
                 input.mousedown(linefunc(i));
                 setTimeout(function(){ $("input#newtext").focus(); }, 100); // 何故か少し待ってからfocus()を呼ばないとフォーカスされない...
             }
@@ -678,7 +673,6 @@ function display(delay){
 function adjustIframeSize(newHeight,i) {
     var frame= document.getElementById("gistFrame"+i);
     frame.style.height = parseInt(newHeight) + "px";
-    console.log("size adjusted", newHeight);
 }
 
 function transpose(){ // 同じパタンが連続した行の行と桁を入れ換える
@@ -986,15 +980,10 @@ function tag(s,line){
     return elements.join(' ');
 };
 
-//var posting = false;
 function writedata(){
     if(!writable) return;
-    //if(posting) return;
-    //posting = true;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    //console.log("==writedata==");
-    //console.log(datastr);
 
     cache.history = {}; // 履歴cacheをリセット
 
@@ -1006,16 +995,12 @@ function writedata(){
             name: name,
             title: title,
             orig_md5: orig_md5,
-            data: datastr,
-            date: Number(new Date)
+            data: datastr
         },
         beforeSend: function(xhr,settings){
-            //alert(xhr);
-            //xhr.setRequestHeader("Content-Type" , "text/html; charset=utf-8");
             return true;
         },
         success: function(msg){
-            //posting = false;
             $("input#newtext").css('background-color','#ddd');
             //$("#debug").text(msg);
             if(msg.match(/^conflict/)){
@@ -1040,7 +1025,6 @@ function writedata(){
 }
 
 function getdata(){ // 20050815123456.utf のようなテキストを読み出し
-    //console.log("getdata: editline = <" + editline + ">");
     $.ajax({
         type: "GET",
         async: false,
@@ -1052,34 +1036,8 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
             datestr = res['date'];
             dt = res['age'];
             data = res['data'];
-            //console.log("getdata()====");
-            //console.log(data.join("\n"));
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
-
-            // ??? 日本語入力中の<input>にval()すると値が消えるのかも?
-	    
-	    if(false){
-		console.log("#newtext=<"+$("input#newtext").val()+">");
-		console.log("typeof=" + typeof(data[editline]));
-		console.log("editline = <" + editline + ">");
-		if(editline >= 0){
-                    lll = '';
-                    if(typeof(data[editline]) != 'undefined'){
-			lll = data[editline];
-			console.log("defined: lll = <" + lll + ">");
-                    }
-                    else {
-			data[editline] = lll;
-			console.log("undefined: lll = <" + lll + ">");
-                    }
-                    // $("input#newtext").val(lll); // ****
-                    
-                    console.log("after search-----");
-                    console.log("line=<"+data[editline]+">");
-                    console.log("#newtext=<"+$("input#newtext").val()+">");
-		}
-	    }
         }
     });
 }
