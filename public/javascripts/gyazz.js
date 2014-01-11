@@ -197,11 +197,12 @@ function destline_down(){
     return -1;
 }
 
-var returnpressed = false;
 $(document).keyup(function(event){
     var input = $("input#newtext");
     data[editline] = input.val();
 });
+
+var not_saved = false;
 
 $(document).keydown(function(event){
     if(reloadTimeout) clearTimeout(reloadTimeout);
@@ -218,7 +219,7 @@ $(document).keydown(function(event){
     
     if(searchmode) return true;
     
-    $("input#newtext").css('background-color','#f0f0d0');
+    not_saved = true;
 
     if(ck && kc == 0x53 && editline >= 0){
         transpose();
@@ -368,6 +369,8 @@ $(document).keydown(function(event){
         $('#querydiv').css('visibility','visible').css('display','block');
         $('#query').focus();
     }
+    
+    if(not_saved) $("input#newtext").css('background-color','#f0f0d0');
 });
 
 function deleteblankdata(){ // 空白行を削除
@@ -936,6 +939,7 @@ function tag(s,line){
 };
 
 function writedata(){
+    not_saved = false;
     if(!writable) return;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
