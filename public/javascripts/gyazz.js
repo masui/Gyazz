@@ -146,7 +146,7 @@ $(document).mousedown(function(event){
     searchmode = false;
     
     if(eline == -1){ // 行以外をクリック
-	writedata(); // データセーブ
+	writedata(true);
         editline = eline;
         calcdoi();
         display(true);
@@ -938,11 +938,17 @@ function tag(s,line){
     return elements.join(' ');
 };
 
-function writedata(){
+var olddatastr = '';
+function writedata(force){
     not_saved = false;
     if(!writable) return;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
+    if(!force && datastr == olddatastr){
+	search();
+	return;
+    }
+    olddatastr = datastr;
 
     cache.history = {}; // 履歴cacheをリセット
 
