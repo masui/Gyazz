@@ -1,8 +1,8 @@
 *~
 .DS_Store
+public/upload
 data
 lib/config.rb
 .ruby-version
 .SyncID
 .SyncIgnore
-

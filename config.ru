@@ -9,6 +9,7 @@ $:.unshift File.dirname(__FILE__)
 
 ## load libraries
 require 'lib/config'
+require 'lib/init'
 require 'lib/pair'
 require 'lib/keyword'
 require 'lib/png'
