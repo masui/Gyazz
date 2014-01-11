@@ -148,7 +148,7 @@ $(document).mousedown(function(event){
     searchmode = false;
     
     if(eline == -1){ // 行以外をクリック
-	writedata(true);
+	////writedata(true);
         editline = eline;
         calcdoi();
         display(true);
@@ -485,6 +485,13 @@ function setup(){ // 初期化
             });
         }
     );
+
+    $('#contents').mousedown(function(event){
+	if(eline == -1){ // 行以外をクリック
+	    writedata(true);
+	}
+    });
+
 }
 
 function display(delay){
@@ -957,7 +964,7 @@ function writedata(force){
 
     $.ajax({
         type: "POST",
-        async: false,
+        async: true,
         url: root + "/__write",
         data: {
             name: name,
