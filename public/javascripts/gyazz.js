@@ -122,10 +122,12 @@ function addblankline(line,indent){
 $(document).mouseup(function(event){
     if(editTimeout) clearTimeout(editTimeout);
     eline = -1;
+    return true;
 });
 
 $(document).mousemove(function(event){
     if(editTimeout) clearTimeout(editTimeout);
+    return true;
 });
 
 function longmousedown(){
@@ -155,6 +157,7 @@ $(document).mousedown(function(event){
         if(editTimeout) clearTimeout(editTimeout);
         editTimeout = setTimeout(longmousedown,300);
     }
+    return true;
 });
 
 function indent(line){ // 先頭の空白文字の数
