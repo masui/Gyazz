@@ -211,8 +211,11 @@ $(document).keyup(function(event){
     //if(kc == 8) return;
     
     if(kc != 22 && kc != 21){
-        // 入力途中の文字列を確定 
-        data[editline] = $("input#newtext").val();
+        // 入力途中の文字列を確定
+	var input = $("input#newtext");
+	input.blur();
+        data[editline] = input.val();
+	input.focus();
     }
 
     if(kc == 13){ // 改行
