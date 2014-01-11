@@ -964,7 +964,7 @@ function writedata(force){
 
     $.ajax({
         type: "POST",
-        async: true,
+        async: false,
         url: root + "/__write",
         data: {
             name: name,
