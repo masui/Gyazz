@@ -38,8 +38,6 @@ var editTimeout = null;
 
 var searchmode = false;
 
-var edited = false;
-
 var orig_md5; // getdata()したときのMD5
 
 var KC = {
@@ -147,7 +145,8 @@ $(document).mousedown(function(event){
     }
     searchmode = false;
     
-    if(eline == -1){
+    if(eline == -1){ // 行以外をクリック
+	writedata(); // データセーブ
         editline = eline;
         calcdoi();
         display(true);
@@ -200,39 +199,8 @@ function destline_down(){
 
 var returnpressed = false;
 $(document).keyup(function(event){
-    var kc = event.which;
-    var sk = event.shiftKey;
-
-    // 恐らくFirefox上の日本語入力対策
-    if(kc == 224) return;
-    if(kc == 22 || kc == 21) return;
-    if(kc == 17) return;
-    //if(kc == 219 || kc == 221) return; // [ ] なんでやねん
-    //if(kc == 8) return;
-    
-    if(kc != 22 && kc != 21){
-        // 入力途中の文字列を確定
-	var input = $("input#newtext");
-	//input.blur();
-        data[editline] = input.val();
-	//input.focus();
-    }
-
-    if(kc == 13){ // 改行
-        if(sendTimeout) clearTimeout(sendTimeout);
-	returnpressed = true;
-        return;
-    }
-    
-    // 数秒入力がなければデータ書き込み
-    if(version == -1 && !event.ctrlKey && edited){
-        if(sk || returnpressed || (kc != KC.down && kc != KC.up && kc != KC.left && kc != KC.right)){
-	    returnpressed = false;
-            if(sendTimeout) clearTimeout(sendTimeout);
-            sendTimeout = setTimeout("writedata()",1300);
-            $("input#newtext").css('background-color','#f0f0d0');
-        }
-    }
+    var input = $("input#newtext");
+    data[editline] = input.val();
 });
 
 $(document).keydown(function(event){
@@ -250,13 +218,14 @@ $(document).keydown(function(event){
     
     if(searchmode) return true;
     
-    edited = false;
-    
+    $("input#newtext").css('background-color','#f0f0d0');
+
     if(ck && kc == 0x53 && editline >= 0){
         transpose();
     }
     else if(kc == KC.enter){
         $('#query').val('');
+	writedata();
     }
     else if(kc == KC.down && sk){ // Shift+↓ = 下にブロック移動
         if(editline >= 0 && editline < data.length-1){
@@ -269,8 +238,7 @@ $(document).keydown(function(event){
                 for(i=0;i<m;i++)  data[editline+m2+i] = tmp[i];
                 editline = editline + m2;
                 deleteblankdata();
-                display();
-                edited = true;
+		writedata();
             }
         }
     }
@@ -279,8 +247,7 @@ $(document).keydown(function(event){
         if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
             data[editline] = ""; // 現在の行を削除
             deleteblankdata();
-            display();
-            edited = true;
+	    writedata();
             setTimeout(function(){
                 // カーソルを行頭に移動
                 input_tag = $("#newtext");
@@ -305,8 +272,7 @@ $(document).keydown(function(event){
         setTimeout(function(){
             editline += 1;
             deleteblankdata();
-            display();
-            edited = true;
+	    writedata();
         }, 1);
     }
     else if((kc == KC.down && !sk) || (kc == KC.n && !sk && ck)){ // ↓ = カーソル移動
@@ -316,7 +282,7 @@ $(document).keydown(function(event){
                 if(doi[i] >= -zoomlevel){
                     editline = i;
                     deleteblankdata();
-                    display();
+		    writedata();
                     break;
                 }
             }
@@ -333,8 +299,7 @@ $(document).keydown(function(event){
                 for(i=0;i<m2;i++) data[dst+m+i] = tmp[i];
                 editline = dst;
                 deleteblankdata();
-                display();
-                edited = true;
+		writedata();
             }
         }
     }
@@ -345,8 +310,7 @@ $(document).keydown(function(event){
         setTimeout(function(){
             editline -= 1;
             deleteblankdata();
-            display();
-            edited = true;
+	    writedata();
         }, 1);
     }
     else if((kc == KC.up && !sk) || (kc == KC.p && !sk && ck)){ // 上にカーソル移動
@@ -356,7 +320,7 @@ $(document).keydown(function(event){
                 if(doi[i] >= -zoomlevel){
                     editline = i;
                     deleteblankdata();
-                    display();
+		    writedata();
                     break;
                 }
             }
@@ -365,7 +329,7 @@ $(document).keydown(function(event){
     if(kc == KC.tab && !sk || kc == KC.right && sk){ // indent
         if(editline >= 0 && editline < data.length){
             data[editline] = ' ' + data[editline];
-            display();
+	    writedata();
         }
     }
     if(kc == KC.tab && sk || kc == KC.left && sk){ // undent
@@ -374,7 +338,7 @@ $(document).keydown(function(event){
             if(s.substring(0,1) == ' '){
                 data[editline] = s.substring(1,s.length);
             }
-            display();
+	    writedata();
         }
     }
     if(kc == KC.left && !sk && !ck && editline < 0){ // zoom out
@@ -403,18 +367,6 @@ $(document).keydown(function(event){
     else if(kc >= 0x30 && kc <= 0x7e && editline < 0 && !cd && !ck){
         $('#querydiv').css('visibility','visible').css('display','block');
         $('#query').focus();
-    }
-    else if(ck && kc == 0x68){
-        edited = true;
-    }
-    else if(kc == 0x08){
-        edited = true;
-    }
-    else if(ck){
-        edited = false;
-    }
-    else {
-        edited = true;
     }
 });
 
