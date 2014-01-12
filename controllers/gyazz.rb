@@ -16,7 +16,6 @@ configure do
   set :protection, :except => :frame_options
 end
 
-#before '/:name/*' do
 before '/:name*' do
   name = params[:name]
   title = params[:splat][0]
@@ -136,11 +135,6 @@ post '/__upload' do
     savefile
   end
 end
-
-# アップロードされたファイルにアクセス
-#get "/upload/:filename" do |filename|
-#  send_file "#{Gyazz::FILEROOT}/upload/#{filename}"
-#end
 
 #-----------------------------------------------------
 # サイト属性関連
