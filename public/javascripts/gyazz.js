@@ -992,7 +992,7 @@ function writedata(force){
                 // orig_md5 = MD5_hexhash(utf16to8(datastr)); でいいのか?
             }
             else {
-                alert("Can't find old data - something's wrong.");
+                console.log("Can't find old data - something's wrong.");
                 getdata();
             }
         }
