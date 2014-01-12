@@ -1,5 +1,5 @@
 # Gyazz - 手軽で強力なWiki
-<img src="http://gyazo.com/113a195acceac1efaff640b4ffade7ab.gif">
+<img src="http://gyazo.com/248389634c9f44bd08edcd94e21c3808.gif">
 
 ## 特徴
 
