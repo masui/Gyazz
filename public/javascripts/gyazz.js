@@ -73,6 +73,7 @@ function hex2(v){
 }
 
 function bgcol(t){
+    var i, r, g, b;
     // データの古さに応じて行の色を変える
     var table = [
         [0,                                  256,256,256],
@@ -104,17 +105,18 @@ function bgcol(t){
             return "#" + hex2(r) + hex2(g) + hex2(b);
         }
     }
-};
+}
 
 function addblankline(line,indent){
+    var i;
     editline = line;
     eline = line;
     deleteblankdata();
-    for(var i=data.length-1;i>=editline;i--){
+    for(i=data.length-1;i>=editline;i--){
         data[i+1] = data[i];
     }
     var s = '';
-    for(var i=0;i<indent;i++) s += ' ';
+    for(i=0;i<indent;i++) s += ' ';
     data[editline] = s;
     search();
 }
@@ -137,6 +139,7 @@ function longmousedown(){
 }                 
 
 $(document).mousedown(function(event){
+    var y;
     if(reloadTimeout) clearTimeout(reloadTimeout);
     reloadTimeout = setTimeout(reload,reloadInterval);
     
@@ -173,6 +176,7 @@ function movelines(line){ // 移動すべき行数
 }
 
 function destline_up(){
+    var ind;
     // インデントが自分と同じか自分より深い行を捜す。
     // ひとつもなければ -1 を返す。
     var ind_editline = indent(editline);
@@ -189,6 +193,7 @@ function destline_up(){
 }
 
 function destline_down(){
+    var ind;
     // インデントが自分と同じ行を捜す。
     // ひとつもなければ -1 を返す。
     var ind_editline = indent(editline);
@@ -219,6 +224,7 @@ $(document).keydown(function(event){
     var m,m2;
     var dst;
     var tmp = [];
+    var current_line_data;
     
     if(searchmode) return true;
     
@@ -229,7 +235,7 @@ $(document).keydown(function(event){
     }
     else if(kc == KC.enter){
         $('#query').val('');
-	writedata();
+        writedata();
     }
     else if(kc == KC.down && sk){ // Shift+↓ = 下にブロック移動
         if(editline >= 0 && editline < data.length-1){
@@ -242,7 +248,7 @@ $(document).keydown(function(event){
                 for(i=0;i<m;i++)  data[editline+m2+i] = tmp[i];
                 editline = editline + m2;
                 deleteblankdata();
-		writedata();
+                writedata();
             }
         }
     }
@@ -251,7 +257,7 @@ $(document).keydown(function(event){
         if(input_tag.val().match(/^\s*$/) && editline < data.length-1){ // 行が完全に削除された時
             data[editline] = ""; // 現在の行を削除
             deleteblankdata();
-	    writedata();
+            writedata();
             setTimeout(function(){
                 // カーソルを行頭に移動
                 input_tag = $("#newtext");
@@ -270,23 +276,22 @@ $(document).keydown(function(event){
         }, 10);
     }
     else if(kc == KC.down && ck && editline >= 0 && editline < data.length-1){ // Ctrl+↓ = 下の行と入れ替え
-        var current_line_data = data[editline];
+        current_line_data = data[editline];
         data[editline] = data[editline+1];
         data[editline+1] = current_line_data;
         setTimeout(function(){
             editline += 1;
             deleteblankdata();
-	    writedata();
+            writedata();
         }, 1);
     }
     else if((kc == KC.down && !sk) || (kc == KC.n && !sk && ck)){ // ↓ = カーソル移動
         if(editline >= 0 && editline < data.length-1){
-            var i;
             for(i=editline+1;i<data.length;i++){
                 if(doi[i] >= -zoomlevel){
                     editline = i;
                     deleteblankdata();
-		    writedata();
+                    writedata();
                     break;
                 }
             }
@@ -303,28 +308,27 @@ $(document).keydown(function(event){
                 for(i=0;i<m2;i++) data[dst+m+i] = tmp[i];
                 editline = dst;
                 deleteblankdata();
-		writedata();
+                writedata();
             }
         }
     }
     else if(kc == KC.up && ck && editline > 0){ // Ctrl+↑= 上の行と入れ替え
-        var current_line_data = data[editline];
+        current_line_data = data[editline];
         data[editline] = data[editline-1];
         data[editline-1] = current_line_data;
         setTimeout(function(){
             editline -= 1;
             deleteblankdata();
-	    writedata();
+            writedata();
         }, 1);
     }
     else if((kc == KC.up && !sk) || (kc == KC.p && !sk && ck)){ // 上にカーソル移動
         if(editline > 0){
-            var i;
             for(i=editline-1;i>=0;i--){
                 if(doi[i] >= -zoomlevel){
                     editline = i;
                     deleteblankdata();
-		    writedata();
+                    writedata();
                     break;
                 }
             }
@@ -333,7 +337,7 @@ $(document).keydown(function(event){
     if(kc == KC.tab && !sk || kc == KC.right && sk){ // indent
         if(editline >= 0 && editline < data.length){
             data[editline] = ' ' + data[editline];
-	    writedata();
+            writedata();
         }
     }
     if(kc == KC.tab && sk || kc == KC.left && sk){ // undent
@@ -342,7 +346,7 @@ $(document).keydown(function(event){
             if(s.substring(0,1) == ' '){
                 data[editline] = s.substring(1,s.length);
             }
-	    writedata();
+            writedata();
         }
     }
     if(kc == KC.left && !sk && !ck && editline < 0){ // zoom out
@@ -487,9 +491,9 @@ function setup(){ // 初期化
     );
 
     $('#contents').mousedown(function(event){
-	if(eline == -1){ // 行以外をクリック
-	    writedata(true);
-	}
+        if(eline == -1){ // 行以外をクリック
+            writedata(true);
+        }
     });
 
 }
@@ -757,29 +761,30 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
     var pos = [];
     var width = [];
     var maxwidth = [];
-    for(var line=begin;line<begin+lines;line++){ // 表示されている要素の位置を取得
+    var i, id, line;
+    for(line=begin;line<begin+lines;line++){ // 表示されている要素の位置を取得
         pos[line] = [];
         width[line] = [];
-        for(var i=0;i<=spaces[begin];i++){
-            var id = "#e" + line + "_" + (i + indent(line));
+        for(i=0;i<=spaces[begin];i++){
+            id = "#e" + line + "_" + (i + indent(line));
             pos[line][i] = $(id).offset().left;
         }
-        for(var i=0;i<spaces[begin];i++){
+        for(i=0;i<spaces[begin];i++){
             width[line][i] = pos[line][i+1]-pos[line][i];
         }
     }
-    for(var i=0;i<spaces[begin];i++){ // 桁ごとに最大幅を計算
+    for(i=0;i<spaces[begin];i++){ // 桁ごとに最大幅を計算
         var max = 0;
-        for(var line=begin;line<begin+lines;line++){
+        for(line=begin;line<begin+lines;line++){
             if(width[line][i] > max) max = width[line][i];
         }
         maxwidth[i] = max;
     }
     
     var colpos = pos[begin][0];
-    for(var i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
-        for(var line=begin;line<begin+lines;line++){
-            var id = "#e" + line + "_" + (i + indent(line));
+    for(i=0;i<=spaces[begin];i++){ // 最大幅ずつずらして表示
+        for(line=begin;line<begin+lines;line++){
+            id = "#e" + line + "_" + (i + indent(line));
             //$(id).css('position','absolute').css('top',posy[line]);
             $(id).css('position','absolute').css('left',colpos);
             //$(id).css('position','absolute').css('line-height','').css('left',colpos).css('top',posy[line]);
@@ -791,6 +796,7 @@ function align(begin,lines){ // begin番目からlines個の行を桁揃え
 }
 
 function tag(s,line){
+    var link_to, img_url, screen_name;
     // [[....]], [[[...]]]を[解析]
     if(typeof s !== "string") return;
     matched = [];
@@ -821,10 +827,10 @@ function tag(s,line){
             matched.push('<a href="' + t[1] + '.' + t[2] + '" target="_blank"><img src="' + t[1] + '.' + t[2] + '" border="none"></a>');
         }
         else if(t = inner.match(/^(.+)\.(png|icon)$/i)){ // ページ名.icon or ページ名.pngでアイコン表示
-            var link_to = null;
-            var img_url = null;
+            link_to = null;
+            img_url = null;
             if(t[1].match(/^@[\da-z_]+$/i)){
-                var screen_name = t[1].replace(/^@/,"");
+                screen_name = t[1].replace(/^@/,"");
                 link_to = "http://twitter.com/"+screen_name;
                 img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
             }
@@ -835,10 +841,10 @@ function tag(s,line){
             matched.push('<a href="'+link_to+'" class="link" target="_blank"><img src="'+img_url+'" class="icon" height="24" border="0" alt="'+link_to+'" title="'+link_to+'" /></a>');
         }
         else if(t = inner.match(/^(.+)\.(png|icon|jpe?g|gif)[\*x×]([1-9][0-9]*)(|\.[0-9]+)$/i)){ // (URL|ページ名).(icon|png)x個数 でアイコンをたくさん表示
-            var link_to = null;
-            var img_url = null;
+            link_to = null;
+            img_url = null;
             if(t[1].match(/^@[\da-z_]+$/i)){
-                var screen_name = t[1].replace(/^@/,"");
+                screen_name = t[1].replace(/^@/,"");
                 link_to = "http://twitter.com/"+screen_name;
                 img_url = "http://twiticon.herokuapp.com/"+screen_name+"/mini";
             }
