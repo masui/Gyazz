@@ -22,6 +22,12 @@ class WikiTest < MiniTest::Test
     cleanup
   end
 
+  def test_new
+    assert_instance_of Gyazz::Wiki, Gyazz::Wiki.new("wikiname")
+    assert_equal @wikiname, @wiki.name
+    assert_same @wiki, Gyazz::Wiki.new(@wikiname)
+  end
+
   def test_pages
     page = Gyazz::Page.new(@wiki,'test1')
     page.write('abc')
