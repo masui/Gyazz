@@ -16,6 +16,10 @@ configure do
   set :protection, :except => :frame_options
 end
 
+if ENV["RACK_ENV"] == "test"
+  set :root, "#{File.dirname(__FILE__)}/../"
+end
+
 before '/:name*' do
   name = params[:name]
   title = params[:splat][0]

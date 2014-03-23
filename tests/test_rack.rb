@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 require File.expand_path 'test_helper', File.dirname(__FILE__)
 
-# ENV['RACK_ENV'] = 'test'
-
 class TestTest < MiniTest::Test
   include Rack::Test::Methods
 
