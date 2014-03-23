@@ -28,20 +28,6 @@ module Gyazz
 
       @title = title
       Gyazz.id2title(id,title) # titleとIDとの対応セット
-
-      #
-      # 新規ページ作成時、大文字小文字を間違えたページが既に作られていないかチェック *******
-      #
-      # こんな感じのコードを入れる
-      #  if !data or data.strip.empty? or data.strip == "(empty)"
-      #    similar_titles = similar_page_titles(name, title)
-      #    unless similar_titles.empty?
-      #      suggest_title = similar_titles.sort{|a,b|
-      #        readdata(name, b)['data'].join("\n").size <=> readdata(name, a)['data'].join("\n").size  # 一番大きいページをサジェスト
-      #      }.first
-      #      data = "\n-> [[#{suggest_title}]]" if suggest_title
-      #    end
-      #  end
     end
     attr_reader :wiki, :title
 
@@ -67,7 +53,7 @@ module Gyazz
           a = tag.split(/ /)
           if a[0] =~ /^http/ then
             if a[1] =~ /^http/ then
-              newtitle = pre + "<<<" + tag + ">>>" + post
+              newtitle = "#{pre}<<<#{tag}>>>#{post}"
             else
               a.shift
               newtitle = pre + a.join(' ') + post
