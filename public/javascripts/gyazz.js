@@ -1023,6 +1023,34 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
     });
 }
 
+function getAllPageTitles(callback){
+  if(typeof callback !== 'function') return;
+  $.getJSON(root+"/"+name+"/__list", null, function(res){
+    var titles = res.map(function(i){ return i[0] });
+    callback(titles);
+  });
+}
+
+function suggestSimilarPage(){
+  getAllPageTitles(function(titles){
+    var similar_titles = [];
+    var pattern = new Asearch(title);
+    for(var level = 0; level <= 2; level++){
+      for(var i = 0; i < titles.length; i++){
+        var _title = titles[i];
+        if(pattern.match(_title, level)){
+          similar_titles.push(_title);
+        }
+      }
+      if(similar_titles.length > 0){
+        data = ["-&gt; [["+similar_titles[0]+"]]"];
+        display(true);
+        return;
+      }
+    }
+  });
+}
+
 function maxindent(){
     var maxind = 0;
     for(var i=0;i<data.length;i++){
