@@ -1005,14 +1005,14 @@ function writedata(force){
     });
 }
 
-function getdata(){ // 20050815123456.utf のようなテキストを読み出し
+function getdata(opts){ // 20050815123456.utf のようなテキストを読み出し
+    if(opts === null || typeof opts !== 'object') opts = {};
+    if(typeof opts.version !== 'number' || 0 > opts.version) opts.version = 0;
     $.ajax({
         type: "GET",
         async: false,
         url: root + "/" + name + "/" + title + "/json",
-        data: {
-            version: version >= 0 ? version : 0
-        },
+        data: opts,
         success: function(res){
             datestr = res['date'];
             dt = res['age'];
@@ -1021,34 +1021,6 @@ function getdata(){ // 20050815123456.utf のようなテキストを読み出�
             search();
         }
     });
-}
-
-function getAllPageTitles(callback){
-  if(typeof callback !== 'function') return;
-  $.getJSON(root+"/"+name+"/__list", null, function(res){
-    var titles = res.map(function(i){ return i[0] });
-    callback(titles);
-  });
-}
-
-function suggestSimilarPage(){
-  getAllPageTitles(function(titles){
-    var similar_titles = [];
-    var pattern = new Asearch(title);
-    for(var level = 0; level <= 2; level++){
-      for(var i = 0; i < titles.length; i++){
-        var _title = titles[i];
-        if(pattern.match(_title, level)){
-          similar_titles.push(_title);
-        }
-      }
-      if(similar_titles.length > 0){
-        data = ["-&gt; [["+similar_titles[0]+"]]"];
-        display(true);
-        return;
-      }
-    }
-  });
 }
 
 function maxindent(){

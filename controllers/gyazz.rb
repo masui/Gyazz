@@ -253,6 +253,7 @@ get '/:name/*/json' do
   title = params[:splat].join('/')
   version = params[:version]
   age = params[:age]
+  suggest = params[:suggest]
   response["Access-Control-Allow-Origin"] = "*" # 別サイトからのAjaxを許可
 
   wiki = Gyazz::Wiki.new(name)
@@ -268,6 +269,11 @@ get '/:name/*/json' do
     data = page.data(version)
   else
     data = page.data(version.to_s.to_i)
+  end
+
+  if data["data"].empty? or data["data"] == ["(empty)"]
+    suggest_title = page.suggest_similartitles.first
+    data["data"] = ["-&gt; [[#{suggest_title}]]"]
   end
 
   # 未認証状態でなぞなぞページにアクセスしたときはテキストを並べかえる

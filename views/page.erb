@@ -20,7 +20,6 @@
   <!-- <script language="JavaScript" src='/javascripts/jQuery.kill_referrer.js'></script> -->
   <script language="JavaScript" src='/javascripts/jquery.tipTip.js'></script>
 
-  <script language="JavaScript" src='/javascripts/asearch.min.js'></script>
   <script language="JavaScript" src='/javascripts/gyazz.js'></script>
 
   <script type="text/javascript">
@@ -34,11 +33,7 @@
   $(document).ready(function(){ // この場所にないと駄目?
     $('#rawdata').hide();
     setup();
-    getdata();
-    if(!data || data.length < 1 ||
-       (data.length == 1 && data[0] === "(empty)")){
-      suggestSimilarPage();
-    }
+    getdata({suggest: true}); // 1回目はsuggestオプションを付けてgetdata
   });
   </script>
 </head>
