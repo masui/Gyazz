@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'sinatra'
 require 'backports'
 require 'rss/maker'
+require 'asearch'
 require 'set'
 
 $:.unshift File.dirname(__FILE__)
