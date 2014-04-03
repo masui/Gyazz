@@ -273,7 +273,7 @@ get '/:name/*/json' do
 
   if data["data"].empty? or data["data"] == ["(empty)"]
     suggest_title = page.suggest_similartitles.first
-    data["data"] = ["-&gt; [[#{suggest_title}]]"]
+    data["data"] = ["-&gt; [[#{suggest_title}]]"] if suggest_title
   end
 
   # 未認証状態でなぞなぞページにアクセスしたときはテキストを並べかえる
