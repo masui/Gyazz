@@ -151,7 +151,7 @@ $(document).mousedown(function(event){
     searchmode = false;
     
     if(eline == -1){ // 行以外をクリック
-	////writedata(true);
+	    writedata(true);
         editline = eline;
         calcdoi();
         display(true);
