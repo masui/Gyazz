@@ -3,16 +3,6 @@ require File.expand_path 'wiki/rss', File.dirname(__FILE__)
 
 module Gyazz
   class Wiki
-    @@cached_wiki = {}
-    @@orig_new = self.method(:new)
-    def self.new(name)
-      if @@cached_wiki[name]
-        return @@cached_wiki[name]
-      else
-        @@cached_wiki[name] = @@orig_new.call(name)
-      end
-    end
-
     include Attr
 
     def initialize(name)

@@ -5,17 +5,6 @@ require File.expand_path 'page/visualize', File.dirname(__FILE__)
 
 module Gyazz
   class Page
-    @@cached_page = {}
-    @@orig_new = self.method(:new)
-    def self.new(wiki,title)
-      ind = (wiki.class == String ? wiki : wiki.name) +','+title
-      if @@cached_page[ind]
-        return @@cached_page[ind]
-      else
-        @@cached_page[ind] = @@orig_new.call(wiki,title)
-      end
-    end
-
     @@text = {}
     @@access = {}
 
