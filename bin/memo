@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+require 'date'
+
+cmd_name = $0.split('/').last
+
+if ARGV.empty?
+  STDERR.puts "  % #{cmd_name} masui"
+  STDERR.puts "  % #{cmd_name} (wiki_name)"
+  exit 1
+end
+
+wiki_name = ARGV.shift
+page_name = Date.today.to_s.gsub('-','')
+
+url = "http://gyazz.com/#{wiki_name}/#{page_name}"
+puts url
+system "open #{url}"
