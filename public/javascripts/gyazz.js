@@ -151,7 +151,7 @@ $(document).mousedown(function(event){
     searchmode = false;
     
     if(eline == -1){ // 行以外をクリック
-	    writedata(true);
+	    writedata();
         editline = eline;
         calcdoi();
         display(true);
@@ -492,7 +492,7 @@ function setup(){ // 初期化
 
     $('#contents').mousedown(function(event){
         if(eline == -1){ // 行以外をクリック
-            writedata(true);
+            writedata();
         }
     });
 
@@ -954,23 +954,23 @@ function tag(s,line){
     return elements.join(' ');
 };
 
-var olddatastr = '';
+var data_old = [];
 function writedata(force){
     not_saved = false;
     if(!writable) return;
 
     var datastr = data.join("\n").replace(/\n+$/,'')+"\n";
-    if(!force && datastr == olddatastr){
-	search();
-	return;
+    if(!force && (JSON.stringify(data) == JSON.stringify(data_old))){
+        search();
+        return;
     }
-    olddatastr = datastr;
+    data_old = data.concat();
 
     cache.history = {}; // 履歴cacheをリセット
 
     $.ajax({
         type: "POST",
-        async: false,
+        async: true,
         url: root + "/__write",
         data: {
             name: name,
@@ -1010,13 +1010,14 @@ function getdata(opts){ // 20050815123456.utf のようなテキストを読み�
     if(typeof opts.version !== 'number' || 0 > opts.version) opts.version = 0;
     $.ajax({
         type: "GET",
-        async: false,
+        async: true,
         url: root + "/" + name + "/" + title + "/json",
         data: opts,
         success: function(res){
             datestr = res['date'];
             dt = res['age'];
-            data = res['data'];
+            data = res['data'].concat();
+            data_old = res['data'].concat();
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
         }
