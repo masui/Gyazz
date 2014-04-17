@@ -10,8 +10,6 @@
 //  var do_auth = true;
 
 var version = -1;
-var name_id;
-var title_id;
 
 var editline = -1;
 var eline = -1;
@@ -30,7 +28,6 @@ var posy = [];
 var datestr = '';
 var showold = false;
 
-var sendTimeout;                     // 放置すると書き込み
 var reloadTimeout = null;            // 放っておくとリロードするように
 var reloadInterval = 10 * 60 * 1000; // 10分ごとにリロード
 
@@ -422,8 +419,6 @@ function linefunc(n){
 }
 
 function setup(){ // 初期化
-    name_id = MD5_hexhash(utf16to8(name));
-    title_id = MD5_hexhash(utf16to8(title));
     for(var i=0;i<1000;i++){
         var y = $('<div>').attr('id','listbg'+i);
         var x = $('<span>').attr('id','list'+i).mousedown(linefunc(i));
