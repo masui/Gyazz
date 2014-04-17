@@ -394,7 +394,7 @@ function tell_auth(){
     var authstr = authbuf.sort().join(",");
     $.ajax({
         type: "POST",
-        async: true,
+        async: false,
         url: root + "/__tellauth",
         data: {
             name: name,
@@ -970,7 +970,7 @@ function writedata(force){
 
     $.ajax({
         type: "POST",
-        async: true,
+        async: false,
         url: root + "/__write",
         data: {
             name: name,
@@ -1010,7 +1010,7 @@ function getdata(opts){ // 20050815123456.utf のようなテキストを読み�
     if(typeof opts.version !== 'number' || 0 > opts.version) opts.version = 0;
     $.ajax({
         type: "GET",
-        async: true,
+        async: false,
         url: root + "/" + name + "/" + title + "/json",
         data: opts,
         success: function(res){
