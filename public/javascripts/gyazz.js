@@ -963,6 +963,7 @@ function writedata(force){
 
     cache.history = {}; // 履歴cacheをリセット
 
+    notifyBox.print("saving..", {progress: true}).show();
     $.ajax({
         type: "POST",
         async: false,
@@ -981,21 +982,26 @@ function writedata(force){
             //$("#debug").text(msg);
             if(msg.match(/^conflict/)){
                 // 再読み込み
+                notifyBox.print("write conflict").show(1000);
                 getdata(); // ここで強制書き換えしてしまうのがマズい? (2011/6/17)
             }
             else if(msg == 'protected'){
                 // 再読み込み
-                alert("このページは編集できません");
+                notifyBox.print("このページは編集できません").show(3000);
                 getdata();
             }
             else if(msg == 'noconflict'){
+                notifyBox.print("save success").show(1000);
                 getdata(); // これをしないとorig_md5がセットされない
                 // orig_md5 = MD5_hexhash(utf16to8(datastr)); でいいのか?
             }
             else {
-                console.log("Can't find old data - something's wrong.");
+                notifyBox.print("Can't find old data - something's wrong.").show(3000);
                 getdata();
             }
+        },
+        error: function(){
+            notifyBox.print("write error").show(3000);
         }
     });
 }
@@ -1015,6 +1021,8 @@ function getdata(opts){ // 20050815123456.utf のようなテキストを読み�
             data_old = res['data'].concat();
             orig_md5 = MD5_hexhash(utf16to8(data.join("\n").replace(/\n+$/,'')+"\n"));
             search();
+        },
+        error: function(){
         }
     });
 }
@@ -1119,6 +1127,7 @@ function sendfile(file, callback){
     var fd;
     fd = new FormData;
     fd.append('uploadfile', file);
+    notifyBox.print("uploading..", {progress: true}).show();
     $.ajax({
         url: root + "/__upload",
         type: "POST",
@@ -1130,6 +1139,7 @@ function sendfile(file, callback){
             // 通常はここでtextStatusやerrorThrownの値を見て処理を切り分けるか、
             // 単純に通信に失敗した際の処理を記述します。
             alert('upload fail');
+            notifyBox.print("upload fail").show(3000);
             // alert(XMLHttpRequest);
             // alert(textStatus);
             // alert(errorThrown);
@@ -1137,6 +1147,7 @@ function sendfile(file, callback){
         },
         success: function(data) {
             //return callback.call(this);
+            notifyBox.print("upload success!!").show(1000);
             return callback(data);
         }
     });
@@ -1162,3 +1173,47 @@ function follow_scroll(){
     $("body").stop().animate({'scrollTop': currentLinePos - windowHeight/2}, 200);
 };
 
+
+// 右下の通知Box
+$(function(){
+  window.notifyBox = new (function(target){
+
+    var img = $("<img>").attr("src", "/progress.png").hide();
+    var textBox = $("<span>").css({margin: "5px"});
+
+    var box = $("<div>").addClass("notifyBox").css({
+      position: "fixed",
+      right: "10px",
+      bottom: "10px",
+      "background-color": "#EEE"
+    }).append(textBox).append(img);
+
+    $("html").append(box);
+
+    var self = this;
+
+    this.print = function(str, opts){
+      if(!opts) opts = {};
+      textBox.text(str);
+      if(opts.progress) img.show();
+      else img.hide();
+      return self;
+    };
+
+    this.show = function(timeout){
+      box.show();
+      if(typeof timeout === 'number' && timeout > 0){
+        setTimeout(function(){
+          box.fadeOut(800);
+        }, timeout);
+      }
+      return self;
+    };
+
+    this.hide = function(){
+      box.hide();
+      return self;
+    };
+
+  })();
+});
