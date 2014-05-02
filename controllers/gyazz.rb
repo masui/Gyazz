@@ -163,14 +163,16 @@ end
 # ページリスト表示
 get "/:name" do |name|
   @wiki = Gyazz::Wiki.new(name)
-  @pages = @wiki.pages
-  erb :search
+  stream do |out|
+    out << erb(:search)
+  end
 end
 
 get "/:name/" do |name|
   @wiki = Gyazz::Wiki.new(name)
-  @pages = @wiki.pages
-  erb :search
+  stream do |out|
+    out << erb(:search)
+  end
 end
 
 # 名前でソートされたページリスト表示
