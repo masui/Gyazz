@@ -299,6 +299,7 @@ get '/:name/*/json' do
   end
   
   content_type 'application/json'
+  cache_control :no_cache, :max_age => 0
   data.to_json
 end
 
