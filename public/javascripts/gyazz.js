@@ -361,12 +361,12 @@ $(document).keydown(function(event){
     }
     if(ck && kc == KC.left){ // 古いバージョンゲット
         version += 1;
-        getdata();
+        getdata({version:version});
     }
     else if(ck && kc == KC.right){
         if(version >= 0){
             version -= 1;
-            getdata();
+            getdata({version:version});
         }
     }
     else if(kc >= 0x30 && kc <= 0x7e && editline < 0 && !cd && !ck){
