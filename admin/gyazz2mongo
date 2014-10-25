@@ -1,0 +1,153 @@
+#! /usr/bin/env ruby
+# -*- coding: utf-8 -*-
+#
+require 'mongo'
+require 'sdbm'
+
+require '../lib/config'
+require '../lib/md5'
+require '../lib/time'
+require '../lib/pair'
+require '../models/attr'
+require '../models/wiki'
+require '../models/page'
+
+# MongoDB
+#
+# データ
+#   wiki名, page名, id, text
+#
+# % mongo gyazz
+# MongoDB shell version: 2.4.8
+# connecting to: gyazz
+# > db.pages
+# gyazz.pages
+# > db.pages.find()
+# > db.pages.find({title:'Xcode'})
+#
+
+connection = Mongo::Connection.new
+gyazzdb = connection.db('gyazz')
+puts "connection established"
+
+wikiname = '増井研'
+wiki = Gyazz::Wiki.new(wikiname)
+puts "wiki = #{wiki}"
+
+# Attrs
+#  wiki:String
+#  title: String
+#  attr: {
+#    repimage: String
+#  }
+
+attrs = gyazzdb.collection('attrs')
+attrs.remove # 古いのを消す
+puts "attrs removed"
+attrs = gyazzdb.collection('attrs')
+puts "start making attrs DB"
+
+wiki.pages.collect { |page|
+  puts page.title
+  attr = {}
+  page.each { |key,val|
+    begin
+      # if key =~ /^TimeStamp-(.*)$/ then
+      if key == 'repimage' then
+        attr[key] = val;
+      end
+    rescue
+    end
+  }
+  data = {'wiki' => wikiname, 'title' => page.title, 'attr' => attr}
+  puts data
+  id = attrs.insert(data)
+}
+
+# Lines
+#  wiki: String
+#  title: String
+#  line: String
+#  timestamp: Date
+#
+lines = gyazzdb.collection('lines')
+lines.remove # 古いのを消す
+lines = gyazzdb.collection('lines')
+
+wiki.pages.collect { |page|
+  puts page.title
+  page.each { |key,val|
+    begin
+      if key =~ /^TimeStamp-(.*)$/ then
+        line = $1
+        data = {'wiki' => wikiname, 'title' => page.title, 'line' => line, 'timestamp' => val.to_time }
+        id = lines.insert(data)
+      end
+    rescue
+    end
+  }
+}
+
+# Access
+#  wiki: String
+#  title: String
+#  timestamp: Date # アクセス日付
+#
+access = gyazzdb.collection('accesses')
+access.remove # 古いのを消す
+access = gyazzdb.collection('accesses')
+
+wiki.pages.collect { |page|
+  puts page.title
+  page.access_history.each { |date|
+    data = {'wiki' => wikiname, 'title' => page.title, 'timestamp' => date.to_time }
+    id = access.insert(data)
+  }
+}
+
+# Pairs
+#  wiki: String
+#  title1: String
+#  title2: String
+#
+pairs = gyazzdb.collection('pairs')
+pairs.remove # 古いのを消す
+pairs = gyazzdb.collection('pairs')
+
+pair = Pair.new("#{wiki.dir}/pair")
+pair.each { |title1,title2|
+  data = {'wiki' => wikiname, 'title1' => title1, 'title2' => title2}
+  id = pairs.insert(data)
+  puts "#{title1} : #{title2}"
+}
+
+# Pages
+#  wiki: String
+#  title: String
+#  text: String
+#  timestamp: Date # 更新日付
+#
+pages = gyazzdb.collection('pages')
+pages.remove # 古いのを消す
+pages = gyazzdb.collection('pages')
+
+require 'nkf'
+
+wiki.pages.collect { |page|
+  puts page.title
+  # id = page.modtime.stamp
+  doc = {'wiki' => wikiname, 'title' => page.title, 'text' => page.text, 'timestamp' => page.modtime}
+  #コレクションにドキュメントをインサート
+  id = pages.insert(doc)
+
+  page.backupids.each { |backupid|
+    backupfile = "#{page.dir}/#{backupid}"
+    text = File.read(backupfile)
+    # text = text.encode("UTF-8","UTF-8")
+    text = NKF.nkf('-w',text)
+    # puts text
+    # puts page.title
+    doc = {'wiki' => wikiname, 'title' => page.title, 'text' => text, 'timestamp' => backupid.to_time}
+    id = pages.insert(doc)
+  }
+}

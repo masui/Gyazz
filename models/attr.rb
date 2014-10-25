@@ -15,5 +15,13 @@ module Gyazz
         attr[key] = val
       }
     end
+
+    def each
+      SDBM.open("#{dir}/attr",0644){ |attr|
+        attr.each { |key,val|
+          yield(key,val)
+        }
+      }
+    end
   end
 end
