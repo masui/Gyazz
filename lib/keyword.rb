@@ -25,6 +25,7 @@ class String
           kw !~ /^javascript:/ && 
           kw !~ /pdf / && 
           kw !~ /^@/ && 
+          kw !~ /\.(png|jpe?g|gif|icon)(|x[\d\.])/i &&
           kw !~ /::/ && 
           kw !~ /^([EWNSZ][1-9][0-9\.]*)+$/ &&
           kw !~ /\.icon((\*|x|×)[\d\.]*)?$/i &&
